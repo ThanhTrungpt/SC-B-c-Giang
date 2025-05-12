@@ -258,7 +258,7 @@ function checkExecutionTime(startTime, maxTime) {
  */
 function getDeviceById(deviceId) {
   const allData = getAllData();
-  return allData.val_DSThietBi.find(row => row[CONFIG.COLUMNS.DSThietBi.ID] === deviceId) || null;
+  return allData.val_DSThietBi.find(row => row[CONFIG.COLUMNS.DSThietBi.ID_TB] === deviceId) || null;
 }
 
 /**
@@ -268,7 +268,7 @@ function getDeviceById(deviceId) {
  */
 function getRepairById(repairId) {
   const allData = getAllData();
-  return allData.val_MainSC.find(row => row[CONFIG.COLUMNS.MainSC.ID] === repairId) || null;
+  return allData.val_MainSC.find(row => row[CONFIG.COLUMNS.MainSC.ID_DataSC] === repairId) || null;
 }
 
 /**
@@ -317,22 +317,22 @@ function createRepairReport(repairData) {
     }`;
     
     // Tạo dữ liệu dòng mới
-    const newRow = Array(CONFIG.COLUMNS.MainSC.TIME_UPDATE + 1).fill(''); // Tạo mảng trống với đủ số cột
+    const newRow = Array(CONFIG.COLUMNS.MainSC.TIME_UPDATE_DataSC + 1).fill(''); // Tạo mảng trống với đủ số cột
     
     // Cập nhật các trường quan trọng
-    newRow[CONFIG.COLUMNS.MainSC.ID] = repairId;
-    newRow[CONFIG.COLUMNS.MainSC.TRANG_THAI] = CONFIG.REPAIR_STATUS.BAO_HONG;
-    newRow[CONFIG.COLUMNS.MainSC.MUC_DO] = repairData.mucDo;
-    newRow[CONFIG.COLUMNS.MainSC.DON_VI] = repairData.iduserdv;
-    newRow[CONFIG.COLUMNS.MainSC.NGUOI_SUA] = repairData.idusersua;
-    newRow[CONFIG.COLUMNS.MainSC.THIET_BI] = repairData.idthietbi;
-    newRow[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_DV_BAO] = repairData.tinhtrangtbdvbao;
-    newRow[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO] = formattedDateTime;
-    newRow[CONFIG.COLUMNS.MainSC.GHI_CHU] = repairData.ghichu;
-    newRow[CONFIG.COLUMNS.MainSC.HO_TEN] = repairData.hoten;
-    newRow[CONFIG.COLUMNS.MainSC.SO_DIEN_THOAI] = repairData.sdt;
-    newRow[CONFIG.COLUMNS.MainSC.HISTORY] = history;
-    newRow[CONFIG.COLUMNS.MainSC.TIME_UPDATE] = formattedDateTime;
+    newRow[CONFIG.COLUMNS.MainSC.ID_DataSC] = repairId;
+    newRow[CONFIG.COLUMNS.MainSC.TRANG_THAI_DataSC] = CONFIG.REPAIR_STATUS.BAO_HONG;
+    newRow[CONFIG.COLUMNS.MainSC.MUC_DO_DataSC] = repairData.mucDo;
+    newRow[CONFIG.COLUMNS.MainSC.DON_VI_DataSC] = repairData.iduserdv;
+    newRow[CONFIG.COLUMNS.MainSC.NGUOI_SUA_DataSC] = repairData.idusersua;
+    newRow[CONFIG.COLUMNS.MainSC.THIET_BI_DataSC] = repairData.idthietbi;
+    newRow[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_DV_BAO_DataSC] = repairData.tinhtrangtbdvbao;
+    newRow[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO_DataSC] = formattedDateTime;
+    newRow[CONFIG.COLUMNS.MainSC.GHI_CHU_DataSC] = repairData.ghichu;
+    newRow[CONFIG.COLUMNS.MainSC.HO_TEN_DataSC] = repairData.hoten;
+    newRow[CONFIG.COLUMNS.MainSC.SO_DIEN_THOAI_DataSC] = repairData.sdt;
+    newRow[CONFIG.COLUMNS.MainSC.HISTORY_DataSC] = history;
+    newRow[CONFIG.COLUMNS.MainSC.TIME_UPDATE_DataSC] = formattedDateTime;
     
     // Thêm dòng mới vào sheet
     sheetSC.appendRow(newRow);
@@ -389,7 +389,7 @@ function updateUserInfo(userId, userData) {
   const val_DSUserDV = sh_DSUserDV.getDataRange().getValues();
   
   // Tìm vị trí dòng của người dùng
-  const rowIndex = val_DSUserDV.findIndex(row => row[CONFIG.COLUMNS.DSUserDV.ID] === userId);
+  const rowIndex = val_DSUserDV.findIndex(row => row[CONFIG.COLUMNS.DSUserDV.ID_UDV] === userId);
   
   if (rowIndex === -1) return; // Không tìm thấy
   
@@ -397,12 +397,12 @@ function updateUserInfo(userId, userData) {
   
   // Cập nhật thông tin
   if (userData.hoten) {
-    sh_DSUserDV.getRange(rowNumber, CONFIG.COLUMNS.DSUserDV.HO_TEN + 1, 1, 1)
+    sh_DSUserDV.getRange(rowNumber, CONFIG.COLUMNS.DSUserDV.HO_TEN_UDV + 1, 1, 1)
       .setValue(userData.hoten);
   }
   
   if (userData.sdt) {
-    sh_DSUserDV.getRange(rowNumber, CONFIG.COLUMNS.DSUserDV.SO_DIEN_THOAI + 1, 1, 1)
+    sh_DSUserDV.getRange(rowNumber, CONFIG.COLUMNS.DSUserDV.SO_DIEN_THOAI_UDV + 1, 1, 1)
       .setValue(userData.sdt.toString());
   }
 }
@@ -417,24 +417,24 @@ function createReportFile(repairId, deviceId, unitId) {
   // Lấy dữ liệu thiết bị và đơn vị
   const deviceData = getDeviceById(deviceId);
   const allData = getAllData();
-  const unitData = allData.val_DSUserDV.find(row => row[CONFIG.COLUMNS.DSUserDV.ID] === unitId);
+  const unitData = allData.val_DSUserDV.find(row => row[CONFIG.COLUMNS.DSUserDV.ID_UDV] === unitId);
   
   if (!deviceData || !unitData) return;
   
   // Tạo dữ liệu thay thế trong mẫu
   const now = new Date();
   const templateData = {
-    'Đơn vị yêu cầu': unitData[CONFIG.COLUMNS.DSUserDV.DON_VI],
+    'Đơn vị yêu cầu': unitData[CONFIG.COLUMNS.DSUserDV.TEN_DON_VI_UDV],
     'today': now.getDate().toString(),
     'month': (now.getMonth() + 1).toString(),
     'year': now.getFullYear().toString(),
-    'Tên thiết bị': deviceData[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI],
-    'Model': deviceData[CONFIG.COLUMNS.DSThietBi.MODEL],
-    'Serial': deviceData[CONFIG.COLUMNS.DSThietBi.SERIAL],
-    'Hãng sản xuất': deviceData[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT],
-    'Nước sản xuất': deviceData[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT],
-    'Năm sản xuất': deviceData[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT],
-    'Năm sử dụng': deviceData[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_SU_DUNG],
+    'Tên thiết bị': deviceData[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI_TB],
+    'Model': deviceData[CONFIG.COLUMNS.DSThietBi.MODEL_TB],
+    'Serial': deviceData[CONFIG.COLUMNS.DSThietBi.SERIAL_TB],
+    'Hãng sản xuất': deviceData[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT_TB],
+    'Nước sản xuất': deviceData[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT_TB],
+    'Năm sản xuất': deviceData[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT_TB],
+    'Năm sử dụng': deviceData[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_DUA_VAO_SU_DUNG_TB],
     'QR_CODE': '',
     'id': repairId
   };
@@ -457,7 +457,7 @@ function updateFileUrlInSheet(repairId, fileUrl) {
   const data = sheetSC.getDataRange().getValues();
   
   // Tìm vị trí dòng của báo cáo
-  const rowIndex = data.findIndex(row => row[CONFIG.COLUMNS.MainSC.ID] === repairId);
+  const rowIndex = data.findIndex(row => row[CONFIG.COLUMNS.MainSC.ID_DataSC] === repairId);
   
   if (rowIndex === -1) return; // Không tìm thấy
   

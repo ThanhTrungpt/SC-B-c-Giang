@@ -105,17 +105,17 @@ function createBM0901(repairId, deviceRow, unitRow) {
   
   // Chuẩn bị dữ liệu thay thế
   const templateData = {
-    'Đơn vị yêu cầu': unitRow[CONFIG.COLUMNS.DSUserDV.DON_VI],
+    'Đơn vị yêu cầu': unitRow[CONFIG.COLUMNS.DSUserDV.TEN_DON_VI_UDV],
     'today': day,
     'month': month,
     'year': year,
-    'Tên thiết bị': deviceRow[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI],
-    'Model': deviceRow[CONFIG.COLUMNS.DSThietBi.MODEL],
-    'Serial': deviceRow[CONFIG.COLUMNS.DSThietBi.SERIAL],
-    'Hãng sản xuất': deviceRow[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT],
-    'Nước sản xuất': deviceRow[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT],
-    'Năm sản xuất': deviceRow[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT],
-    'Năm sử dụng': deviceRow[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_SU_DUNG],
+    'Tên thiết bị': deviceRow[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI_TB],
+    'Model': deviceRow[CONFIG.COLUMNS.DSThietBi.MODEL_TB],
+    'Serial': deviceRow[CONFIG.COLUMNS.DSThietBi.SERIAL_TB],
+    'Hãng sản xuất': deviceRow[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT_TB],
+    'Nước sản xuất': deviceRow[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT_TB],
+    'Năm sản xuất': deviceRow[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT_TB],
+    'Năm sử dụng': deviceRow[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_DUA_VAO_SU_DUNG_TB],
     'QR_CODE': generateQRCodeUrl(repairId),
     'id': repairId
   };
@@ -147,8 +147,8 @@ function createBM0902(data) {
   const dateParts = {};
   
   // Ngày khảo sát
-  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT]) {
-    const ngaykhaosat = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT]);
+  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT_DataSC]) {
+    const ngaykhaosat = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT_DataSC]);
     dateParts.day_ngaykhaosat = ngaykhaosat.getDate();
     dateParts.month_ngaykhaosat = ngaykhaosat.getMonth() + 1;
     dateParts.year_ngaykhaosat = ngaykhaosat.getFullYear();
@@ -160,8 +160,8 @@ function createBM0902(data) {
   }
   
   // Ngày đơn vị báo
-  if (rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO]) {
-    const ngaydvbao = new Date(rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO]);
+  if (rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO_DataSC]) {
+    const ngaydvbao = new Date(rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO_DataSC]);
     dateParts.day_ngaydvbao = ngaydvbao.getDate();
     dateParts.month_ngaydvbao = ngaydvbao.getMonth() + 1;
     dateParts.year_ngaydvbao = ngaydvbao.getFullYear();
@@ -175,32 +175,32 @@ function createBM0902(data) {
   // Chuẩn bị dữ liệu thay thế
   const templateData = {
     ...dateParts,
-    'Đơn vị yêu cầu': rowdvyc[CONFIG.COLUMNS.DSUserDV.DON_VI],
-    'Quyết định tổ khảo sát': rowdvyc[CONFIG.COLUMNS.DSUserDV.QUYET_DINH_TO_KHAO_SAT] || '',
-    'Đại diện BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_1] || '',
-    'Chức vụ DD BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_1] || '',
-    'Đại diện BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_2] || '',
-    'Chức vụ DD BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_2] || '',
-    'Đại diện BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_3] || '',
-    'Chức vụ DD BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_3] || '',
-    'Đại diện BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_4] || '',
-    'Chức vụ DD BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_4] || '',
-    'Đại diện BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_5] || '',
-    'Chức vụ DD BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_5] || '',
-    'Đại diện ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV1_BAO_SUA_1] || '',
-    'Chức vụ DD ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV1_BAO_SUA] || '',
-    'Đại diện ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV2_BAO_SUA] || '',
-    'Chức vụ DD ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV2_BAO_SUA] || '',
-    'Tên thiết bị': rowthietbi[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI],
-    'Model': rowthietbi[CONFIG.COLUMNS.DSThietBi.MODEL],
-    'Serial': rowthietbi[CONFIG.COLUMNS.DSThietBi.SERIAL],
-    'Hãng sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT],
-    'Nước sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT],
-    'Năm sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT],
-    'Năm sử dụng': rowthietbi[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_SU_DUNG],
-    'Tình trang thiết bị khảo sát': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_KHAO_SAT] || '',
-    'Kết luận khảo sát': rowsc[CONFIG.COLUMNS.MainSC.KET_LUAN_KHAO_SAT] || '',
-    'Đề xuất phương án': rowsc[CONFIG.COLUMNS.MainSC.DE_XUAT_PHUONG_AN] || '',
+    'Đơn vị yêu cầu': rowdvyc[CONFIG.COLUMNS.DSUserDV.TEN_DON_VI_UDV],
+    'Quyết định tổ khảo sát': rowdvyc[CONFIG.COLUMNS.DSUserDV.QUYET_DINH_TO_KHAO_SAT_UDV] || '',
+    'Đại diện BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_1_UDV] || '',
+    'Chức vụ DD BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_1_UDV] || '',
+    'Đại diện BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_2_UDV] || '',
+    'Chức vụ DD BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_2_UDV] || '',
+    'Đại diện BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_3_UDV] || '',
+    'Chức vụ DD BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_3_UDV] || '',
+    'Đại diện BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_4_UDV] || '',
+    'Chức vụ DD BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_4_UDV] || '',
+    'Đại diện BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_5_UDV] || '',
+    'Chức vụ DD BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_5_UDV] || '',
+    'Đại diện ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV1_BAO_SUA_1_UDV] || '',
+    'Chức vụ DD ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV1_BAO_SUA_UDV] || '',
+    'Đại diện ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV2_BAO_SUA_UDV] || '',
+    'Chức vụ DD ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV2_BAO_SUA_UDV] || '',
+    'Tên thiết bị': rowthietbi[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI_TB],
+    'Model': rowthietbi[CONFIG.COLUMNS.DSThietBi.MODEL_TB],
+    'Serial': rowthietbi[CONFIG.COLUMNS.DSThietBi.SERIAL_TB],
+    'Hãng sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT_TB],
+    'Nước sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT_TB],
+    'Năm sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT_TB],
+    'Năm sử dụng': rowthietbi[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_DUA_VAO_SU_DUNG_TB],
+    'Tình trang thiết bị khảo sát': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_KHAO_SAT_DataSC] || '',
+    'Kết luận khảo sát': rowsc[CONFIG.COLUMNS.MainSC.KET_LUAN_KHAO_SAT_DataSC] || '',
+    'Đề xuất phương án': rowsc[CONFIG.COLUMNS.MainSC.DE_XUAT_PHUONG_AN_DataSC] || '',
     'QR_CODE': generateQRCodeUrl(id),
     'id': id
   };
@@ -224,8 +224,8 @@ function createBM0903(data) {
   const dateParts = {};
   
   // Ngày đề nghị
-  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_DE_NGHI]) {
-    const ngaydenghi = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_DE_NGHI]);
+  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_DE_NGHI_DataSC]) {
+    const ngaydenghi = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_DE_NGHI_DataSC]);
     dateParts.day_ngaydenghi = ngaydenghi.getDate();
     dateParts.month_ngaydenghi = ngaydenghi.getMonth() + 1;
     dateParts.year_ngaydenghi = ngaydenghi.getFullYear();
@@ -237,8 +237,8 @@ function createBM0903(data) {
   }
   
   // Ngày đơn vị báo
-  if (rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO]) {
-    const ngaydvbao = new Date(rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO]);
+  if (rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO_DataSC]) {
+    const ngaydvbao = new Date(rowsc[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO_DataSC]);
     dateParts.day_ngaydvbao = ngaydvbao.getDate();
     dateParts.month_ngaydvbao = ngaydvbao.getMonth() + 1;
     dateParts.year_ngaydvbao = ngaydvbao.getFullYear();
@@ -250,8 +250,8 @@ function createBM0903(data) {
   }
   
   // Ngày khảo sát
-  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT]) {
-    const ngaykhaosat = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT]);
+  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT_DataSC]) {
+    const ngaykhaosat = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_KHAO_SAT_DataSC]);
     dateParts.day_ngaykhaosat = ngaykhaosat.getDate();
     dateParts.month_ngaykhaosat = ngaykhaosat.getMonth() + 1;
     dateParts.year_ngaykhaosat = ngaykhaosat.getFullYear();
@@ -265,20 +265,20 @@ function createBM0903(data) {
   // Chuẩn bị dữ liệu thay thế
   const templateData = {
     ...dateParts,
-    'Đơn vị yêu cầu': rowdvyc[CONFIG.COLUMNS.DSUserDV.DON_VI],
-    'Quyết định tổ khảo sát': rowdvyc[CONFIG.COLUMNS.DSUserDV.QUYET_DINH_TO_KHAO_SAT] || '',
-    'Tên thiết bị': rowthietbi[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI],
-    'Model': rowthietbi[CONFIG.COLUMNS.DSThietBi.MODEL],
-    'Serial': rowthietbi[CONFIG.COLUMNS.DSThietBi.SERIAL],
-    'Hãng sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT],
-    'Nước sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT],
-    'Năm sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT],
-    'Năm sử dụng': rowthietbi[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_SU_DUNG],
-    'Tình trang thiết bị khảo sát': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_KHAO_SAT] || '',
-    'Kết luận khảo sát': rowsc[CONFIG.COLUMNS.MainSC.KET_LUAN_KHAO_SAT] || '',
-    'Đề xuất phương án': rowsc[CONFIG.COLUMNS.MainSC.DE_XUAT_PHUONG_AN] || '',
-    'Nội dung đề nghi': rowsc[CONFIG.COLUMNS.MainSC.NOI_DUNG_DE_NGHI] || '',
-    'Người sửa chữa': rowusersc ? rowusersc[CONFIG.COLUMNS.DSUserSua.HO_TEN] : '',
+    'Đơn vị yêu cầu': rowdvyc[CONFIG.COLUMNS.DSUserDV.TEN_DON_VI_UDV],
+    'Quyết định tổ khảo sát': rowdvyc[CONFIG.COLUMNS.DSUserDV.QUYET_DINH_TO_KHAO_SAT_UDV] || '',
+    'Tên thiết bị': rowthietbi[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI_TB],
+    'Model': rowthietbi[CONFIG.COLUMNS.DSThietBi.MODEL_TB],
+    'Serial': rowthietbi[CONFIG.COLUMNS.DSThietBi.SERIAL_TB],
+    'Hãng sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT_TB],
+    'Nước sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT_TB],
+    'Năm sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT_TB],
+    'Năm sử dụng': rowthietbi[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_DUA_VAO_SU_DUNG_TB],
+    'Tình trang thiết bị khảo sát': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_KHAO_SAT_DataSC] || '',
+    'Kết luận khảo sát': rowsc[CONFIG.COLUMNS.MainSC.KET_LUAN_KHAO_SAT_DataSC] || '',
+    'Đề xuất phương án': rowsc[CONFIG.COLUMNS.MainSC.DE_XUAT_PHUONG_AN_DataSC] || '',
+    'Nội dung đề nghi': rowsc[CONFIG.COLUMNS.MainSC.NOI_DUNG_DE_NGHI_DataSC] || '',
+    'Người sửa chữa': rowusersc ? rowusersc[CONFIG.COLUMNS.DSUserSua.HO_VA_TEN_USC] : '',
     'QR_CODE': generateQRCodeUrl(id),
     'id': id
   };
@@ -301,8 +301,8 @@ function createBM0904(data) {
   // Xử lý ngày bàn giao
   let day_ngaybangiao, month_ngaybangiao, year_ngaybangiao;
   
-  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_BAN_GIAO]) {
-    const ngaybangiao = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_BAN_GIAO]);
+  if (rowsc[CONFIG.COLUMNS.MainSC.NGAY_BAN_GIAO_DataSC]) {
+    const ngaybangiao = new Date(rowsc[CONFIG.COLUMNS.MainSC.NGAY_BAN_GIAO_DataSC]);
     day_ngaybangiao = ngaybangiao.getDate();
     month_ngaybangiao = ngaybangiao.getMonth() + 1;
     year_ngaybangiao = ngaybangiao.getFullYear();
@@ -318,31 +318,31 @@ function createBM0904(data) {
     'day_ngaybangiao': day_ngaybangiao,
     'month_ngaybangiao': month_ngaybangiao,
     'year_ngaybangiao': year_ngaybangiao,
-    'quyetdinhtokhaosat': rowdvyc[CONFIG.COLUMNS.DSUserDV.QUYET_DINH_TO_KHAO_SAT] || '',
-    'Đơn vị yêu cầu': rowdvyc[CONFIG.COLUMNS.DSUserDV.DON_VI],
-    'Đại diện BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_1] || '',
-    'Chức vụ DD BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_1] || '',
-    'Đại diện BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_2] || '',
-    'Chức vụ DD BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_2] || '',
-    'Đại diện BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_3] || '',
-    'Chức vụ DD BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_3] || '',
-    'Đại diện BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_4] || '',
-    'Chức vụ DD BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_4] || '',
-    'Đại diện BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_5] || '',
-    'Chức vụ DD BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_5] || '',
-    'Đại diện ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV1_BAO_SUA_1] || '',
-    'Chức vụ DD ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV1_BAO_SUA] || '',
-    'Đại diện ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV2_BAO_SUA] || '',
-    'Chức vụ DD ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV2_BAO_SUA] || '',
-    'Tên thiết bị': rowthietbi[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI],
-    'Model': rowthietbi[CONFIG.COLUMNS.DSThietBi.MODEL],
-    'Serial': rowthietbi[CONFIG.COLUMNS.DSThietBi.SERIAL],
-    'Hãng sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT],
-    'Nước sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT],
-    'Năm sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT],
-    'Năm sử dụng': rowthietbi[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_SU_DUNG],
-    'Tình trang thiết bị khảo sát': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_KHAO_SAT] || '',
-    'Tình trạng thiết bị bàn giao': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_BAN_GIAO] || '',
+    'quyetdinhtokhaosat': rowdvyc[CONFIG.COLUMNS.DSUserDV.QUYET_DINH_TO_KHAO_SAT_UDV] || '',
+    'Đơn vị yêu cầu': rowdvyc[CONFIG.COLUMNS.DSUserDV.TEN_DON_VI_UDV],
+    'Đại diện BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_1_UDV] || '',
+    'Chức vụ DD BV 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_1_UDV] || '',
+    'Đại diện BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_2_UDV] || '',
+    'Chức vụ DD BV 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_2_UDV] || '',
+    'Đại diện BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_3_UDV] || '',
+    'Chức vụ DD BV 3': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_3_UDV] || '',
+    'Đại diện BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_4_UDV] || '',
+    'Chức vụ DD BV 4': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_4_UDV] || '',
+    'Đại diện BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_BV_5_UDV] || '',
+    'Chức vụ DD BV 5': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_BV_5_UDV] || '',
+    'Đại diện ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV1_BAO_SUA_1_UDV] || '',
+    'Chức vụ DD ĐV Báo sửa 1': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV1_BAO_SUA_UDV] || '',
+    'Đại diện ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.DAI_DIEN_DV2_BAO_SUA_UDV] || '',
+    'Chức vụ DD ĐV Báo sửa 2': rowdvyc[CONFIG.COLUMNS.DSUserDV.CHUC_VU_DD_DV2_BAO_SUA_UDV] || '',
+    'Tên thiết bị': rowthietbi[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI_TB],
+    'Model': rowthietbi[CONFIG.COLUMNS.DSThietBi.MODEL_TB],
+    'Serial': rowthietbi[CONFIG.COLUMNS.DSThietBi.SERIAL_TB],
+    'Hãng sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT_TB],
+    'Nước sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT_TB],
+    'Năm sản xuất': rowthietbi[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT_TB],
+    'Năm sử dụng': rowthietbi[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_DUA_VAO_SU_DUNG_TB],
+    'Tình trang thiết bị khảo sát': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_KHAO_SAT_DataSC] || '',
+    'Tình trạng thiết bị bàn giao': rowsc[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_BAN_GIAO_DataSC] || '',
     'QR_CODE': generateQRCodeUrl(id),
     'id': id
   };

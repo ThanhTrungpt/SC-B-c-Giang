@@ -51,7 +51,11 @@ function doGet(e) {
   }
   
   // Trường hợp mặc định: trả về trang HTML
-  return HtmlService.createTemplateFromFile('index.html')
+  const template = HtmlService.createTemplateFromFile('index.html');
+  // Truyền CONFIG từ server xuống client
+  template.CONFIG = CONFIG;
+  
+  return template
     .evaluate()
     .setTitle('Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang')
     .setSandboxMode(HtmlService.SandboxMode.IFRAME)
@@ -123,9 +127,9 @@ function dailyReport() {
   const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   
   const newReports = allData.val_MainSC.filter(row => {
-    if (!row[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO]) return false;
+    if (!row[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO_DataSC]) return false;
     
-    const reportTime = new Date(row[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO]);
+    const reportTime = new Date(row[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO_DataSC]);
     return reportTime >= oneDayAgo && reportTime <= now;
   });
   
@@ -392,18 +396,18 @@ function login(username, password) {
     
     // Tìm kiếm người dùng đơn vị
     const user = allData.val_DSUserDV.find(row => 
-      row[CONFIG.COLUMNS.DSUserDV.USERNAME] === username &&
-      row[CONFIG.COLUMNS.DSUserDV.PASSWORD] === password
+      row[CONFIG.COLUMNS.DSUserDV.USERNAME_UDV] === username &&
+      row[CONFIG.COLUMNS.DSUserDV.PASSWORK_UDV] === password
     );
     
     if (user) {
-      const donVi = user[CONFIG.COLUMNS.DSUserDV.DON_VI];
+      const donVi = user[CONFIG.COLUMNS.DSUserDV.TEN_DON_VI_UDV];
       msgData.push([new Date(), 'login', `Đăng nhập thành công (Đơn vị: ${donVi})`, username]);
       saveLogData(msgData);
       
       // Lưu thông tin người dùng vào cache để sử dụng cho log
       const userData = {
-        id: user[CONFIG.COLUMNS.DSUserDV.ID],
+        id: user[CONFIG.COLUMNS.DSUserDV.ID_UDV],
         donVi: donVi,
         username: username
       };
@@ -414,28 +418,28 @@ function login(username, password) {
       return {
         success: true,
         userData: {
-          id: user[CONFIG.COLUMNS.DSUserDV.ID],
+          id: user[CONFIG.COLUMNS.DSUserDV.ID_UDV],
           donVi: donVi,
-          username: user[CONFIG.COLUMNS.DSUserDV.USERNAME],
-          kiHieu: user[CONFIG.COLUMNS.DSUserDV.KY_HIEU]
+          username: user[CONFIG.COLUMNS.DSUserDV.USERNAME_UDV],
+          kiHieu: user[CONFIG.COLUMNS.DSUserDV.KY_HIEU_UDV]
         }
       };
     }
     
     // Kiểm tra người dùng sửa chữa
     const techUser = allData.val_DSUserSua.find(row => 
-      row[CONFIG.COLUMNS.DSUserSua.USERNAME] === username &&
-      row[CONFIG.COLUMNS.DSUserSua.PASSWORD] === password
+      row[CONFIG.COLUMNS.DSUserSua.USERNAME_USC] === username &&
+      row[CONFIG.COLUMNS.DSUserSua.PASSWORK_USC] === password
     );
     
     if (techUser) {
-      const hoTen = techUser[CONFIG.COLUMNS.DSUserSua.HO_TEN];
+      const hoTen = techUser[CONFIG.COLUMNS.DSUserSua.HO_VA_TEN_USC];
       msgData.push([new Date(), 'login', `Đăng nhập thành công (Kỹ thuật: ${hoTen})`, username]);
       saveLogData(msgData);
       
       // Lưu thông tin người dùng vào cache để sử dụng cho log
       const userData = {
-        id: techUser[CONFIG.COLUMNS.DSUserSua.ID],
+        id: techUser[CONFIG.COLUMNS.DSUserSua.ID_USC],
         hoTen: hoTen,
         username: username
       };
@@ -447,10 +451,10 @@ function login(username, password) {
         success: true,
         isTechUser: true,
         userData: {
-          id: techUser[CONFIG.COLUMNS.DSUserSua.ID],
-          donVi: techUser[CONFIG.COLUMNS.DSUserSua.DON_VI],
+          id: techUser[CONFIG.COLUMNS.DSUserSua.ID_USC],
+          donVi: techUser[CONFIG.COLUMNS.DSUserSua.DON_VI_USC],
           hoTen: hoTen,
-          username: techUser[CONFIG.COLUMNS.DSUserSua.USERNAME]
+          username: techUser[CONFIG.COLUMNS.DSUserSua.USERNAME_USC]
         }
       };
     }
@@ -505,8 +509,8 @@ function changePassword(userId, oldPassword, newPassword, isTechUser) {
     const data = sheet.getDataRange().getValues();
     
     // Tìm người dùng
-    const colIndex = isTechUser ? CONFIG.COLUMNS.DSUserSua.ID : CONFIG.COLUMNS.DSUserDV.ID;
-    const pwdColIndex = isTechUser ? CONFIG.COLUMNS.DSUserSua.PASSWORD : CONFIG.COLUMNS.DSUserDV.PASSWORD;
+    const colIndex = isTechUser ? CONFIG.COLUMNS.DSUserSua.ID_USC : CONFIG.COLUMNS.DSUserDV.ID_UDV;
+    const pwdColIndex = isTechUser ? CONFIG.COLUMNS.DSUserSua.PASSWORK_USC : CONFIG.COLUMNS.DSUserDV.PASSWORK_UDV;
     
     const rowIndex = data.findIndex(row => row[colIndex] === userId);
     
