@@ -1,0 +1,1408 @@
+<script>
+// Biến lưu trữ dữ liệu ứng dụng
+let appData = {
+  userData: null,
+  allData: null,
+  partialDataProgress: 0,
+  partialDataLoaded: false,
+  partialDataErrors: [] // Thêm để theo dõi lỗi
+};
+
+// Biến lưu timeout ID
+let loadingTimeoutId = null;
+
+// ==== CÁC HÀM TIỆN ÍCH ====
+/**
+ * Ẩn màn hình loading
+ */
+function hideLoading() {
+  document.getElementById('loadingScreen').classList.add('hidden');
+  // Xóa timeout nếu có
+  if (loadingTimeoutId) {
+    clearTimeout(loadingTimeoutId);
+    loadingTimeoutId = null;
+  }
+}
+
+/**
+ * Hiển thị màn hình loading
+ * @param {number} timeoutSeconds - Thời gian tối đa chờ (giây)
+ */
+function showLoading(timeoutSeconds = 30) {
+  document.getElementById('loadingScreen').classList.remove('hidden');
+  
+  // Ẩn thông báo lỗi nếu có
+  document.getElementById('loadingError').classList.add('d-none');
+  
+  // Reset thanh tiến độ
+  const progressBar = document.getElementById('loadingProgressBar');
+  if (progressBar) {
+    progressBar.style.width = '0%';
+    progressBar.classList.add('progress-bar-animated', 'bg-primary');
+    progressBar.classList.remove('bg-danger');
+  }
+  
+  // Cài đặt timeout để tránh trường hợp loading quá lâu
+  if (loadingTimeoutId) {
+    clearTimeout(loadingTimeoutId);
+  }
+  
+  loadingTimeoutId = setTimeout(() => {
+    // Hiển thị lỗi và nút thử lại thay vì ẩn loading screen
+    document.getElementById('loadingError').classList.remove('d-none');
+    document.getElementById('loadingMessage').textContent = 'Quá thời gian chờ phản hồi từ máy chủ';
+    
+    // Dừng spinner
+    const progressBar = document.getElementById('loadingProgressBar');
+    if (progressBar) {
+      progressBar.style.width = '100%';
+      progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+      progressBar.classList.add('bg-danger');
+    }
+    
+    console.error('Loading timeout exceeded');
+  }, timeoutSeconds * 1000);
+}
+
+/**
+ * Cập nhật tiến độ tải
+ * @param {number} percent - Phần trăm tiến độ (0-100)
+ * @param {string} message - Thông báo hiển thị
+ */
+function updateLoadingProgress(percent, message) {
+  const progressBar = document.getElementById('loadingProgressBar');
+  const loadingMessage = document.getElementById('loadingMessage');
+  
+  if (progressBar) {
+    progressBar.style.width = `${percent}%`;
+  }
+  
+  if (loadingMessage && message) {
+    loadingMessage.textContent = message;
+  }
+}
+
+/**
+ * Thử lại tải dữ liệu
+ */
+function retryLoading() {
+  // Reset UI
+  updateLoadingProgress(0, 'Đang tải dữ liệu... (0%)');
+  document.getElementById('loadingError').classList.add('d-none');
+  
+  const progressBar = document.getElementById('loadingProgressBar');
+  if (progressBar) {
+    progressBar.classList.add('progress-bar-animated', 'bg-primary');
+    progressBar.classList.remove('bg-danger');
+  }
+  
+  // Tải lại dữ liệu
+  loadAllData();
+}
+
+/**
+ * Hiển thị thông báo
+ * @param {string} title - Tiêu đề thông báo
+ * @param {string} message - Nội dung thông báo
+ * @param {string} icon - Biểu tượng (success, error, warning, info)
+ */
+function showAlert(title, message, icon = 'info') {
+  Swal.fire({
+    title: title,
+    text: message,
+    icon: icon,
+    confirmButtonText: 'Đồng ý',
+    confirmButtonColor: '#0d6efd'
+  });
+}
+
+/**
+ * Chuyển đổi hiển thị giữa các màn hình
+ * @param {string} sectionId - ID của màn hình cần hiển thị
+ */
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(section => {
+    section.style.display = 'none';
+  });
+  document.getElementById(sectionId).style.display = 'block';
+}
+
+/**
+ * Format ngày theo định dạng dd/mm/yyyy
+ * @param {Date|string} date - Đối tượng Date hoặc chuỗi ngày
+ * @returns {string} Ngày đã định dạng
+ */
+function formatDate(date) {
+  if (!date) return '';
+  
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return date; // Trả về nguyên mẫu nếu không phải ngày hợp lệ
+  
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  
+  return `${day}/${month}/${year}`;
+}
+
+/**
+ * Chuyển đổi hiển thị mật khẩu
+ */
+function togglePassword() {
+  const passwordField = document.getElementById('password');
+  const icon = document.querySelector('.toggle-password i');
+  
+  if (passwordField.type === 'password') {
+    passwordField.type = 'text';
+    icon.classList.remove('fa-eye');
+    icon.classList.add('fa-eye-slash');
+  } else {
+    passwordField.type = 'password';
+    icon.classList.remove('fa-eye-slash');
+    icon.classList.add('fa-eye');
+  }
+}
+
+// ==== CÁC HÀM XỬ LÝ ĐĂNG NHẬP ====
+/**
+ * Xử lý đăng nhập
+ */
+function handleLogin() {
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  
+  if (!username || !password) {
+    showAlert('Lỗi đăng nhập', 'Vui lòng nhập tên đăng nhập và mật khẩu', 'error');
+    return;
+  }
+  
+  showLoading();
+  
+  google.script.run
+    .withSuccessHandler(processLoginResult)
+    .withFailureHandler(handleLoginError)
+    .login(username, password);
+}
+
+/**
+ * Xử lý kết quả đăng nhập
+ * @param {Object} result - Kết quả đăng nhập
+ */
+function processLoginResult(result) {
+  if (result.success) {
+    // Lưu dữ liệu người dùng
+    appData.userData = result.userData;
+    
+    // Hiển thị tên người dùng
+    const userDisplayName = document.getElementById('userDisplayName');
+    userDisplayName.textContent = result.isTechUser 
+      ? result.userData.hoTen 
+      : result.userData.donVi;
+    
+    // Chuyển đến màn hình chính
+    showSection('dashboardSection');
+    
+    // Tải dữ liệu
+    loadAllData();
+  } else {
+    hideLoading();
+    showAlert('Lỗi đăng nhập', result.message, 'error');
+  }
+}
+
+/**
+ * Xử lý lỗi đăng nhập
+ * @param {Error} error - Lỗi
+ */
+function handleLoginError(error) {
+  hideLoading();
+  showAlert('Lỗi hệ thống', `Không thể đăng nhập: ${error.message}`, 'error');
+}
+
+/**
+ * Đăng xuất
+ */
+function logout() {
+  // Xóa dữ liệu ứng dụng
+  appData = {
+    userData: null,
+    allData: null
+  };
+  
+  // Reset các trường nhập liệu
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  
+  // Chuyển về màn hình đăng nhập
+  showSection('loginSection');
+}
+
+// ==== CÁC HÀM TẢI DỮ LIỆU ====
+/**
+ * Tải dữ liệu ứng dụng
+ */
+function loadAllData() {
+  // Hiển thị màn hình loading với timeout 120 giây
+  showLoading(120);
+  
+  // Reset thông tin lỗi
+  appData.partialDataErrors = [];
+  
+  // Thêm thông tin debug
+  console.log('Bắt đầu tải dữ liệu...');
+  updateLoadingProgress(0, 'Đang tải dữ liệu... (0%)');
+  
+  // Sử dụng phương pháp tải từng phần
+  appData.partialDataProgress = 0;
+  appData.partialDataLoaded = false;
+  
+  // Luôn sử dụng phương pháp tải từng phần để đảm bảo ổn định
+  loadDataInParts();
+}
+
+/**
+ * Tải dữ liệu theo từng phần
+ */
+function loadDataInParts() {
+  updateLoadingProgress(5, 'Đang tải dữ liệu thiết yếu... (5%)');
+  
+  // Đặt lại timeout để tránh hết thời gian
+  if (loadingTimeoutId) {
+    clearTimeout(loadingTimeoutId);
+    loadingTimeoutId = setTimeout(() => {
+      document.getElementById('loadingError').classList.remove('d-none');
+      document.getElementById('loadingMessage').textContent = 'Quá thời gian chờ phản hồi từ máy chủ';
+      
+      // Dừng spinner
+      const progressBar = document.getElementById('loadingProgressBar');
+      if (progressBar) {
+        progressBar.style.width = '100%';
+        progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+        progressBar.classList.add('bg-danger');
+      }
+      
+      console.error('Loading timeout exceeded');
+    }, 120 * 1000);
+  }
+  
+  // Tải dữ liệu thiết yếu (đăng nhập, thông tin cơ bản)
+  google.script.run
+    .withSuccessHandler(function(jsonData) {
+      try {
+        console.log('Đã nhận dữ liệu thiết yếu, độ dài: ' + jsonData.length);
+        // Kiểm tra dữ liệu có phải JSON hợp lệ không
+        if (!jsonData || jsonData.trim() === '') {
+          throw new Error('Dữ liệu trống');
+        }
+        
+        const essentialData = JSON.parse(jsonData);
+        
+        // Kiểm tra lỗi trong phản hồi
+        if (essentialData.error) {
+          throw new Error(essentialData.message || 'Lỗi không xác định từ máy chủ');
+        }
+        
+        appData.allData = appData.allData || {};
+        
+        // Ghép dữ liệu
+        Object.assign(appData.allData, essentialData);
+        
+        appData.partialDataProgress += 30;
+        updateLoadingProgress(appData.partialDataProgress, 
+          `Đang tải dữ liệu chính... (${appData.partialDataProgress}%)`);
+        
+        // Đặt lại timeout
+        if (loadingTimeoutId) {
+          clearTimeout(loadingTimeoutId);
+          loadingTimeoutId = setTimeout(() => {
+            document.getElementById('loadingError').classList.remove('d-none');
+            document.getElementById('loadingMessage').textContent = 'Quá thời gian chờ phản hồi từ máy chủ';
+            
+            // Dừng spinner
+            const progressBar = document.getElementById('loadingProgressBar');
+            if (progressBar) {
+              progressBar.style.width = '100%';
+              progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+              progressBar.classList.add('bg-danger');
+            }
+            
+            console.error('Loading timeout exceeded');
+          }, 120 * 1000);
+        }
+        
+        // Tiếp tục tải dữ liệu chính
+        loadMainData();
+      } catch (error) {
+        console.error('Lỗi khi xử lý dữ liệu thiết yếu:', error);
+        appData.partialDataErrors.push('essential: ' + error.message);
+        // Vẫn tiếp tục tải phần còn lại
+        appData.partialDataProgress += 30;
+        updateLoadingProgress(appData.partialDataProgress, 
+          `Đang tải dữ liệu chính... (${appData.partialDataProgress}%)`);
+        loadMainData();
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Lỗi khi tải dữ liệu thiết yếu:', error);
+      appData.partialDataErrors.push('essential: ' + error.message);
+      // Vẫn tiếp tục tải phần còn lại
+      appData.partialDataProgress += 30;
+      updateLoadingProgress(appData.partialDataProgress, 
+        `Đang tải dữ liệu chính... (${appData.partialDataProgress}%)`);
+      loadMainData();
+    })
+    .getPartialData('essential');
+}
+
+/**
+ * Tải dữ liệu chính (sửa chữa, thiết bị)
+ */
+function loadMainData() {
+  // Đặt lại timeout để tránh hết thời gian
+  if (loadingTimeoutId) {
+    clearTimeout(loadingTimeoutId);
+    loadingTimeoutId = setTimeout(() => {
+      document.getElementById('loadingError').classList.remove('d-none');
+      document.getElementById('loadingMessage').textContent = 'Quá thời gian chờ phản hồi từ máy chủ';
+      
+      // Dừng spinner
+      const progressBar = document.getElementById('loadingProgressBar');
+      if (progressBar) {
+        progressBar.style.width = '100%';
+        progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+        progressBar.classList.add('bg-danger');
+      }
+      
+      console.error('Loading timeout exceeded');
+    }, 120 * 1000);
+  }
+  
+  google.script.run
+    .withSuccessHandler(function(jsonData) {
+      try {
+        console.log('Đã nhận dữ liệu chính, độ dài: ' + jsonData.length);
+        // Kiểm tra dữ liệu có phải JSON hợp lệ không
+        if (!jsonData || jsonData.trim() === '') {
+          throw new Error('Dữ liệu trống');
+        }
+        
+        const mainData = JSON.parse(jsonData);
+        
+        // Kiểm tra lỗi trong phản hồi
+        if (mainData.error) {
+          throw new Error(mainData.message || 'Lỗi không xác định từ máy chủ');
+        }
+        
+        appData.allData = appData.allData || {};
+        
+        // Ghép dữ liệu
+        Object.assign(appData.allData, mainData);
+        
+        appData.partialDataProgress += 50;
+        updateLoadingProgress(appData.partialDataProgress, 
+          `Đang tải dữ liệu bổ sung... (${appData.partialDataProgress}%)`);
+        
+        // Đặt lại timeout
+        if (loadingTimeoutId) {
+          clearTimeout(loadingTimeoutId);
+          loadingTimeoutId = setTimeout(() => {
+            document.getElementById('loadingError').classList.remove('d-none');
+            document.getElementById('loadingMessage').textContent = 'Quá thời gian chờ phản hồi từ máy chủ';
+            
+            // Dừng spinner
+            const progressBar = document.getElementById('loadingProgressBar');
+            if (progressBar) {
+              progressBar.style.width = '100%';
+              progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+              progressBar.classList.add('bg-danger');
+            }
+            
+            console.error('Loading timeout exceeded');
+          }, 120 * 1000);
+        }
+        
+        // Tiếp tục tải dữ liệu phụ
+        loadSecondaryData();
+      } catch (error) {
+        console.error('Lỗi khi xử lý dữ liệu chính:', error);
+        appData.partialDataErrors.push('main: ' + error.message);
+        // Vẫn tiếp tục tải phần còn lại
+        appData.partialDataProgress += 50;
+        updateLoadingProgress(appData.partialDataProgress, 
+          `Đang tải dữ liệu bổ sung... (${appData.partialDataProgress}%)`);
+        loadSecondaryData();
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Lỗi khi tải dữ liệu chính:', error);
+      appData.partialDataErrors.push('main: ' + error.message);
+      // Vẫn tiếp tục tải phần còn lại
+      appData.partialDataProgress += 50;
+      updateLoadingProgress(appData.partialDataProgress, 
+        `Đang tải dữ liệu bổ sung... (${appData.partialDataProgress}%)`);
+      loadSecondaryData();
+    })
+    .getPartialData('main');
+}
+
+/**
+ * Tải dữ liệu phụ (cài đặt, nhóm thiết bị)
+ */
+function loadSecondaryData() {
+  // Đặt lại timeout để tránh hết thời gian
+  if (loadingTimeoutId) {
+    clearTimeout(loadingTimeoutId);
+    loadingTimeoutId = setTimeout(() => {
+      document.getElementById('loadingError').classList.remove('d-none');
+      document.getElementById('loadingMessage').textContent = 'Quá thời gian chờ phản hồi từ máy chủ';
+      
+      // Dừng spinner
+      const progressBar = document.getElementById('loadingProgressBar');
+      if (progressBar) {
+        progressBar.style.width = '100%';
+        progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+        progressBar.classList.add('bg-danger');
+      }
+      
+      console.error('Loading timeout exceeded');
+    }, 120 * 1000);
+  }
+  
+  google.script.run
+    .withSuccessHandler(function(jsonData) {
+      try {
+        console.log('Đã nhận dữ liệu phụ, độ dài: ' + jsonData.length);
+        // Kiểm tra dữ liệu có phải JSON hợp lệ không
+        if (!jsonData || jsonData.trim() === '') {
+          throw new Error('Dữ liệu trống');
+        }
+        
+        const secondaryData = JSON.parse(jsonData);
+        
+        // Kiểm tra lỗi trong phản hồi
+        if (secondaryData.error) {
+          throw new Error(secondaryData.message || 'Lỗi không xác định từ máy chủ');
+        }
+        
+        appData.allData = appData.allData || {};
+        
+        // Ghép dữ liệu
+        Object.assign(appData.allData, secondaryData);
+        
+        appData.partialDataProgress = 90;
+        updateLoadingProgress(appData.partialDataProgress, 
+          `Đang cập nhật giao diện... (${appData.partialDataProgress}%)`);
+        
+        // Dữ liệu đã tải xong, cập nhật giao diện
+        appData.partialDataLoaded = true;
+      } catch (error) {
+        console.error('Lỗi khi xử lý dữ liệu phụ:', error);
+        appData.partialDataErrors.push('secondary: ' + error.message);
+        // Tiếp tục với dữ liệu đã có
+        appData.partialDataProgress = 90;
+        updateLoadingProgress(appData.partialDataProgress, 
+          `Đang cập nhật giao diện... (${appData.partialDataProgress}%)`);
+      } finally {
+        // Kiểm tra dữ liệu tối thiểu để tiếp tục
+        if (!appData.allData) {
+          appData.allData = {};
+        }
+        
+        try {
+          // Cập nhật giao diện với dữ liệu đã có
+          updateDashboard();
+          
+          updateLoadingProgress(100, 'Hoàn tất!');
+          
+          // Nếu có lỗi, hiển thị cảnh báo
+          if (appData.partialDataErrors.length > 0) {
+            showAlert('Cảnh báo', 'Một số dữ liệu có thể không đầy đủ. Vui lòng làm mới trang nếu có vấn đề.', 'warning');
+            console.warn('Có lỗi khi tải dữ liệu:', appData.partialDataErrors);
+          }
+          
+          // Đợi một chút để người dùng thấy 100% rồi mới ẩn
+          setTimeout(() => {
+            hideLoading();
+          }, 500);
+        } catch (uiError) {
+          console.error('Lỗi khi cập nhật giao diện:', uiError);
+          document.getElementById('loadingError').classList.remove('d-none');
+          document.getElementById('loadingMessage').textContent = 'Lỗi khi cập nhật giao diện';
+          
+          // Dừng spinner
+          const progressBar = document.getElementById('loadingProgressBar');
+          if (progressBar) {
+            progressBar.style.width = '100%';
+            progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+            progressBar.classList.add('bg-danger');
+          }
+        }
+      }
+    })
+    .withFailureHandler(function(error) {
+      console.error('Lỗi khi tải dữ liệu phụ:', error);
+      appData.partialDataErrors.push('secondary: ' + error.message);
+      
+      // Tiếp tục với dữ liệu đã có
+      appData.partialDataProgress = 90;
+      updateLoadingProgress(appData.partialDataProgress, 
+        `Đang cập nhật giao diện... (${appData.partialDataProgress}%)`);
+      
+      try {
+        // Cập nhật giao diện với dữ liệu đã có
+        updateDashboard();
+        
+        updateLoadingProgress(100, 'Hoàn tất!');
+        
+        // Hiển thị cảnh báo
+        showAlert('Cảnh báo', 'Một số dữ liệu có thể không đầy đủ. Vui lòng làm mới trang nếu có vấn đề.', 'warning');
+        
+        // Đợi một chút để người dùng thấy 100% rồi mới ẩn
+        setTimeout(() => {
+          hideLoading();
+        }, 500);
+      } catch (uiError) {
+        console.error('Lỗi khi cập nhật giao diện:', uiError);
+        document.getElementById('loadingError').classList.remove('d-none');
+        document.getElementById('loadingMessage').textContent = 'Lỗi khi cập nhật giao diện';
+        
+        // Dừng spinner
+        const progressBar = document.getElementById('loadingProgressBar');
+        if (progressBar) {
+          progressBar.style.width = '100%';
+          progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+          progressBar.classList.add('bg-danger');
+        }
+      }
+    })
+    .getPartialData('secondary');
+}
+
+/**
+ * Xử lý dữ liệu ứng dụng
+ * @param {string} jsonData - Dữ liệu JSON
+ */
+function processAppData(jsonData) {
+  try {
+    console.log('Đã nhận dữ liệu từ server, đang xử lý...');
+    updateLoadingProgress(50, 'Đang xử lý dữ liệu... (50%)');
+    
+    appData.allData = JSON.parse(jsonData);
+    
+    // Kiểm tra dữ liệu cơ bản
+    if (!appData.allData || !appData.allData.val_DSUserDV || !appData.allData.val_DSThietBi) {
+      hideLoading();
+      showAlert('Lỗi dữ liệu', 'Dữ liệu tải về không đầy đủ. Vui lòng làm mới trang và thử lại.', 'error');
+      console.error('Data incomplete:', appData.allData);
+      return;
+    }
+    
+    updateLoadingProgress(80, 'Đang cập nhật giao diện... (80%)');
+    
+    // Cập nhật giao diện
+    console.log('Cập nhật giao diện...');
+    updateDashboard();
+    
+    updateLoadingProgress(100, 'Hoàn tất!');
+    
+    console.log('Tải dữ liệu thành công');
+    
+    // Đợi một chút để người dùng thấy 100% rồi mới ẩn
+    setTimeout(() => {
+      hideLoading();
+    }, 500);
+  } catch (error) {
+    console.error('Lỗi khi xử lý dữ liệu:', error);
+    handleLoadingError(error, 'Không thể xử lý dữ liệu');
+  }
+}
+
+/**
+ * Xử lý lỗi tải dữ liệu
+ * @param {Error} error - Lỗi
+ */
+function handleDataError(error) {
+  console.error('Lỗi khi tải dữ liệu:', error);
+  handleLoadingError(error, 'Không thể tải dữ liệu');
+}
+
+/**
+ * Xử lý lỗi màn hình loading
+ * @param {Error} error - Lỗi
+ * @param {string} prefix - Tiền tố thông báo lỗi
+ */
+function handleLoadingError(error, prefix) {
+  // Xóa timeout nếu có
+  if (loadingTimeoutId) {
+    clearTimeout(loadingTimeoutId);
+    loadingTimeoutId = null;
+  }
+  
+  // Hiển thị nút thử lại
+  document.getElementById('loadingError').classList.remove('d-none');
+  
+  // Dừng spinner
+  const progressBar = document.getElementById('loadingProgressBar');
+  if (progressBar) {
+    progressBar.style.width = '100%';
+    progressBar.classList.remove('progress-bar-animated', 'bg-primary');
+    progressBar.classList.add('bg-danger');
+  }
+  
+  // Cập nhật thông báo lỗi
+  const loadingMessage = document.getElementById('loadingMessage');
+  if (loadingMessage) {
+    loadingMessage.textContent = 'Có lỗi xảy ra khi tải dữ liệu!';
+  }
+  
+  // Hiển thị thông báo chi tiết
+  let errorMessage = `${prefix}: ${error.message || 'Lỗi không xác định'}`;
+  let errorDetails = '';
+  
+  // Phân tích lỗi thường gặp
+  if (error.message && error.message.includes('timed out') || error.message && error.message.includes('timeout')) {
+    errorDetails = 'Máy chủ phản hồi quá chậm, vui lòng thử lại sau.';
+  } else if (error.message && error.message.includes('Failed to execute')) {
+    errorDetails = 'Có vấn đề khi thực thi script, vui lòng làm mới trang.';
+  } else if (error.message && error.message.includes('Authorization')) {
+    errorDetails = 'Cần đăng nhập lại hoặc có vấn đề về quyền truy cập.';
+  } else {
+    errorDetails = 'Vui lòng làm mới trang và thử lại.';
+  }
+  
+  if (errorDetails) {
+    errorMessage += `\n${errorDetails}`;
+  }
+  
+  console.error('Chi tiết lỗi:', error);
+  showAlert('Lỗi tải dữ liệu', errorMessage, 'error');
+}
+
+// ==== CÁC HÀM CẬP NHẬT GIAO DIỆN ====
+/**
+ * Cập nhật bảng điều khiển
+ */
+function updateDashboard() {
+  if (!appData.allData || !appData.userData) {
+    console.error('Dữ liệu không đầy đủ để cập nhật giao diện');
+    return;
+  }
+  
+  try {
+    // Kiểm tra dữ liệu MainSC có tồn tại không
+    if (!appData.allData.val_MainSC) {
+      console.error('Thiếu dữ liệu val_MainSC');
+      document.getElementById('bao-hong-count').textContent = '0';
+      document.getElementById('dang-sua-count').textContent = '0';
+      document.getElementById('bao-hanh-count').textContent = '0';
+      document.getElementById('sua-ngoai-count').textContent = '0';
+      
+      // Hiển thị thông báo trong các bảng
+      updateRepairTable('baoHongTable', []);
+      updateRepairTable('dangSuaTable', []);
+      updateRepairTable('baoHanhTable', []);
+      updateRepairTable('suaNgoaiTable', []);
+      
+      // Hiển thị thông báo lỗi
+      showAlert('Dữ liệu chưa đầy đủ', 'Chưa nhận được dữ liệu sửa chữa. Vui lòng làm mới trang.', 'warning');
+      return;
+    }
+    
+    // Lọc dữ liệu theo đơn vị người dùng
+    const userUnitId = appData.userData.id;
+    const repairData = appData.allData.val_MainSC.filter(row => 
+      row && row.length > CONFIG.COLUMNS.MainSC.DON_VI && row[CONFIG.COLUMNS.MainSC.DON_VI] === userUnitId
+    );
+    
+    // Phân loại theo trạng thái
+    let baoHongData = [], dangSuaData = [], baoHanhData = [], suaNgoaiData = [];
+    
+    try {
+      baoHongData = repairData.filter(row => 
+        row && row.length > CONFIG.COLUMNS.MainSC.TRANG_THAI && 
+        row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.BAO_HONG
+      );
+      dangSuaData = repairData.filter(row => 
+        row && row.length > CONFIG.COLUMNS.MainSC.TRANG_THAI && 
+        row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.DANG_SUA
+      );
+      baoHanhData = repairData.filter(row => 
+        row && row.length > CONFIG.COLUMNS.MainSC.TRANG_THAI && 
+        row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.BAO_HANH
+      );
+      suaNgoaiData = repairData.filter(row => 
+        row && row.length > CONFIG.COLUMNS.MainSC.TRANG_THAI && 
+        row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.SUA_NGOAI
+      );
+    } catch (e) {
+      console.error('Lỗi khi phân loại dữ liệu:', e);
+    }
+    
+    // Cập nhật số lượng
+    document.getElementById('bao-hong-count').textContent = baoHongData.length;
+    document.getElementById('dang-sua-count').textContent = dangSuaData.length;
+    document.getElementById('bao-hanh-count').textContent = baoHanhData.length;
+    document.getElementById('sua-ngoai-count').textContent = suaNgoaiData.length;
+    
+    // Cập nhật các bảng
+    updateRepairTable('baoHongTable', baoHongData);
+    updateRepairTable('dangSuaTable', dangSuaData);
+    updateRepairTable('baoHanhTable', baoHanhData);
+    updateRepairTable('suaNgoaiTable', suaNgoaiData);
+    
+    // Thiết lập các combobox
+    try {
+      setupDropdowns();
+    } catch (e) {
+      console.error('Lỗi khi thiết lập dropdowns:', e);
+    }
+    
+  } catch (error) {
+    console.error('Lỗi khi cập nhật giao diện:', error);
+    // Thông báo lỗi cho người dùng
+    showAlert('Lỗi hiển thị', 'Có lỗi khi hiển thị dữ liệu. Vui lòng làm mới trang.', 'error');
+  }
+}
+
+/**
+ * Cập nhật bảng báo sửa
+ * @param {string} tableId - ID của bảng
+ * @param {Array} data - Dữ liệu bảng
+ */
+function updateRepairTable(tableId, data) {
+  try {
+    const table = document.getElementById(tableId);
+    if (!table) {
+      console.error(`Không tìm thấy bảng với ID: ${tableId}`);
+      return;
+    }
+    
+    const tbody = table.querySelector('tbody');
+    if (!tbody) {
+      console.error(`Không tìm thấy phần tbody trong bảng ${tableId}`);
+      return;
+    }
+    
+    tbody.innerHTML = '';
+    
+    if (!data || !Array.isArray(data) || data.length === 0) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="3" class="text-center">Không có dữ liệu</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+    
+    data.forEach((row, index) => {
+      try {
+        if (!row || !Array.isArray(row)) return;
+        
+        // Đảm bảo có đủ cột dữ liệu
+        const hasMinimumColumns = row.length > Math.max(
+          CONFIG.COLUMNS.MainSC.ID,
+          CONFIG.COLUMNS.MainSC.THIET_BI,
+          CONFIG.COLUMNS.MainSC.HO_TEN,
+          CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO,
+          CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_DV_BAO
+        );
+        
+        if (!hasMinimumColumns) return;
+        
+        const repairId = row[CONFIG.COLUMNS.MainSC.ID] || 'N/A';
+        const deviceId = row[CONFIG.COLUMNS.MainSC.THIET_BI];
+        const deviceInfo = findDeviceById(deviceId);
+        
+        // Tạo nội dung hiển thị
+        const deviceName = deviceInfo ? deviceInfo[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI] : 'Không xác định';
+        const deviceModel = deviceInfo ? deviceInfo[CONFIG.COLUMNS.DSThietBi.MODEL] : '';
+        const deviceSerial = deviceInfo ? deviceInfo[CONFIG.COLUMNS.DSThietBi.SERIAL] : '';
+        const deviceOrigin = deviceInfo ? deviceInfo[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT] : '';
+        const reporterName = row[CONFIG.COLUMNS.MainSC.HO_TEN] || '';
+        const reportDate = formatDate(row[CONFIG.COLUMNS.MainSC.THOI_GIAN_DV_BAO]);
+        const issueDescription = row[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_DV_BAO] || '';
+        
+        const content = `
+          <div class="repair-content">
+            <span class="repair-id">⚠️ ${repairId}</span>
+            <p>🛠️ ${issueDescription}</p>
+            <p>- Thông tin thiết bị: ♟️${deviceName} ⚙️${deviceModel} ⚙️${deviceSerial} ⚙️${deviceOrigin}</p>
+            <p>- Thông tin người sửa: 👨${reporterName} 📅${reportDate}</p>
+          </div>
+        `;
+        
+        // Tạo nút hành động
+        let actionButtons = `
+          <button class="btn btn-sm btn-info action-btn" onclick="viewRepairDetails('${repairId}')">
+            <i class="fas fa-eye"></i><span>Xem</span>
+          </button>
+        `;
+        
+        // Thêm nút sửa/xóa cho Báo hỏng
+        if (tableId === 'baoHongTable') {
+          actionButtons += `
+            <button class="btn btn-sm btn-primary action-btn" onclick="editRepair('${repairId}')">
+              <i class="fas fa-edit"></i><span>Sửa</span>
+            </button>
+            <button class="btn btn-sm btn-danger action-btn" onclick="deleteRepair('${repairId}')">
+              <i class="fas fa-trash"></i><span>Xóa</span>
+            </button>
+          `;
+        }
+        
+        // Thêm nút xuất báo cáo
+        actionButtons += `
+          <button class="btn btn-sm btn-success action-btn" onclick="exportRepair('${repairId}', 'pdf')">
+            <i class="fas fa-file-pdf"></i><span>PDF</span>
+          </button>
+          <button class="btn btn-sm btn-secondary action-btn" onclick="exportRepair('${repairId}', 'doc')">
+            <i class="fas fa-file-word"></i><span>Word</span>
+          </button>
+        `;
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="text-center">${index + 1}</td>
+          <td>${content}</td>
+          <td class="text-center">${actionButtons}</td>
+        `;
+        tbody.appendChild(tr);
+      } catch (rowError) {
+        console.error('Lỗi khi xử lý dòng dữ liệu:', rowError);
+      }
+    });
+  } catch (error) {
+    console.error('Lỗi khi cập nhật bảng:', error);
+  }
+}
+
+/**
+ * Tìm thiết bị theo ID
+ * @param {string} deviceId - ID thiết bị
+ * @returns {Array|null} Dữ liệu thiết bị
+ */
+function findDeviceById(deviceId) {
+  if (!appData.allData || !deviceId) return null;
+  
+  try {
+    if (!appData.allData.val_DSThietBi || !Array.isArray(appData.allData.val_DSThietBi)) {
+      console.warn('Thiếu dữ liệu thiết bị hoặc dữ liệu không đúng định dạng');
+      return null;
+    }
+    
+    return appData.allData.val_DSThietBi.find(row => 
+      row && 
+      row.length > CONFIG.COLUMNS.DSThietBi.ID && 
+      row[CONFIG.COLUMNS.DSThietBi.ID] === deviceId
+    ) || null;
+  } catch (error) {
+    console.error('Lỗi khi tìm thiết bị:', error);
+    return null;
+  }
+}
+
+/**
+ * Thiết lập các dropdown
+ */
+function setupDropdowns() {
+  // Thiết lập dropdown mức độ yêu cầu
+  const mucDoSelect = document.getElementById('mucDoYeuCau');
+  if (mucDoSelect) {
+    mucDoSelect.innerHTML = '';
+    
+    if (appData.allData.mucDoList) {
+      appData.allData.mucDoList.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = item.ten;
+        mucDoSelect.appendChild(option);
+      });
+    }
+  }
+  
+  // Thiết lập dropdown người sửa chữa
+  const nguoiSuaSelect = document.getElementById('nguoiSuaChua');
+  if (nguoiSuaSelect) {
+    nguoiSuaSelect.innerHTML = '';
+    
+    if (appData.allData.val_DSUserSua) {
+      appData.allData.val_DSUserSua.forEach(row => {
+        if (row && row.length > CONFIG.COLUMNS.DSUserSua.ID) {
+          const option = document.createElement('option');
+          option.value = row[CONFIG.COLUMNS.DSUserSua.ID];
+          option.textContent = row[CONFIG.COLUMNS.DSUserSua.HO_TEN] || 'Không xác định';
+          option.dataset.sdt = (row.length > CONFIG.COLUMNS.DSUserSua.SO_DIEN_THOAI) ? 
+            (row[CONFIG.COLUMNS.DSUserSua.SO_DIEN_THOAI] || '') : '';
+          nguoiSuaSelect.appendChild(option);
+        }
+      });
+    } else {
+      console.warn('Thiếu dữ liệu val_DSUserSua');
+    }
+  }
+  
+  // Thiết lập dropdown nhóm thiết bị
+  const nhomThietBiSelect = document.getElementById('nhomThietBi');
+  if (nhomThietBiSelect) {
+    nhomThietBiSelect.innerHTML = '';
+    
+    if (appData.allData.val_DSNhomTB) {
+      try {
+        const uniqueGroups = [...new Set(appData.allData.val_DSNhomTB
+          .filter(row => row && row.length > CONFIG.COLUMNS.DSNhomTB.NHOM_THIET_BI)
+          .map(row => row[CONFIG.COLUMNS.DSNhomTB.NHOM_THIET_BI])
+          .filter(Boolean)
+        )];
+        
+        uniqueGroups.forEach(group => {
+          const option = document.createElement('option');
+          option.value = group;
+          option.textContent = group;
+          nhomThietBiSelect.appendChild(option);
+        });
+      } catch (e) {
+        console.error('Lỗi khi xử lý danh sách nhóm thiết bị:', e);
+      }
+    } else {
+      console.warn('Thiếu dữ liệu val_DSNhomTB');
+    }
+  }
+  
+  // Thiết lập danh sách gợi ý người yêu cầu
+  const nguoiYeuCauList = document.getElementById('nguoiYeuCauList');
+  if (nguoiYeuCauList) {
+    nguoiYeuCauList.innerHTML = '';
+    
+    if (appData.allData.val_MainSC) {
+      try {
+        // Lọc theo người dùng hiện tại
+        const userUnitId = appData.userData.id;
+        const unitRepairs = appData.allData.val_MainSC.filter(row => 
+          row && row.length > CONFIG.COLUMNS.MainSC.DON_VI && 
+          row[CONFIG.COLUMNS.MainSC.DON_VI] === userUnitId
+        );
+        
+        // Lấy danh sách người yêu cầu độc đáo
+        const uniqueRequesters = [...new Set(unitRepairs
+          .filter(row => row && row.length > CONFIG.COLUMNS.MainSC.HO_TEN)
+          .map(row => row[CONFIG.COLUMNS.MainSC.HO_TEN])
+          .filter(Boolean)
+        )];
+        
+        uniqueRequesters.forEach(requester => {
+          const option = document.createElement('option');
+          option.value = requester;
+          nguoiYeuCauList.appendChild(option);
+        });
+      } catch (e) {
+        console.error('Lỗi khi xử lý danh sách người yêu cầu:', e);
+      }
+    }
+  }
+  
+  // Thiết lập danh sách gợi ý số điện thoại
+  const sdtYeuCauList = document.getElementById('sdtYeuCauList');
+  if (sdtYeuCauList) {
+    sdtYeuCauList.innerHTML = '';
+    
+    if (appData.allData.val_MainSC) {
+      try {
+        // Lọc theo người dùng hiện tại
+        const userUnitId = appData.userData.id;
+        const unitRepairs = appData.allData.val_MainSC.filter(row => 
+          row && row.length > CONFIG.COLUMNS.MainSC.DON_VI && 
+          row[CONFIG.COLUMNS.MainSC.DON_VI] === userUnitId
+        );
+        
+        const uniquePhones = [...new Set(unitRepairs
+          .filter(row => row && row.length > CONFIG.COLUMNS.MainSC.SO_DIEN_THOAI)
+          .map(row => row[CONFIG.COLUMNS.MainSC.SO_DIEN_THOAI])
+          .filter(Boolean)
+        )];
+        
+        uniquePhones.forEach(phone => {
+          const option = document.createElement('option');
+          option.value = phone;
+          sdtYeuCauList.appendChild(option);
+        });
+      } catch (e) {
+        console.error('Lỗi khi xử lý danh sách số điện thoại:', e);
+      }
+    }
+  }
+}
+
+// ==== CÁC HÀM XỬ LÝ SỰ KIỆN ====
+/**
+ * Khởi tạo khi trang đã tải xong
+ */
+window.onload = function() {
+  // Xử lý sự kiện thay đổi người sửa chữa
+  document.getElementById('nguoiSuaChua').addEventListener('change', function() {
+    const selectedOption = this.options[this.selectedIndex];
+    document.getElementById('sdtNguoiSua').value = selectedOption.dataset.sdt || '';
+  });
+  
+  // Xử lý sự kiện thay đổi nhóm thiết bị
+  document.getElementById('nhomThietBi').addEventListener('change', function() {
+    const selectedGroup = this.value;
+    updateDeviceList(selectedGroup);
+  });
+  
+  // Xử lý sự kiện thay đổi mã thiết bị
+  document.getElementById('maThietBi').addEventListener('change', function() {
+    const selectedDeviceId = this.value;
+    updateDeviceDetails(selectedDeviceId);
+  });
+  
+  // Xử lý nút thêm báo hỏng
+  document.getElementById('addRepairBtn').addEventListener('click', function() {
+    openAddRepairModal();
+  });
+  
+  // Xử lý nút lưu báo hỏng
+  document.getElementById('saveRepairBtn').addEventListener('click', function() {
+    saveRepair();
+  });
+  
+  // Xử lý nút lưu mật khẩu
+  document.getElementById('savePasswordBtn').addEventListener('click', function() {
+    changePassword();
+  });
+  
+  // Xử lý tìm kiếm
+  document.getElementById('searchBtn').addEventListener('click', function() {
+    searchRepairs();
+  });
+  
+  // Xử lý tìm kiếm khi nhấn Enter
+  document.getElementById('searchInput').addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+      searchRepairs();
+    }
+  });
+};
+
+/**
+ * Cập nhật danh sách thiết bị theo nhóm
+ * @param {string} groupName - Tên nhóm thiết bị
+ */
+function updateDeviceList(groupName) {
+  const deviceSelect = document.getElementById('maThietBi');
+  deviceSelect.innerHTML = '';
+  
+  // Thêm lựa chọn mặc định
+  const defaultOption = document.createElement('option');
+  defaultOption.value = '';
+  defaultOption.textContent = '-- Chọn thiết bị --';
+  deviceSelect.appendChild(defaultOption);
+  
+  // Lọc thiết bị theo nhóm
+  const devices = appData.allData.val_DSThietBi.filter(row => 
+    row[CONFIG.COLUMNS.DSThietBi.NHOM_THIET_BI] === groupName
+  );
+  
+  // Thêm các thiết bị
+  devices.forEach(device => {
+    const option = document.createElement('option');
+    option.value = device[CONFIG.COLUMNS.DSThietBi.ID];
+    option.textContent = `${device[CONFIG.COLUMNS.DSThietBi.MA_THIET_BI]} - ${device[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI]}`;
+    deviceSelect.appendChild(option);
+  });
+}
+
+/**
+ * Cập nhật thông tin chi tiết thiết bị
+ * @param {string} deviceId - ID thiết bị
+ */
+function updateDeviceDetails(deviceId) {
+  if (!deviceId) {
+    // Clear device details
+    document.getElementById('tenThietBi').value = '';
+    document.getElementById('modelThietBi').value = '';
+    document.getElementById('serialThietBi').value = '';
+    document.getElementById('hangSanXuat').value = '';
+    document.getElementById('nuocSanXuat').value = '';
+    document.getElementById('namSanXuat').value = '';
+    document.getElementById('namSuDung').value = '';
+    document.getElementById('hanBaoHanh').value = '';
+    document.getElementById('viTriDat').value = '';
+    return;
+  }
+  
+  // Find the device
+  const device = findDeviceById(deviceId);
+  if (!device) return;
+  
+  // Update device details
+  document.getElementById('tenThietBi').value = device[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI] || '';
+  document.getElementById('modelThietBi').value = device[CONFIG.COLUMNS.DSThietBi.MODEL] || '';
+  document.getElementById('serialThietBi').value = device[CONFIG.COLUMNS.DSThietBi.SERIAL] || '';
+  document.getElementById('hangSanXuat').value = device[CONFIG.COLUMNS.DSThietBi.HANG_SAN_XUAT] || '';
+  document.getElementById('nuocSanXuat').value = device[CONFIG.COLUMNS.DSThietBi.NUOC_SAN_XUAT] || '';
+  document.getElementById('namSanXuat').value = device[CONFIG.COLUMNS.DSThietBi.NAM_SAN_XUAT] || '';
+  document.getElementById('namSuDung').value = device[CONFIG.COLUMNS.DSThietBi.THOI_GIAN_SU_DUNG] || '';
+  document.getElementById('hanBaoHanh').value = device[CONFIG.COLUMNS.DSThietBi.HAN_BAO_HANH] || '';
+  document.getElementById('viTriDat').value = device[CONFIG.COLUMNS.DSThietBi.VI_TRI_DAT] || '';
+}
+
+/**
+ * Mở modal thêm báo hỏng mới
+ */
+function openAddRepairModal() {
+  // Reset form
+  document.getElementById('repairForm').reset();
+  document.getElementById('repairId').value = '';
+  
+  // Điền thông tin đơn vị yêu cầu
+  document.getElementById('donViYeuCau').value = appData.userData.donVi || '';
+  
+  // Hiển thị modal
+  const repairModal = new bootstrap.Modal(document.getElementById('repairModal'));
+  repairModal.show();
+}
+
+/**
+ * Lưu báo cáo sửa chữa
+ */
+function saveRepair() {
+  // Validate form
+  const form = document.getElementById('repairForm');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  // Hiển thị loading
+  showLoading();
+  
+  // Thu thập dữ liệu form
+  const repairData = {
+    iduserdv: appData.userData.id,
+    idusersua: document.getElementById('nguoiSuaChua').value,
+    idthietbi: document.getElementById('maThietBi').value,
+    tinhtrangtbdvbao: document.getElementById('tinhTrangThietBi').value,
+    hoten: document.getElementById('nguoiYeuCau').value,
+    sdt: document.getElementById('sdtYeuCau').value,
+    ghichu: document.getElementById('ghiChu').value,
+    mucDo: document.getElementById('mucDoYeuCau').value,
+    donvi: appData.userData.kiHieu || 'XX'
+  };
+  
+  // Gửi yêu cầu tạo báo cáo sửa chữa
+  google.script.run
+    .withSuccessHandler(onSaveRepairSuccess)
+    .withFailureHandler(onSaveRepairError)
+    .createRepairReport(repairData);
+}
+
+/**
+ * Xử lý khi lưu báo cáo thành công
+ * @param {Object} result - Kết quả từ server
+ */
+function onSaveRepairSuccess(result) {
+  hideLoading();
+  
+  if (result.success) {
+    // Ẩn modal
+    const repairModal = bootstrap.Modal.getInstance(document.getElementById('repairModal'));
+    repairModal.hide();
+    
+    // Thông báo thành công
+    showAlert('Thành công', result.message, 'success');
+    
+    // Tải lại dữ liệu
+    loadAllData();
+  } else {
+    showAlert('Lỗi', result.message, 'error');
+  }
+}
+
+/**
+ * Xử lý khi lưu báo cáo bị lỗi
+ * @param {Error} error - Lỗi
+ */
+function onSaveRepairError(error) {
+  hideLoading();
+  showAlert('Lỗi hệ thống', `Không thể lưu báo cáo: ${error.message}`, 'error');
+}
+
+/**
+ * Đổi mật khẩu
+ */
+function changePassword() {
+  // Validate form
+  const form = document.getElementById('changePasswordForm');
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+  
+  const oldPassword = document.getElementById('oldPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  
+  // Kiểm tra mật khẩu mới và xác nhận
+  if (newPassword !== confirmPassword) {
+    showAlert('Lỗi', 'Mật khẩu mới và xác nhận mật khẩu không khớp', 'error');
+    return;
+  }
+  
+  // Hiển thị loading
+  showLoading();
+  
+  // Gửi yêu cầu đổi mật khẩu
+  google.script.run
+    .withSuccessHandler(onChangePasswordSuccess)
+    .withFailureHandler(onChangePasswordError)
+    .changePassword(appData.userData.id, oldPassword, newPassword, !!appData.userData.hoTen);
+}
+
+/**
+ * Xử lý khi đổi mật khẩu thành công
+ * @param {Object} result - Kết quả từ server
+ */
+function onChangePasswordSuccess(result) {
+  hideLoading();
+  
+  if (result.success) {
+    // Ẩn modal
+    const passwordModal = bootstrap.Modal.getInstance(document.getElementById('changePasswordModal'));
+    passwordModal.hide();
+    
+    // Reset form
+    document.getElementById('changePasswordForm').reset();
+    
+    // Thông báo thành công
+    showAlert('Thành công', result.message, 'success');
+  } else {
+    showAlert('Lỗi', result.message, 'error');
+  }
+}
+
+/**
+ * Xử lý khi đổi mật khẩu bị lỗi
+ * @param {Error} error - Lỗi
+ */
+function onChangePasswordError(error) {
+  hideLoading();
+  showAlert('Lỗi hệ thống', `Không thể đổi mật khẩu: ${error.message}`, 'error');
+}
+
+/**
+ * Tìm kiếm báo cáo
+ */
+function searchRepairs() {
+  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+  
+  if (!searchTerm) {
+    updateDashboard(); // Nếu không có từ khóa, hiển thị tất cả
+    return;
+  }
+  
+  if (!appData.allData || !appData.userData) return;
+  
+  // Lọc dữ liệu theo đơn vị người dùng
+  const userUnitId = appData.userData.id;
+  const repairData = appData.allData.val_MainSC.filter(row => 
+    row[CONFIG.COLUMNS.MainSC.DON_VI] === userUnitId
+  );
+  
+  // Lọc theo từ khóa
+  const filteredData = repairData.filter(row => {
+    // Lấy thông tin thiết bị
+    const deviceId = row[CONFIG.COLUMNS.MainSC.THIET_BI];
+    const deviceInfo = findDeviceById(deviceId);
+    
+    // Tìm kiếm trong các trường
+    const repairId = row[CONFIG.COLUMNS.MainSC.ID] || '';
+    const deviceName = deviceInfo ? deviceInfo[CONFIG.COLUMNS.DSThietBi.TEN_THIET_BI] || '' : '';
+    const deviceModel = deviceInfo ? deviceInfo[CONFIG.COLUMNS.DSThietBi.MODEL] || '' : '';
+    const deviceSerial = deviceInfo ? deviceInfo[CONFIG.COLUMNS.DSThietBi.SERIAL] || '' : '';
+    const issueDescription = row[CONFIG.COLUMNS.MainSC.TINH_TRANG_TB_DV_BAO] || '';
+    const reporterName = row[CONFIG.COLUMNS.MainSC.HO_TEN] || '';
+    
+    // Kiểm tra xem từ khóa có trùng với bất kỳ trường nào
+    return repairId.toLowerCase().includes(searchTerm) ||
+      deviceName.toLowerCase().includes(searchTerm) ||
+      deviceModel.toLowerCase().includes(searchTerm) ||
+      deviceSerial.toLowerCase().includes(searchTerm) ||
+      issueDescription.toLowerCase().includes(searchTerm) ||
+      reporterName.toLowerCase().includes(searchTerm);
+  });
+  
+  // Phân loại theo trạng thái
+  const baoHongData = filteredData.filter(row => row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.BAO_HONG);
+  const dangSuaData = filteredData.filter(row => row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.DANG_SUA);
+  const baoHanhData = filteredData.filter(row => row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.BAO_HANH);
+  const suaNgoaiData = filteredData.filter(row => row[CONFIG.COLUMNS.MainSC.TRANG_THAI] === CONFIG.REPAIR_STATUS.SUA_NGOAI);
+  
+  // Cập nhật số lượng
+  document.getElementById('bao-hong-count').textContent = baoHongData.length;
+  document.getElementById('dang-sua-count').textContent = dangSuaData.length;
+  document.getElementById('bao-hanh-count').textContent = baoHanhData.length;
+  document.getElementById('sua-ngoai-count').textContent = suaNgoaiData.length;
+  
+  // Cập nhật các bảng
+  updateRepairTable('baoHongTable', baoHongData);
+  updateRepairTable('dangSuaTable', dangSuaData);
+  updateRepairTable('baoHanhTable', baoHanhData);
+  updateRepairTable('suaNgoaiTable', suaNgoaiData);
+}
+
+/**
+ * Xem chi tiết báo cáo
+ * @param {string} repairId - ID báo cáo sửa chữa
+ */
+function viewRepairDetails(repairId) {
+  showAlert('Thông báo', 'Chức năng xem chi tiết đang được phát triển.', 'info');
+}
+
+/**
+ * Sửa báo cáo
+ * @param {string} repairId - ID báo cáo sửa chữa
+ */
+function editRepair(repairId) {
+  showAlert('Thông báo', 'Chức năng sửa báo cáo đang được phát triển.', 'info');
+}
+
+/**
+ * Xóa báo cáo
+ * @param {string} repairId - ID báo cáo sửa chữa
+ */
+function deleteRepair(repairId) {
+  Swal.fire({
+    title: 'Xác nhận xóa',
+    text: `Bạn có chắc chắn muốn xóa báo cáo ${repairId}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Xóa',
+    cancelButtonText: 'Hủy',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      showAlert('Thông báo', 'Chức năng xóa báo cáo đang được phát triển.', 'info');
+    }
+  });
+}
+
+/**
+ * Xuất báo cáo
+ * @param {string} repairId - ID báo cáo sửa chữa
+ * @param {string} format - Định dạng (pdf, doc)
+ */
+function exportRepair(repairId, format) {
+  showAlert('Thông báo', 'Chức năng xuất báo cáo đang được phát triển.', 'info');
+}
+
+/**
+ * Hiển thị modal đổi mật khẩu
+ */
+function showChangePasswordModal() {
+  // Reset form
+  document.getElementById('changePasswordForm').reset();
+  
+  // Hiển thị modal
+  const passwordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+  passwordModal.show();
+}
+</script> 

@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BÁO SỬA THIẾT BỊ</title>
+    <!-- Bootstrap CSS (phiên bản 5.1.3) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <!-- Font Awesome (chỉ một liên kết) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Thư viện jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <!-- Bootstrap JS (phiên bản 5.1.3 tương ứng với CSS Bootstrap 5.1.3) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <!-- Thư viện SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Thư viện FileSaver -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    <!-- Thư viện giao tiếp script -->
+    <script src="https://apis.google.com/js/platform.js"></script>
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 100%;
+        margin-top: 20px;
+      }
+
+      /* THÔNG BÁO NẠP DỮ LIỆU */
+      /* Vùng loading */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f4f4;
+        z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      .loading-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #ddd;
+        border-top-color: #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-message {
+        margin-top: 20px;
+        font-size: 16px;
+        color: #333;
+        text-align: center;
+      }
+
+      /* HỘP THOAI ĐĂNG NHẬP */
+      #loginSection {
+        width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+      }
+
+      .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border: none;
+        padding: 10px;
+        /* Thêm padding để tạo khoảng cách 10px */
+      }
+
+      .card-header {
+        background-color: #007bff;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .password-field {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        cursor: pointer;
+      }
+
+      .section {
+        display: none;
+        padding: 5px;
+      }
+
+      .dashboard {
+        margin-left: 10px;
+        margin-right: 10px;
+        display: none;
+      }
+
+      .nav-pills .nav-link.active {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      .tab-content .tab-pane {
+        padding: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-top: none;
+        background-color: #ffffff;
+      }
+
+      /* TABLE SỬA CHỮA */
+      .custom-table {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #ddd;
+        font-size: 18px;
+      }
+
+      .custom-table th,
+      .custom-table td {
+        text-align: left;
+        padding: 12px;
+      }
+
+      .custom-table tr {
+        border-bottom: 1px solid #ddd;
+      }
+
+      .custom-table tr.tb_header,
+      .custom-table tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      /* NÚT ĐIỀU KHIỂN TRONG BẢNG  */
+      .action-buttons button {
+        padding: 5px 10px;
+        margin: 2px;
+        cursor: pointer;
+      }
+
+      .edit-button {
+        background-color: #4CAF50;
+        /* Màu nền xanh cho nút Edit */
+        color: white;
+        border: none;
+      }
+
+      .delete-button {
+        background-color: #f44336;
+        /* Màu nền đỏ cho nút Xóa */
+        color: white;
+        border: none;
+      }
+
+      //SPIN WAITING
+      .modal {
+        display: none;
+        /* Ẩn modal mặc định */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        /* Nền mờ */
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .spinner {
+        border: 8px solid #f3f3f3;
+        /* Màu nền */
+        border-top: 8px solid #3498db;
+        /* Màu xoay */
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+        /* Khoảng cách giữa spinner và text */
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loading-text {
+        font-size: 16px;
+        color: #333;
+        font-weight: bold;
+      }
+
+      /* HỘP THOẠI EDIT  */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        padding: 20px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #444;
+      }
+
+      #dataTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      #dataTable th,
+      #dataTable td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+      }
+
+      #dataTable th {
+        background-color: #4CAF50;
+        color: white;
+      }
+
+      #editDialog {
+        display: none;
+        position: fixed;
+        top: 5%;
+        left: 50%;
+        transform: translate(-50%, 0);
+        width: 95%;
+        max-width: 900px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+        overflow: hidden;
+      }
+
+      .dialog-header {
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .dialog-body {
+        padding: 20px;
+      }
+
+      .accordion {
+        background-color: #f1f1f1;
+        color: #444;
+        cursor: pointer;
+        padding: 15px;
+        width: 100%;
+        border: none;
+        text-align: left;
+        outline: none;
+        font-size: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .panel {
+        display: none;
+        padding: 15px;
+        background-color: #f9f9f9;
+        overflow-y: auto;
+        /* Cho phép cuộn theo chiều dọc */
+        max-height: 300px;
+        /* Đặt chiều cao tối đa */
+        border-left: 4px solid #4CAF50;
+      }
+
+      .form-group {
+        display: flex;
+        margin-bottom: 10px;
+      }
+
+      .form-group label {
+        flex: 0 0 30%;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .form-group input,
+      .form-group select {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        min-width: 0;
+      }
+
+      .double-input {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .double-input .form-group {
+        flex: 0 0 48%;
+      }
+
+      .dialog-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 15px;
+        background-color: #f1f1f1;
+      }
+
+      .dialog-footer button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        flex: 1;
+        margin: 0 5px;
+      }
+
+      .btnclose {
+        background-color: #f44336;
+        /* Màu đỏ cho nút Đóng */
+        color: white;
+      }
+
+      .btn-save {
+        background-color: #4CAF50;
+        /* Màu xanh cho nút Lưu */
+        color: white;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+    </style>
+    <script>
+      // NẠP DỮ liệu
+      let id_user;
+      let id_sc;
+      let status_sc; 
+      var mydata = []
+      var mycol = []
+      window.addEventListener('DOMContentLoaded', loadulieuAll); // Nạp dữ liệu tất cả
+      function loadulieuAll() {
+        google.script.run.withSuccessHandler(function(dataout) {
+          const data = JSON.parse(dataout); // Phân tích chuỗi JSON thành đối tượng
+          filldata_all(data); // Gọi hàm filldata_all với dữ liệu trả về
+        }).getdata();
+      }
+      // ĐIỀN DỮ LIỆU VÀO LIST
+      function filldata_all(dataout) {
+        const loadingScreen = document.getElementById('loading');
+        loadingScreen.classList.add('hidden');
+        mycol = dataout.mycol;
+        mydata = dataout;
+        const loginForm = document.getElementById('loginSection');
+        loginForm.style.display = 'block';
+      }
+
+      function reloadData() {
+        loadulieuAll(); // Gọi lại hàm loadulieuAll để nạp lại dữ liệu từ Google Apps Script
+      }
+
+
+    function updatetable_all() {
+      try {
+        // Lấy các bảng theo ID
+        const history_baohong = document.getElementById("history_baohong");
+        const history_dangsua = document.getElementById("history_dangsua");
+        const history_baohanh = document.getElementById("history_baohanh");
+        const history_suangoai = document.getElementById("history_suangoai");
+
+        // Kiểm tra sự tồn tại của bảng
+        if (!history_baohong || !history_dangsua || !history_baohanh || !history_suangoai) {
+          showinfor("Không tìm thấy bảng trong giao diện.");
+          return;
+        }
+
+        // Xóa dữ liệu cũ trong tbody
+        history_baohong.innerHTML = '';
+        history_dangsua.innerHTML = '';
+        history_baohanh.innerHTML = '';
+        history_suangoai.innerHTML = '';
+
+        // Kiểm tra dữ liệu
+        if (!mydata.val_DataSC || mydata.val_DataSC.length <= 1) {
+          history_baohong.innerHTML = '<tr><td colspan="3">Không có dữ liệu</td></tr>';
+          history_dangsua.innerHTML = '<tr><td colspan="3">Không có dữ liệu</td></tr>';
+          history_baohanh.innerHTML = '<tr><td colspan="3">Không có dữ liệu</td></tr>';
+          history_suangoai.innerHTML = '<tr><td colspan="3">Không có dữ liệu</td></tr>';
+          return;
+        }
+
+        // Biến đếm STT
+        const stt = {
+          baohong: 0,
+          dangsua: 0,
+          baohanh: 0,
+          suangoai: 0
+        };
+        // Duyệt qua các dòng dữ liệu
+        mydata.val_DataSC.slice(1).forEach((item) => {
+          const status = item[mycol.DataSC.trangthai];
+          let targetTable = null;
+          let currentSTTKey = null;
+          let btnWord;
+          // Kiểm tra trạng thái
+          if (status === 1) {
+            targetTable = history_baohong;
+            currentSTTKey = "baohong"; // Load tất cả dữ liệu
+          } else if (item[mycol.DataSC.idusersua]?.toLowerCase() === id_user) {
+            if (status === 2) {
+              targetTable = history_dangsua;
+              currentSTTKey = "dangsua";
+            } else if (status === 3) {
+              targetTable = history_baohanh;
+              currentSTTKey = "baohanh";
+            } else if (status === 4) {
+              targetTable = history_suangoai;
+              currentSTTKey = "suangoai";
+            }
+          }
+
+          // Bỏ qua nếu không có bảng phù hợp
+          if (!targetTable) return;
+
+          stt[currentSTTKey]++;
+          const row = document.createElement("tr");
+
+          // Cột STT
+          const cellSTT = document.createElement("td");
+          cellSTT.textContent = stt[currentSTTKey];
+
+          // Cột Nội dung
+          const idthietbi = item[mycol.DataSC.idthietbi];
+          const rowsthietbi = mydata.val_dsthietbi.filter(item => item[mycol.DSThietBi.id] === idthietbi);
+          if (rowsthietbi.length === 0) {
+            showwarning("Không tìm thấy thiết bị với id: " + idthietbi);
+            return;
+          }
+          const rowthietbi = rowsthietbi[0];
+          const idusersua = item[mycol.DataSC.idusersua];
+          const rowsnguoisua = mydata.val_DSUserSua.filter(item => item[mycol.DSUserSua.id] === idusersua);
+          if (rowsnguoisua.length === 0) {
+            showwarning("Không tìm thấy người sửa với id: " + idusersua);
+            return;
+          }
+          const rownguoisua = rowsnguoisua[0];
+
+          const cellNoiDung = document.createElement("td");
+          const content = `⚠️ ${item[mycol.DataSC.id]} 🛠️ ${item[mycol.DataSC.tinhtrangtbdvbao]}
+            <br> ♟️${rowthietbi[mycol.DSThietBi.id]} ⚙️${rowthietbi[mycol.DSThietBi.tentb]} ⚙️${rowthietbi[mycol.DSThietBi.model]}
+            <br> 👨‍🔧${rownguoisua[mycol.DSUserSua.hoten]} 📅${item[mycol.DataSC.ngaydonvibao]}`;
+          cellNoiDung.innerHTML = content;
+
+          // Cột Hành động (chỉ thêm nút khi trạng thái là "baohong")
+          const cellHanhDong = document.createElement("td");
+          const btnEdit = document.createElement("button");
+          btnEdit.classList.add("btn", "btn-primary", "btn-sm");
+          btnEdit.setAttribute("onclick", `editreport('${item[mycol.DataSC.id]}')`);
+          btnEdit.innerHTML = '<i class="fas fa-edit"></i>';
+          cellHanhDong.appendChild(btnEdit);
+
+
+          if (status === 1) {
+            //Sự kiện next status 
+            //sự kiện pdf 
+            if(item[mycol.DataSC.url_vttb_09_02]!==""){
+              const btn0902= document.createElement("button");
+              btn0902.classList.add("btn", "btn-secondary", "btn-sm");
+              btn0902.setAttribute("onclick", `window.open('${item[mycol.DataSC.url_vttb_09_02]}', '_blank')`);
+              btn0902.innerHTML = '<i class="fas fa-file-pdf"></i> BM.09.02';
+              btn0902.id = "btn0902" + item[mycol.DataSC.id];
+              //sự kiên 
+              cellHanhDong.appendChild(btn0902);
+            }
+           
+          } else if (item[mycol.DataSC.idusersua]?.toLowerCase() === id_user) {
+            if (status === 2) {
+              if(item[mycol.DataSC.url_vttb_09_03] !==""){
+                const btn0903= document.createElement("button");
+                btn0903.classList.add("btn", "btn-secondary", "btn-sm");
+                btn0903.setAttribute("onclick", `window.open('${item[mycol.DataSC.url_vttb_09_03]}', '_blank')`);
+                btn0903.innerHTML = '<i class="fas fa-file-pdf"></i> BM.09.03';
+                btn0903.id = "btn0903" + item[mycol.DataSC.id];
+                cellHanhDong.appendChild(btn0903);
+              }
+              if(item[mycol.DataSC.url_vttb_09_04] !==""){
+                const btn0904= document.createElement("button");
+                btn0904.classList.add("btn", "btn-secondary", "btn-sm");
+                btn0904.setAttribute("onclick", `window.open('${item[mycol.DataSC.url_vttb_09_04]}', '_blank')`);
+                btn0904.innerHTML = '<i class="fas fa-file-pdf"></i> BM.09.04';
+                btn0904.id = "btn0904" + item[mycol.DataSC.id];
+                cellHanhDong.appendChild(btn0904);
+              }
+            } else if (status === 3) {
+              if(item[mycol.DataSC.url_vttb_09_04] !==""){
+                const btn0904= document.createElement("button");
+                btn0904.classList.add("btn", "btn-secondary", "btn-sm");
+                btn0904.setAttribute("onclick", `window.open('${item[mycol.DataSC.url_vttb_09_04]}', '_blank')`);
+                btn0904.innerHTML = '<i class="fas fa-file-pdf"></i> BM.09.04';
+                btn0904.id = "btn0904" + item[mycol.DataSC.id];
+                cellHanhDong.appendChild(btn0904);
+              }
+            } else if (status === 4) {
+              if(item[mycol.DataSC.url_vttb_09_04] !==""){
+                const btn0904= document.createElement("button");
+                btn0904.classList.add("btn", "btn-secondary", "btn-sm");
+                btn0904.setAttribute("onclick", `window.open('${item[mycol.DataSC.url_vttb_09_04]}', '_blank')`);
+                btn0904.innerHTML = '<i class="fas fa-file-pdf"></i> BM.09.04';
+                btn0904.id = "btn0904" + item[mycol.DataSC.id];
+                cellHanhDong.appendChild(btn0904);
+              }
+            }
+          }
+          const btnNext = document.createElement("button");
+          btnNext.classList.add("btn", "btn-primary", "btn-sm");
+          btnNext.innerHTML = '<i class="fas fa-forward"></i> Qua bước tiếp theo';
+          btnNext.id = "btnNext" + item[mycol.DataSC.id];
+          btnNext.addEventListener("click", () => {
+                nextstatus(item[mycol.DataSC.id]); // Gọi hàm nextstatus với ID của item
+            });
+          cellHanhDong.appendChild(btnNext);
+          // Thêm các ô vào dòng
+          row.appendChild(cellSTT);
+          row.appendChild(cellNoiDung);
+          row.appendChild(cellHanhDong);
+
+          // Thêm dòng vào bảng tương ứng
+          targetTable.appendChild(row);
+        });
+
+        // Cập nhật tab số lượng
+        document.getElementById('tab-baohong').textContent = `Báo hỏng (${stt.baohong})`;
+        document.getElementById('tab-dangsua').textContent = `Đang sửa (${stt.dangsua})`;
+        document.getElementById('tab-baohanh').textContent = `Bảo hành (${stt.baohanh})`;
+        document.getElementById('tab-suangoai').textContent = `Sửa ngoài (${stt.suangoai})`;
+      } catch (error) {
+        console.error("Lỗi khi cập nhật bảng:", error);
+        showinfor("Đã xảy ra lỗi: " + error.message);
+      }
+    }
+
+    function nextstatus(id) {
+        id_sc = id 
+          try {
+              showyesno("Bạn có muốn chuyển qua trậng thái tiếp theo cho ID [" + id_sc + "] không?", "Cập nhật dữ liệu").then((rs) => {
+                  if (rs === 1) {
+                      try {
+                          showLoading();
+                          closeDialog();
+                          google.script.run
+                              .withSuccessHandler((result) => {
+                                  try {
+                                      mydata.val_DataSC = result;
+                                      updatetable_all();  
+                                      hideLoading();
+                                      showwarning("Đã cập nhật thành công dữ liệu");
+                                  } catch (e) {
+                                      handleFunctionError("Xử lý thành công", e);
+                                  }
+                              })
+                              .withFailureHandler((error) => {
+                                  console.error("Lỗi từ Apps Script:", error);
+                                  alert("Có lỗi xảy ra khi gọi Apps Script: " + error);
+                                  hideLoading();
+                              })
+                              .SC_nextstatus(id_sc);
+                      } catch (e) {
+                          handleFunctionError("Quy trình lưu dữ liệu", e);
+                      }
+                  } else {
+                      console.log("Người dùng đã hủy hành động.");
+                  }
+              });
+          } catch (e) {
+              handleFunctionError("Hàm chính saveData", e);
+          }
+      }
+
+      function clearTable(table) {
+        while (table.firstChild) {
+          table.removeChild(table.firstChild);
+        }
+      }
+      // Hàm chỉnh sửa báo sửa
+      let iduserdv;
+      function editreport(id) {
+        id_sc = id
+        try {
+          // Gọi Apps Script để lấy dữ liệu tương ứng với ID
+          google.script.run.withSuccessHandler((data) => {
+            try {
+              if (data && Object.keys(data).length > 0) { // Kiểm tra dữ liệu hợp lệ
+                status_sc = data[mycol.DataSC.trangthai]
+                document.getElementById("dialogTitle").textContent = `Chỉnh sửa báo hỏng: ${data[mycol.DataSC.id]}`;
+                //Hiện/ẩn các đối tượng accordi
+                update_trangthai(data[mycol.DataSC.trangthai]);
+
+                iduserdv =  data[mycol.DataSC.iduserdv]
+                const rowsnguoiyeucau= mydata.val_DSUserDV.filter(item => item[mycol.DSUserDV.id] === iduserdv);   
+                if (rowsnguoiyeucau.length === 0) {
+                    showwarning("Không tìm thấy người yêu cầu với id: " + iduserdv);
+                    return; // Hoặc xử lý logic khác nếu cần
+                } 
+                const rownguoiyeucau = rowsnguoiyeucau[0]
+                document.getElementById("txt_donviyeucau_nguoiyeucau").value = rownguoiyeucau[mycol.DSUserDV.hoten]
+                document.getElementById("txt_donviyeucau_sdt").value = rownguoiyeucau[mycol.DSUserDV.sdt]
+                document.getElementById("txt_donviyeucau_donvi").value = rownguoiyeucau[mycol.DSUserDV.donvi]
+
+
+                var idthietbi =  data[mycol.DataSC.idthietbi]
+                const rowsthietbi = mydata.val_dsthietbi.filter(item => item[mycol.DSThietBi.id] === idthietbi); 
+                if (rowsthietbi.length === 0) {
+                    showwarning("Không tìm thấy thiết bị với id: " + idthietbi);
+                    return; // Hoặc xử lý logic khác nếu cần
+                }
+                const rowthietbi = rowsthietbi[0] ;
+                //Thông tin thiết bị 
+                document.getElementById("txt_tb_nhom").value = rowthietbi[mycol.DSThietBi.nhomtb]
+                document.getElementById("txt_tb_id").value = rowthietbi[mycol.DSThietBi.id]
+                document.getElementById("txt_tb_ten").value = rowthietbi[mycol.DSThietBi.tentb]
+                document.getElementById("txt_tb_model").value = rowthietbi[mycol.DSThietBi.model]
+                document.getElementById("txt_tb_serial").value = rowthietbi[mycol.DSThietBi.serial]
+                document.getElementById("txt_tb_hang").value = rowthietbi[mycol.DSThietBi.hangsx]
+                document.getElementById("txt_tb_namsx").value = rowthietbi[mycol.DSThietBi.namsx]
+                document.getElementById("txt_tb_namsd").value =formatDateToDDMMYYYY( rowthietbi[mycol.DSThietBi.namsd])
+                document.getElementById("txt_tb_hanbaohanh").value = rowthietbi[mycol.DSThietBi.hanbaohanh]
+                document.getElementById("txt_tb_vitridat").value = rowthietbi[mycol.DSThietBi.vitridat]
+                //Gán dữ liệu 
+
+                document.getElementById("txt_tinhtrangthietbiks").value = data[mycol.DataSC.tinhtrangthietbiks]
+                document.getElementById("txt_ketluankhaosat").value = data[mycol.DataSC.ketluankhaosat]
+                document.getElementById("txt_tinhtrang_dexuatphuongan").value = data[mycol.DataSC.dexuatphuongan]
+                document.getElementById("txt_tinhtrang_bv1_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv1_daidien]
+                document.getElementById("txt_tinhtrang_bv1_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv1_chucvu]
+                document.getElementById("txt_tinhtrang_bv2_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv2_daidien]
+                document.getElementById("txt_tinhtrang_bv2_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv2_chucvu]
+                document.getElementById("txt_tinhtrang_bv3_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv3_daidien]
+                document.getElementById("txt_tinhtrang_bv3_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv3_chucvu]
+                document.getElementById("txt_tinhtrang_bv4_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv4_daidien]
+                document.getElementById("txt_tinhtrang_bv4_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv4_chucvu]
+                document.getElementById("txt_tinhtrang_bv5_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv5_daidien]
+                document.getElementById("txt_tinhtrang_bv5_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv5_chucvu]
+                document.getElementById("txt_tinhtrang_dv1_daidien").value = rownguoiyeucau[mycol.DSUserDV.dv1_daidien]
+                document.getElementById("txt_tinhtrang_dv1_chucvu").value = rownguoiyeucau[mycol.DSUserDV.dv1_chucvu]
+                document.getElementById("txt_tinhtrang_dv2_daidien").value = rownguoiyeucau[mycol.DSUserDV.dv2_daidien]
+                document.getElementById("txt_tinhtrang_dv2_chucvu").value = rownguoiyeucau[mycol.DSUserDV.dv2_chucvu]
+
+                document.getElementById("txt_tinhtrang_quyetdinhks").value = rownguoiyeucau[mycol.DSUserDV.quyetdinhtokhaosat]
+
+                document.getElementById("txt_tinhtrang_ghichu").value = data[mycol.DataSC.ghichu]
+                document.getElementById("txt_denghi_ghichu").value = data[mycol.DataSC.ghichu]
+                document.getElementById("txt_bangiao_ghichu").value = data[mycol.DataSC.ghichu]
+                document.getElementById("txt_denghi_noidung").value = data[mycol.DataSC.noidungdenghi]
+                //Bàn giao
+
+                document.getElementById("txt_bangiao_bv1_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv1_daidien]
+                document.getElementById("txt_bangiao_bv1_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv1_chucvu]
+                document.getElementById("txt_bangiao_bv2_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv2_daidien]
+                document.getElementById("txt_bangiao_bv2_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv2_chucvu]
+                document.getElementById("txt_bangiao_bv3_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv3_daidien]
+                document.getElementById("txt_bangiao_bv3_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv3_chucvu]
+                document.getElementById("txt_bangiao_bv4_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv4_daidien]
+                document.getElementById("txt_bangiao_bv4_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv4_chucvu]
+                document.getElementById("txt_bangiao_bv5_daidien").value = rownguoiyeucau[mycol.DSUserDV.bv5_daidien]
+                document.getElementById("txt_bangiao_bv5_chucvu").value = rownguoiyeucau[mycol.DSUserDV.bv5_chucvu]
+                document.getElementById("txt_bangiao_dv1_daidien").value = rownguoiyeucau[mycol.DSUserDV.dv1_daidien]
+                document.getElementById("txt_bangiao_dv1_chucvu").value = rownguoiyeucau[mycol.DSUserDV.dv1_chucvu]
+                document.getElementById("txt_bangiao_dv2_daidien").value = rownguoiyeucau[mycol.DSUserDV.dv2_daidien]
+                document.getElementById("txt_bangiao_dv2_chucvu").value = rownguoiyeucau[mycol.DSUserDV.dv2_chucvu]
+                switch (status_sc) {
+                  case 1: // Nếu status_sc === 1
+                    document.getElementById("txt_tinhtrang_ngayks").value = getCurrentDateFormatted();
+                    break;
+                  case 2: // Nếu status_sc === 2
+                    document.getElementById("txt_tinhtrang_ngayks").value = data[mycol.DataSC.ngaykhaosat]; 
+                    document.getElementById("txt_ngaydenghi").value = getCurrentDateFormatted();
+                    document.getElementById("txt_ngaybangiao").value = getCurrentDateFormatted();
+                    break;
+
+                  case 3: // Nếu status_sc === 3
+                    document.getElementById("txt_tinhtrang_ngayks").value = data[mycol.DataSC.ngaykhaosat]; 
+                    document.getElementById("txt_ngaydenghi").value = data[mycol.DataSC.ngaydenghi]; 
+                    document.getElementById("txt_ngaybangiao").value = getCurrentDateFormatted
+                    break;
+                  case 4: // Nếu status_sc === 4
+                    document.getElementById("txt_tinhtrang_ngayks").value = data[mycol.DataSC.ngaykhaosat]; 
+                    document.getElementById("txt_ngaydenghi").value = data[mycol.DataSC.ngaydenghi]; 
+                    document.getElementById("txt_ngaybangiao").value = getCurrentDateFormatted
+                    break;
+                  default: // Nếu không khớp với bất kỳ case nào
+                    console.log("Trạng thái không xác định");
+                    break;
+                }                  
+                //Tình trạng thiết bị bàn giao
+                document.getElementById("editDialog").style.display = "block";
+                document.getElementById("overlay").style.display = "block";
+              } else {
+                showwarning("Không tìm thấy dữ liệu cho ID này.");
+              }
+            } catch (innerErr) {
+              console.error("Lỗi trong quá trình xử lý dữ liệu:", innerErr.message);
+              showwarning("Đã xảy ra lỗi trong quá trình xử lý dữ liệu: " + innerErr.message);
+            }
+          }).withFailureHandler((error) => {
+            console.error("Lỗi từ Apps Script:", error);
+            showwarning("Có lỗi xảy ra khi gọi Apps Script: " + error);
+          }).SC_getDataById(id); // Gọi Apps Script với ID
+        } catch (err) {
+          console.error("Lỗi khi thực thi editreport:", err.message);
+          showwarning("Đã xảy ra lỗi trong quá trình xử lý: " + err.message);
+        }
+      }
+
+      function saveData() {
+          try {
+              if (status_sc >1 ){
+                var cb_trangthai =  document.getElementById("cb_trangthai");
+                if (cb_trangthai.value === "") {
+                    showwarning("Vui lòng chọn trạng thái kế tiếp.");
+                    return false;
+                }
+                status_sc = cb_trangthai.value ;
+              }
+
+               showyesno("Bạn có muốn chỉnh sửa và cập nhật dữ liệu cho mã sửa chữa có ID [" + id_sc + "] không?", "Cập nhật dữ liệu").then((rs) => {
+                  if (rs === 1) {
+                      try {
+                          showLoading();
+                          closeDialog();
+                          var inputdata = createInputData();
+                          // console.log("Data đầu vào: ", JSON.stringify(inputdata, null, 2));
+                          google.script.run
+                              .withSuccessHandler((result) => {
+                                  try {
+                                      mydata.val_DataSC = result;
+                                      updatetable_all();  
+                                      hideLoading();
+                                      showwarning("Đã cập nhật thành công dữ liệu");
+                                  } catch (e) {
+                                      handleFunctionError("Xử lý thành công", e);
+                                  }
+                              })
+                              .withFailureHandler((error) => {
+                                  console.error("Lỗi từ Apps Script:", error);
+                                  alert("Có lỗi xảy ra khi gọi Apps Script: " + error);
+                                  hideLoading();
+                              })
+                              .SC_update_dangsua(inputdata);
+                      } catch (e) {
+                          handleFunctionError("Quy trình lưu dữ liệu", e);
+                      }
+                  } else {
+                      console.log("Người dùng đã hủy hành động.");
+                  }
+              });
+          } catch (e) {
+              handleFunctionError("Hàm chính saveData", e);
+          }
+      }
+
+      function createInputData() {
+          try {
+              if(status_sc ===1){
+                status_sc = 1 
+              } else {
+                status_sc = document.getElementById("cb_trangthai").value;
+              }
+              console.log("Trạng thái:"+ status_sc)
+              return {
+                  id: id_sc,
+                  iduserdv: iduserdv,
+                  status_sc:  status_sc , 
+                  idusersua: id_user,
+                  val_dsthietbi: mydata.val_dsthietbi,
+                  val_DSUserDV: mydata.val_DSUserDV,
+                  val_DSUserSua: mydata.val_DSUserSua,
+                  tinhtrangthietbiks: getValueById("txt_tinhtrangthietbiks"),
+                  ketluankhaosat: getValueById("txt_ketluankhaosat"),
+                  dexuatphuongan: getValueById("txt_tinhtrang_dexuatphuongan"),
+                  ghichu: getValueById("txt_tinhtrang_ghichu"),
+                  ngaykhaosat: getValueById("txt_tinhtrang_ngayks"),
+                  quyetdinhtokhaosat: getValueById("txt_tinhtrang_quyetdinhks"),
+                  bv1_daidien: getValueById("txt_tinhtrang_bv1_daidien"),
+                  bv1_chucvu: getValueById("txt_tinhtrang_bv1_chucvu"),
+                  bv2_daidien: getValueById("txt_tinhtrang_bv2_daidien"),
+                  bv2_chucvu: getValueById("txt_tinhtrang_bv2_chucvu"),
+                  bv3_daidien: getValueById("txt_tinhtrang_bv3_daidien"),
+                  bv3_chucvu: getValueById("txt_tinhtrang_bv3_chucvu"),
+                  bv4_daidien: getValueById("txt_tinhtrang_bv4_daidien"),
+                  bv4_chucvu: getValueById("txt_tinhtrang_bv4_chucvu"),
+                  bv5_daidien: getValueById("txt_tinhtrang_bv5_daidien"),
+                  bv5_chucvu: getValueById("txt_tinhtrang_bv5_chucvu"),
+                  dv1_daidien: getValueById("txt_tinhtrang_dv1_daidien"),
+                  dv1_chucvu: getValueById("txt_tinhtrang_dv1_chucvu"),
+                  dv2_daidien: getValueById("txt_tinhtrang_dv2_daidien"),
+                  dv2_chucvu: getValueById("txt_tinhtrang_dv2_chucvu"),
+                  ngaybangiao: getValueById("txt_ngaybangiao"),
+                  // ngaybangiao: getValueById("txt_ngaybangiao"),
+                  // tinhtrangbangiao: getValueById("txt_tinhtrangbangiao")
+              };
+          } catch (e) {
+              handleFunctionError("Tạo dữ liệu đầu vào", e);
+          }
+      }
+
+      function getValueById(id) {
+          try {
+              const el = document.getElementById(id);
+              if (!el) throw new Error("Không tìm thấy phần tử với ID: " + id);
+              return el.value;
+          } catch (e) {
+              handleFunctionError(`Lấy giá trị từ ID: ${id}`, e);
+          }
+      }
+
+
+
+      function handleFunctionError(context, error) {
+          console.error(`Lỗi trong ${context}:`, error);
+          alert(`Đã xảy ra lỗi trong ${context}. Chi tiết: ${error.message}`);
+      }
+
+      
+      function formatDateToDDMMYYYY(rawDate) {
+        if (!rawDate) return rawDate ; // Trả về rỗng nếu không có giá trị
+        const date = new Date(rawDate);
+        return date.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+      }
+      function closeDialog() {
+        document.getElementById("editDialog").style.display = "none";
+        document.getElementById("overlay").style.display = "none";
+      }
+
+      function toggleAccordion(index) {
+        const panels = $(".panel");
+        const icons = $(".accordion i");
+        // Lấy panel và icon của accordion được chọn
+        const panel = $(panels[index]);
+        const icon = panels.eq(index).prev().find("i");
+        // Nếu accordion đang mở, chỉ cần ẩn nó và cập nhật icon
+        if (panel.is(":visible")) {
+          panel.hide();
+          icon.removeClass("fa-chevron-up").addClass("fa-chevron-down");
+        } else {
+          // Ẩn tất cả các accordion khác và đặt lại icon
+          panels.hide();
+          icons.removeClass("fa-chevron-up").addClass("fa-chevron-down");
+          // Hiển thị accordion được chọn và cập nhật icon
+          panel.show();
+          icon.removeClass("fa-chevron-down").addClass("fa-chevron-up");
+        }
+      }
+
+
+      // Hàm xóa báo sửa
+      function deleteReport(id, btn) {
+        showyesno("Bạn có muốn xóa dữ liệu sửa chữa có ID " + id + " không?", "Xóa dữ liệu").then((rs) => {
+          if (rs === 1) {
+            google.script.run.withSuccessHandler((result) => {
+              if (result === true) {
+                // Xóa dòng trong bảng HTML
+                const row = btn.closest("tr");
+                const table = row.closest("table");
+                if (!table) {
+                  console.error("Không tìm thấy bảng chứa dòng cần xóa.");
+                  return;
+                }
+                row.remove(); // Xóa dòng
+                // Đánh lại số thứ tự
+                const rows = table.querySelectorAll("tbody tr"); // Lấy tất cả các dòng còn lại trong bảng
+                rows.forEach((tr, index) => {
+                  const sttCell = tr.querySelector("td:first-child"); // Lấy ô STT (cột 1)
+                  if (sttCell) {
+                    sttCell.textContent = index + 1; // Cập nhật STT (bắt đầu từ 1)
+                  }
+                });
+                // Cập nhật lại số lượng cho tab tương ứng
+                const tableId = table.id;
+                let count = rows.length;
+                if (tableId === "history_baohong") {
+                  document.getElementById('tab-baohong').textContent = `Báo hỏng (${count})`;
+                } else if (tableId === "history_dangsua") {
+                  document.getElementById('tab-dangsua').textContent = `Đang sửa (${count})`;
+                } else if (tableId === "history_baohanh") {
+                  document.getElementById('tab-baohanh').textContent = `Bảo hành (${count})`;
+                } else if (tableId === "history_suangoai") {
+                  document.getElementById('tab-suangoai').textContent = `Sửa ngoài (${count})`;
+                }
+              } else {
+                alert("Không thể xóa dòng. Đã có lỗi xảy ra.");
+              }
+            }).withFailureHandler((error) => {
+              alert("Có lỗi xảy ra khi gọi Apps Script: " + error);
+            }).SC_delete(id); // Gọi hàm Apps Script
+          }
+        });
+      }
+      //HÀM MỞ PDF VẬT TƯ THIẾT BỊ 09
+      function open_pdf_0901(idsc) {
+        const result = mydata.val_DataSC.find(row => row[mycol.DataSC.id] === idsc);
+      }
+
+      function open_word_0901(idsc) {
+        const result = mydata.val_DataSC.find(row => row[mycol.DataSC.id] === idsc);
+      }
+      //Chọn người sửa 
+      function update_nguoisua(idnguoisua) {
+        var cb_nguoisua = document.getElementById("cb_nguoisua")
+        var selectedOption = cb_nguoisua.options[cb_nguoisua.selectedIndex];
+        var phoneNumber = selectedOption.getAttribute("data-phone");
+        document.getElementById("txt_sdt_nguoisua").value = phoneNumber; // Cập nh
+      }
+      //Update mã thiết bị 
+      function updateMaThietBi(selectedNhomThietBi) {
+        // Duyệt qua các thiết bị và chỉ chọn những thiết bị thuộc nhóm đã chọn
+        var comboBox = document.getElementById("cb_mathietbi");
+        comboBox.innerHTML = ''; // Xóa hết các lựa chọn trong comboBox
+        // Lọc các mã thiết bị theo nhóm thiết bị đã chọn
+        const filteredData = mydata.val_dsthietbi.filter(item => item[mycol.DSThietBi.nhomtb] === selectedNhomThietBi);
+        // Nếu có thiết bị thuộc nhóm, thêm vào dropdown
+        if (filteredData.length > 0) {
+          filteredData.forEach(function(value) {
+            var option = document.createElement("option");
+            option.text = "[" + value[mycol.DSThietBi.id] + "] " + value[mycol.DSThietBi.tentb]; // Giả sử mã thiết bị là ở cột 2 (index 1)
+            option.value = value[mycol.DSThietBi.id]; // Gán giá trị là mã thiết bị
+            comboBox.add(option);
+          });
+          // Sau khi thêm thiết bị vào dropdown, chọn thiết bị đầu tiên
+          // comboBox.value = filteredData[0][mycol.DSThietBi.id]; // Chọn mã thiết bị đầu tiên
+          // showDeviceDetails(comboBox.value);  // Gọi hàm showDeviceDetails với mã thiết bị đầu tiên
+        }
+      }
+      //onchangeMaThietBi
+      function showDeviceDetails(selectedMaThietBi) {
+        // Kiểm tra nếu không chọn mã thiết bị
+        if (!selectedMaThietBi) {
+          return;
+        }
+        // Tìm thiết bị theo mã thiết bị đã chọn
+        const selectedDevice = mydata.val_dsthietbi.find(item => item[mycol.DSThietBi.id] === selectedMaThietBi);
+        // Nếu tìm thấy thiết bị, hiển thị thông tin vào các textbox
+        if (selectedDevice) {
+          document.getElementById("txt_tb_ten").value = selectedDevice[mycol.DSThietBi.tentb];
+          document.getElementById("txt_tb_model").value = selectedDevice[mycol.DSThietBi.model];
+          document.getElementById("txt_tb_serial").value = selectedDevice[mycol.DSThietBi.serial];
+          document.getElementById("txt_tb_hang").value = selectedDevice[mycol.DSThietBi.hangsx];
+          document.getElementById("txt_tb_namsx").value = selectedDevice[mycol.DSThietBi.namsx];
+          document.getElementById("txt_tb_namsd").value = selectedDevice[mycol.DSThietBi.namsd];
+          document.getElementById("txt_tb_hanbaohanh").value = selectedDevice[mycol.DSThietBi.hanbaohanh];
+          document.getElementById("txt_tb_vitridat").value = selectedDevice[mycol.DSThietBi.vitridat];
+          // Bạn có thể thêm các textbox khác nếu có thêm thông tin từ các cột khác
+        } else {
+          // Nếu không tìm thấy thiết bị
+          alert("Không tìm thấy thiết bị!");
+        }
+      }
+      
+
+      function login() {
+        try {
+          const username = document.getElementById("username").value.trim();
+          const password = document.getElementById("password").value;
+          if (!username || !password) {
+            showwarning("Vui lòng nhập tên đăng nhập và mật khẩu.");
+            return;
+          }
+          const filteruser = mydata.val_DSUserSua.filter(item => item[mycol.DSUserSua.username].toLowerCase() === username.toLowerCase());
+          if (filteruser.length > 0) {
+            const user = filteruser[0];
+            if (String(user[mycol.DSUserSua.pass]) === password) {
+              id_user = user[mycol.DSUserSua.id].toLowerCase()
+              // Cập nhật thông tin đăng nhập
+              const userFields = {
+                "txt_tendangnhap": user[mycol.DSUserSua.hoten],
+                "txt_sdt_nguoisua": user[mycol.DSUserSua.sdt],
+                "txt_donviquanly": user[mycol.DSUserSua.quanlydonvi],
+                "txt_donvi": user[mycol.DSUserSua.donvi]
+              };
+              for (const [fieldId, value] of Object.entries(userFields)) {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                  field.value = value;
+                } else {
+                  console.warn(`Không tìm thấy phần tử với ID: ${fieldId}`);
+                }
+              }
+              updatetable_all();
+              // Hiển thị giao diện dashboard
+              document.getElementById("loginSection").style.display = "none";
+              document.getElementById("dashboardSection").style.display = "block";
+              document.getElementById("WebUI_BaoSua").style.display = "block";
+              document.querySelector('.container').classList.add('full-screen-container');
+            } else {
+              showwarning("Mật khẩu đăng nhập không chính xác.");
+            }
+          } else {
+            showwarning("Không tìm thấy người dùng nào phù hợp.");
+          }
+        } catch (error) {
+          showwarning(`Đã xảy ra lỗi: ${error.message}`);
+          console.error(error); // Ghi lỗi vào console để dễ kiểm tra
+        }
+      }
+
+      function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        const toggleIcon = document.getElementById("togglePasswordIcon");
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          toggleIcon.classList.remove("bi-eye");
+          toggleIcon.classList.add("bi-eye-slash");
+        } else {
+          passwordInput.type = "password";
+          toggleIcon.classList.remove("bi-eye-slash");
+          toggleIcon.classList.add("bi-eye");
+        }
+      }
+
+      function showTab(sectionId, tabElement, event) {
+        // Ngăn trình duyệt điều hướng khi nhấn vào liên kết
+        if (event) event.preventDefault();
+        // Ẩn tất cả các tab nội dung
+        document.querySelectorAll('.tab').forEach(section => {
+          section.style.display = 'none';
+        });
+        // Hiển thị tab được chọn
+        document.getElementById(sectionId).style.display = 'block';
+        // Xóa lớp 'active' khỏi tất cả các tab
+        document.querySelectorAll('.nav-link').forEach(tab => {
+          tab.classList.remove('active');
+        });
+        // Thêm lớp 'active' vào tab hiện tại
+        tabElement.classList.add('active');
+      }
+      // Hiển thị modal "Đổi mật khẩu"
+      function showPasswordResetModal() {
+        document.getElementById('passwordResetModal').style.display = 'block';
+      }
+      // Đóng modal "Đổi mật khẩu"
+      function closePasswordResetModal() {
+        document.getElementById('passwordResetModal').style.display = 'none';
+      }
+
+      function saveNewPassword() {
+        var tendangnhap = document.getElementById('txt_username1').value;
+        if (tendangnhap === "") {
+          showwarning('Bạn vui lòng nhập tên đăng nhập');
+          return;
+        }
+        var oldPassword = document.getElementById('oldPassword').value;
+        if (oldPassword === "") {
+          showwarning('Bạn vui lòng nhập mật khẩu cũ');
+          return;
+        }
+        var newPassword = document.getElementById('newPassword').value;
+        if (newPassword === "") {
+          showwarning('Bạn vui lòng nhập mật khẩu mới');
+          return;
+        }
+        var confirmPassword = document.getElementById('confirmPassword').value;
+        if (confirmPassword === "") {
+          showwarning('Bạn vui lòng nhập xác nhận lại mật khẩu mới');
+          return;
+        }
+        // Kiểm tra tính hợp lệ
+        if (newPassword !== confirmPassword) {
+          showwarning('Mật khẩu xác nhận không khớp.');
+          return;
+        }
+        const filteruser = mydata.val_DSUserDV.filter(item => item[mycol.DSUserDV.username] === tendangnhap);
+        if (filteruser.length > 0) {
+          var user = filteruser[0]
+          if (String(user[mycol.DSUserDV.pass]) === oldPassword) {
+            var iduser = user[mycol.DSUserDV.id]
+            // Gửi yêu cầu tới Apps Script
+            google.script.run.withSuccessHandler(function(response) {
+              if (response === true) {
+                showinfor('Mật khẩu đã được cập nhật.');
+              } else {
+                showwarning('Cập nhật mật khẩu thất bại.');
+              }
+            }).withFailureHandler(function(error) {
+              showerror('Có lỗi xảy ra: ' + error.message);
+            }).usersua_update_password(iduser, newPassword); // Truyền userID và newPassword vào hàm
+          } else {
+            showwarning("Mật khẩu đăng nhập không chính xác");
+            return;
+          }
+        } else {
+          showwarning("Không tìm thấy người dùng nào phù hợp");
+          return;
+        }
+      }
+      // Hàm hiển thị/ẩn mật khẩu
+      function togglePassword() {
+        var passwordField = document.getElementById('password');
+        var toggleIcon = document.getElementById('togglePasswordIcon');
+        if (passwordField.type === "password") {
+          passwordField.type = "text";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+        } else {
+          passwordField.type = "password";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+        }
+      }
+      // Hàm hiển thị/ẩn mật khẩu cũ trong modal
+      function toggleOldPassword() {
+        var oldPasswordField = document.getElementById('oldPassword');
+        var toggleIcon = document.getElementById('toggleOldPasswordIcon');
+        if (oldPasswordField.type === "password") {
+          oldPasswordField.type = "text";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+        } else {
+          oldPasswordField.type = "password";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+        }
+      }
+      // Hàm hiển thị/ẩn mật khẩu mới trong modal
+      function toggleNewPassword() {
+        var newPasswordField = document.getElementById('newPassword');
+        var toggleIcon = document.getElementById('toggleNewPasswordIcon');
+        if (newPasswordField.type === "password") {
+          newPasswordField.type = "text";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+        } else {
+          newPasswordField.type = "password";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+        }
+      }
+      // Hàm hiển thị/ẩn xác nhận mật khẩu trong modal
+      function toggleConfirmPassword() {
+        var confirmPasswordField = document.getElementById('confirmPassword');
+        var toggleIcon = document.getElementById('toggleConfirmPasswordIcon');
+        if (confirmPasswordField.type === "password") {
+          confirmPasswordField.type = "text";
+          toggleIcon.classList.remove("fa-eye");
+          toggleIcon.classList.add("fa-eye-slash");
+        } else {
+          confirmPasswordField.type = "password";
+          toggleIcon.classList.remove("fa-eye-slash");
+          toggleIcon.classList.add("fa-eye");
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <!-- NẠP DỮ LIỆU -->
+    <div class="loading-screen" id="loading">
+      <div class="spinner"></div>
+      <div class="loading-message">Đang nạp dữ liệu, bạn vui lòng đợi trong giây lát nhé</div>
+    </div>
+    <!-- ĐĂNG NHẬP -->
+    <div class="container">
+      <div id="loginSection" class="section" style="display: block;">
+        <div class="card">
+          <div class="card-header">Đăng nhập</div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label for="username" class="form-label">Tên đăng nhập</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-user"></i>
+                </span>
+                <input type="text" class="form-control" id="username" required>
+              </div>
+            </div>
+            <div class="mb-3 password-field">
+              <label for="password" class="form-label">Mật khẩu</label>
+              <div class="input-group">
+                <span class="input-group-text">
+                  <i class="fas fa-lock"></i>
+                </span>
+                <input type="password" class="form-control" id="password" required>
+                <span class="input-group-text" onclick="togglePassword()">
+                  <i id="togglePasswordIcon" class="fas fa-eye toggle-password"></i>
+                </span>
+              </div>
+            </div>
+            <!-- Đổi mật khẩu -->
+            <div class="mb-3 text-center">
+              <a href="javascript:void(0);" onclick="showPasswordResetModal()">Đổi mật khẩu?</a>
+            </div>
+            <button class="btn btn-primary w-100" onclick="login()">Đăng nhập</button>
+          </div>
+        </div>
+      </div>
+      <!-- Modal Đổi mật khẩu -->
+      <div id="passwordResetModal" class="modal" tabindex="-1" role="dialog" aria-labelledby="passwordResetModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="passwordResetModalLabel">Cập nhật mật khẩu</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closePasswordResetModal()">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label for="username" class="form-label">Tên đăng nhập</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <input type="text" class="form-control" id="txt_username1" required>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="oldPassword" class="form-label">Mật khẩu cũ</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input type="password" class="form-control" id="oldPassword" required>
+                  <span class="input-group-text" onclick="toggleOldPassword()">
+                    <i id="toggleOldPasswordIcon" class="fas fa-eye toggle-password"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input type="password" class="form-control" id="newPassword" required>
+                  <span class="input-group-text" onclick="toggleNewPassword()">
+                    <i id="toggleNewPasswordIcon" class="fas fa-eye toggle-password"></i>
+                  </span>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input type="password" class="form-control" id="confirmPassword" required>
+                  <span class="input-group-text" onclick="toggleConfirmPassword()">
+                    <i id="toggleConfirmPasswordIcon" class="fas fa-eye toggle-password"></i>
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" onclick="closePasswordResetModal()">Hủy bỏ</button>
+              <button type="button" class="btn btn-primary" onclick="saveNewPassword()">Lưu</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="dashboardSection" class="dashboard" style="display: none;">
+        <div class="card">
+          <div id="WebUI_BaoSua" class="section" style="display: block;">
+            <h5>THÔNG TIN NGƯỜI SỬA</h5>
+            <div class="mb-3 row">
+              <label for="tendangnhap" class="col-sm-2 col-form-label">Họ và tên</label>
+              <div class="col-sm-5">
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <input type="text" class="form-control"  id="txt_tendangnhap" readonly  >
+                </div>
+              </div>
+              <div class="col-sm-5">
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-building"></i>
+                  </span>
+                  <input type="text" class="form-control" id="txt_donvi" readonly>
+                </div>
+              </div>
+            </div>
+            <div class="mb-3 row"  style="display: none;" >
+              <label for="ho_ten_yeucau" class="col-sm-2 col-form-label">Đơn vị quản lý</label>
+              <div class="col-sm-5">
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-user"></i>
+                  </span>
+                  <input type="text" class="form-control" id="txt_donviquanly" readonly>
+                </div>
+              </div>
+              <div class="col-sm-5">
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-phone"></i>
+                  </span>
+                  <input type="text" class="form-control" id="txt_sdt_nguoisua"  readonly >
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Modal chứa spinner -->
+          <div id="loadingModal" class="modal">
+            <div class="modal-content">
+              <div class="spinner"></div>
+              <div class="loading-text">Đang tính toán và lưu dữ liệu, bạn đợi giây lát nhé...</div>
+            </div>
+          </div>
+          <!-- VỊ TRÍ LOAD THÔNG TIN CHỈNH Sửa -->
+          <div id="editDialog">
+            <div class="dialog-header" id="dialogTitle">Chỉnh sửa thông tin</div>
+            <div class="dialog-body">
+              <div id="accordionContainer">
+                <div class="accordion" id="accordion1" onclick="toggleAccordion(0)"> THÔNG TIN ĐƠN VỊ YÊU CẦU <i class="fa fa-chevron-down"></i>
+                </div>
+                <div id= "panel1"  class="panel">
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="nguoiyeucau" class="form-label">Người yêu cầu</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_donviyeucau_nguoiyeucau" readonly>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="sodienthoainguoiyeucau" class="form-label">Số điện thoại</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_donviyeucau_sdt" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-15">
+                    <label for="donvi" class="col-sm-2 col-form-label">Đơn vị</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-building"></i>
+                      </span>
+                      <input type="text" class="form-control" id="txt_donviyeucau_donvi" readonly>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion" id="accordion2" onclick="toggleAccordion(1)"> THÔNG TIN THIẾT BỊ <i class="fa fa-chevron-down"></i>
+                </div>
+                <div  id= "panel2" class="panel">
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="tenThietBi" class="form-label">Nhóm thiết bị</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-th-large"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_nhom" readonly>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="model" class="form-label">Mã thiết bị</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-barcode"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_id" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="tenThietBi" class="form-label">Tên thiết bị</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-cogs"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_ten" readonly>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="model" class="form-label">Model</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_model" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="serial" class="form-label">Serial</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-barcode"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_serial" readonly>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="hangSanXuat" class="form-label">Hãng sản xuất</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-industry"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_hang" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="namSanXuat" class="form-label">Năm sản xuất</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_namsx" readonly>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="namSuDung" class="form-label">Năm đưa vào sử dụng</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-calendar-check"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_namsd" readonly>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="hanBaoHanh" class="form-label">Hạn bảo hành</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-shield-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_hanbaohanh" readonly>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="viTriDat" class="form-label">Vị trí đặt</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-map-marker-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tb_vitridat" readonly>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion" id="accordion3" onclick="toggleAccordion(2)"> THÔNG TIN TÌNH TRẠNG THIẾT BỊ HỎNG <i class="fa fa-chevron-down"></i>
+                </div>
+                <div  id= "panel3" class="panel">
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="hanBaoHanh" class="form-label">Tình trạng thiết bị</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-tools"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrangthietbiks" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="viTriDat" class="form-label">Kết luận</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-clipboard-check"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_ketluankhaosat" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="hanBaoHanh" class="form-label">Đề xuất phương án sửa</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-wrench"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_dexuatphuongan" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="viTriDat" class="form-label">Ghi chú</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-comment-dots"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_ghichu">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv1" class="form-label">Đại diện bệnh viện 1</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv1_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu1" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv1_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv2" class="form-label">Đại diện bệnh viện 2</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv2_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu2" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv2_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv3" class="form-label">Đại diện bệnh viện 3</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv3_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu3" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv3_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv4" class="form-label">Đại diện bệnh viện 4</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv4_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu4" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv4_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv5" class="form-label">Đại diện bệnh viện 5</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv5_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu5" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_bv5_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidiendv1" class="form-label">Đại diện đơn vị 1</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_dv1_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvudv1" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_dv1_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidiendv2" class="form-label">Đại diện đơn vị 2</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_dv2_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvudv2" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_dv2_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="quyetdinhkhaosat" class="form-label">Quyết định khảo sát</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-file-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_quyetdinhks" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="ngaykhaosat" class="form-label">Ngày khảo sát</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrang_ngayks" >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion" id="accordion4" onclick="toggleAccordion(3)"> ĐỀ NGHỊ PHƯƠNG ÁN SỬA <i class="fa fa-chevron-down"></i>
+                </div>
+                <div  id= "panel4"  class="panel">
+                  <div class="row align-items-center mt-3"  >
+                    <div class="col-sm-12 d-flex align-items-center">
+                      <label for="cb_trangthai" class="form-label" style="min-width: 150px;">Chọn trạng thái bước tiếp theo:</label>
+                      <div class="input-group flex-grow-1">
+                        <span class="input-group-text"><i class="fas fa-cogs"></i></span>
+                        <select class="form-control" id="cb_trangthai">
+                          <option value="">Vui lòng chọn phương án sửa</option>
+                          <option value=2>Đang sửa</option>
+                          <option value=3>Bảo hành</option>
+                          <option value=4>Sửa ngoài</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="denghi_noidung" class="form-label">Nội dung đề nghị</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-pencil-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_denghi_noidung" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="denghi_ngay" class="form-label">Ngày đề nghị</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_ngaydenghi"  readonly >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-15">
+                    <label for="denghi_ghichu" class="col-sm-2 col-form-label">Ghi chú</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-comment-dots"></i>
+                      </span>
+                      <input type="text" class="form-control" id="txt_denghi_ghichu" >
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion"  id="accordion5"  onclick="toggleAccordion(4)"> BÀN GIAO, NGHIỆM THU ĐƯA VÀO SỬ DỤNG <i class="fa fa-chevron-down"></i>
+                </div>
+                <div id= "panel5"   class="panel">
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="bangiao_tinhtrang" class="form-label">Tình trạng thiết bị sau khi sửa chữa</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-tools"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_tinhtrangbangiao" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="bangiao_ngay" class="form-label">Ngày bàn giao</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-calendar-alt"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_ngaybangiao" readonly >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-sm-15">
+                    <label for="bangiao_ghichu" class="col-sm-2 col-form-label">Ghi chú</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="fas fa-comment-dots"></i>
+                      </span>
+                      <input type="text" class="form-control" id="txt_bangiao_ghichu" >
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv1" class="form-label">Đại diện bệnh viện 1</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv1_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu1" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv1_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv2" class="form-label">Đại diện bệnh viện 2</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv2_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu2" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv2_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv3" class="form-label">Đại diện bệnh viện 3</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv3_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu3" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv3_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv4" class="form-label">Đại diện bệnh viện 4</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv4_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu4" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv4_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidienbv5" class="form-label">Đại diện bệnh viện 5</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-md"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv5_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvu5" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_bv5_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidiendv1" class="form-label">Đại diện đơn vị 1</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_dv1_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvudv1" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_dv1_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <div class="col-sm-6">
+                      <label for="daidiendv2" class="form-label">Đại diện đơn vị 2</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_dv2_daidien" >
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <label for="chucvudv2" class="form-label">Chức vụ</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="fas fa-user-tag"></i>
+                        </span>
+                        <input type="text" class="form-control" id="txt_bangiao_dv2_chucvu" >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="dialog-footer">
+              <button class="btnclose" onclick="closeDialog()">Đóng </button>
+              <button class="btn-save" onclick="saveData()">Lưu</button>
+            </div>
+          </div>
+          <div class="overlay" id="overlay"></div>
+          <H2></H2>
+          <div id="WebUI_BaoSua" class="section" style="display: block;">
+            <h5>LỊCH SỬ BÁO SỬA</h5>
+            <div class="card-body">
+              <!-- Tabs điều hướng chính -->
+              <ul class="nav nav-tabs">
+                <li class="nav-item">
+                  <a class="nav-link active" id="tab-baohong" onclick="showTab('WebUI_ds_baohong', this, event)" href="#">Báo hỏng</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="tab-dangsua" onclick="showTab('WebUI_ds_dangsua', this, event)" href="#">Đang sửa</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="tab-baohanh" onclick="showTab('WebUI_ds_baohanh', this, event)" href="#">Bảo hành</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="tab-suangoai" onclick="showTab('WebUI_ds_suangoai', this, event)" href="#">Sửa ngoài</a>
+                </li>
+              </ul>
+              <br>
+              <!-- Nội dung của từng tab -->
+              <div id="WebUI_ds_baohong" class="tab" style="display: block;">
+                <table id="table_baohong" class="custom-table">
+                  <thead>
+                    <tr class="tb_header">
+                      <th>STT</th>
+                      <th>Nội dung</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history_baohong">
+                    <!-- Các dòng lịch sử báo sửa sẽ được thêm vào đây -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="WebUI_ds_dangsua" class="tab" style="display: none;">
+                <table id="table_dangsua" class="custom-table">
+                  <thead>
+                    <tr class="tb_header">
+                      <th>STT</th>
+                      <th>Nội dung</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history_dangsua">
+                    <!-- Các dòng lịch sử báo sửa sẽ được thêm vào đây -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="WebUI_ds_baohanh" class="tab" style="display: none;">
+                <table id="table_baohanh" class="custom-table">
+                  <thead>
+                    <tr class="tb_header">
+                      <th>STT</th>
+                      <th>Nội dung</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history_baohanh">
+                    <!-- Các dòng lịch sử báo sửa sẽ được thêm vào đây -->
+                  </tbody>
+                </table>
+              </div>
+              <div id="WebUI_ds_suangoai" class="tab" style="display: none;">
+                <table id="table_suangoai" class="custom-table">
+                  <thead>
+                    <tr class="tb_header">
+                      <th>STT</th>
+                      <th>Nội dung</th>
+                      <th>Hành động</th>
+                    </tr>
+                  </thead>
+                  <tbody id="history_suangoai">
+                    <!-- Các dòng lịch sử báo sửa sẽ được thêm vào đây -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+      <script>
+        
+        function showLoading() {
+          document.getElementById('loadingModal').style.display = 'flex'; // Hiển thị modal
+        }
+
+        function hideLoading() {
+          document.getElementById('loadingModal').style.display = 'none'; // Ẩn modal
+        }
+        function getCurrentDateFormatted() {
+          const today = new Date();
+          const day = String(today.getDate()).padStart(2, '0'); // Lấy ngày, thêm số 0 nếu cần
+          const month = String(today.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0
+          const year = today.getFullYear();
+          return `${day}/${month}/${year}`;
+        }
+
+        // CẬP NHẬT HIỆN/ẨN THEO TRẠNG THÁI
+        function update_trangthai(selectedValue) {
+          // Lấy tất cả các accordion
+          const accordionList = document.querySelectorAll(".accordion");
+
+          // Ẩn tất cả accordion
+          accordionList.forEach(acc => {
+            acc.style.display = "none";
+          });
+
+          // Hiện accordion dựa trên giá trị trạng thái
+          try {
+            switch (selectedValue) {
+              case 1: // Báo hỏng
+                console.log("Báo hỏng: " + selectedValue);
+                showAccordions(["accordion1", "accordion2", "accordion3"]);
+                setAccordionReadonly("panel1", true);
+                setAccordionReadonly("panel2", true);
+                setAccordionReadonly("panel3", false);
+                break;
+
+              case 2: // Đang sửa
+                console.log("Đang sửa: " + selectedValue);
+                showAccordions(["accordion1", "accordion2", "accordion3", "accordion4",  "accordion5"]);
+                setAccordionReadonly("panel1", true);
+                setAccordionReadonly("panel2", true);
+                setAccordionReadonly("panel3", true);
+                setAccordionReadonly("panel4", false);
+                setAccordionReadonly("panel5", false);
+                break;
+
+              case 3: // Bảo hành
+                console.log("Bảo hành: " + selectedValue);
+                showAccordions(["accordion1", "accordion2", "accordion3", "accordion4",  "accordion5"]);
+                setAccordionReadonly("panel1", true);
+                setAccordionReadonly("panel2", true);
+                setAccordionReadonly("panel3", true);
+                setAccordionReadonly("panel4", true);
+                setAccordionReadonly("panel5", false);
+                break;
+
+              case 4: // Sửa ngoài
+                console.log("Sửa ngoài: " + selectedValue);
+                showAccordions(["accordion1", "accordion2", "accordion3", "accordion4",  "accordion5"]);
+                setAccordionReadonly("panel1", true);
+                setAccordionReadonly("panel2", true);
+                setAccordionReadonly("panel3", true);
+                setAccordionReadonly("panel4", true);
+                setAccordionReadonly("panel5", false);
+                break;
+
+              default:
+                console.warn("Trạng thái không hợp lệ!");
+                showwarning("Lỗi: Trạng thái không hợp lệ!");
+            }
+          } catch (error) {
+            console.error("Lỗi khi cập nhật trạng thái:", error.message);
+            showwarning("Đã xảy ra lỗi: " + error.message);
+          }
+        }
+        function showAccordions(accordionIds) {
+          accordionIds.forEach(id => {
+            const accordion = document.getElementById(id);
+            if (accordion) {
+              accordion.style.display = "block";
+            } else {
+              console.warn(`Accordion với ID "${id}" không tồn tại.`);
+              alert(`Lỗi: Accordion với ID "${id}" không tồn tại.`);
+            }
+          });
+        }
+        //Thiết đặt trạng thái của các textbox theo accordion;
+        function setAccordionReadonly(accordionId, readonly) {
+          // Lấy accordion dựa trên ID
+          const accordion = document.getElementById(accordionId);
+          if (!accordion) {
+            console.warn(`Lỗi: Accordion với ID "${accordionId}" không tồn tại.`);
+            alert(`Lỗi: Accordion với ID "${accordionId}" không tồn tại.`);
+            return;
+          }
+
+          try {
+            // Tìm tất cả các textbox bên trong accordion
+            const textboxes = accordion.querySelectorAll("input[type='text']");
+
+            if (textboxes.length === 0) {
+              console.warn(`Lỗi: Không tìm thấy textbox nào trong accordion với ID "${accordionId}".`);
+              alert(`Lỗi: Không tìm thấy textbox nào trong accordion với ID "${accordionId}".`);
+              return;
+            }
+
+            // Thiết lập trạng thái readonly cho từng textbox
+            textboxes.forEach(textbox => {
+              switch (textbox.id) {
+                case "txt_tinhtrang_ngayks":
+                  textbox.readOnly = true;                  break;
+
+                case "txt_ngaydenghi":
+                  textbox.readOnly = true;
+                  break;
+                case "txt_ngaybangiao":
+                  textbox.readOnly = true;
+                  break;
+                default:
+                  // Các textbox khác theo giá trị truyền vào
+                  textbox.readOnly = readonly;
+                  break;
+              }
+            });
+          } catch (error) {
+            console.error(`Đã xảy ra lỗi khi xử lý accordion ID "${accordionId}":`, error.message);
+            alert(`Đã xảy ra lỗi khi xử lý accordion ID "${accordionId}": ${error.message}`);
+          }
+        }
+        // Nút sửa
+        function editMode(enable) {
+          // Hiển thị hoặc ẩn các nút theo trạng thái chỉnh sửa
+          document.getElementById("bt_sc_new").style.display = enable ? "none" : "inline-block"; // Ẩn nút Thêm
+          document.getElementById("bt_sc_edit").style.display = enable ? "inline-block" : "none"; // Hiện nút Cập nhật
+          document.getElementById("bt_sc_close").style.display = enable ? "inline-block" : "none"; // Hiện nút Thoát
+        }
+        //cập nhật 
+       
+
+        //Chế độ edit mod
+        function exitEditMode() {
+          editMode(false); // Thoát chế độ chỉnh sửa
+        }
+
+        function fetchDeviceInfo() {
+          const maThietBi = document.getElementById("maThietBi").value;
+          if (maThietBi === "TB001") {
+            document.getElementById("tenThietBi").value = "Máy X-Quang";
+            document.getElementById("model").value = "Model A1";
+            document.getElementById("serial").value = "SN12345";
+            document.getElementById("hangSanXuat").value = "Hãng XYZ";
+            document.getElementById("namSanXuat").value = "2020";
+            document.getElementById("namSuDung").value = "2021";
+            document.getElementById("hanBaoHanh").value = "2025";
+            document.getElementById("viTriDat").value = "Phòng A";
+          } else {
+            document.getElementById("tenThietBi").value = "";
+            document.getElementById("model").value = "";
+            document.getElementById("serial").value = "";
+            document.getElementById("hangSanXuat").value = "";
+            document.getElementById("namSanXuat").value = "";
+            document.getElementById("namSuDung").value = "";
+            document.getElementById("hanBaoHanh").value = "";
+            document.getElementById("viTriDat").value = "";
+          }
+        }
+        //Hàm hiển thị thông báo message box 
+        function showerror(message) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Thông báo',
+            text: message,
+            confirmButtonText: 'Đồng ý',
+          });
+        }
+
+        function showwarning(message) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Thông báo',
+            text: message,
+            confirmButtonText: 'Đồng ý',
+          });
+        }
+
+        function showinfor(message) {
+          Swal.fire({
+            icon: 'info',
+            title: 'Thông báo',
+            text: message,
+            confirmButtonText: 'Đồng ý',
+          });
+        }
+
+        function showsucces(message) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Thông báo',
+            text: message,
+            confirmButtonText: 'Đồng ý',
+          });
+        }
+
+        function showyesno(message, title) {
+          return Swal.fire({
+            title: title,
+            text: message,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Có',
+            cancelButtonText: 'Không',
+          }).then((result) => {
+            if (result.isConfirmed) {
+              return 1;
+            } else {
+              return 0;
+            }
+          });
+        }
+      </script>
+  </body>
+</html>
