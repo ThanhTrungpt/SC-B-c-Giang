@@ -1,0 +1,2016 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- FileSaver -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    
+    <!-- Google Platform -->
+    <script src="https://apis.google.com/js/platform.js"></script>
+    
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 100%;
+        margin-top: 20px;
+      }
+      
+      /* Loading screen */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f4f4;
+        z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      .loading-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #ddd;
+        border-top-color: #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .loading-message {
+        margin-top: 20px;
+        font-size: 16px;
+        color: #333;
+        text-align: center;
+      }
+      
+      /* Login form */
+      #loginSection {
+        width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+        display: none;
+      }
+      
+      .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border: none;
+        padding: 10px;
+      }
+
+      .card-header {
+        background-color: #007bff;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .password-field {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        cursor: pointer;
+      }
+      
+      /* Main sections */
+      .section {
+        display: none;
+        padding: 5px;
+      }
+
+      .dashboard {
+        margin-left: 10px;
+        margin-right: 10px;
+        display: none;
+      }
+
+      .nav-pills .nav-link.active {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      .tab-content .tab-pane {
+        padding: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-top: none;
+        background-color: #ffffff;
+      }
+      
+      /* Tables */
+      .custom-table {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #ddd;
+        font-size: 18px;
+      }
+
+      .custom-table th,
+      .custom-table td {
+        text-align: left;
+        padding: 12px;
+      }
+
+      .custom-table tr {
+        border-bottom: 1px solid #ddd;
+      }
+
+      .custom-table tr.tb_header,
+      .custom-table tr:hover {
+        background-color: #f1f1f1;
+      }
+      
+      /* Action buttons */
+      .action-buttons button {
+        padding: 5px 10px;
+        margin: 2px;
+        cursor: pointer;
+      }
+
+      .edit-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+      }
+
+      .delete-button {
+        background-color: #f44336;
+        color: white;
+        border: none;
+      }
+      
+      /* Modal */
+      .modal {
+        z-index: 1050;
+      }
+
+      .modal-backdrop {
+        z-index: 1040;
+      }
+
+      .modal-dialog {
+        z-index: 1050;
+        margin: 1.75rem auto;
+      }
+
+      .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        z-index: 1050;
+      }
+      
+      .modal-header {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+      
+      /* Password field styling */
+      .input-group .btn-outline-secondary {
+        border-color: #ced4da;
+      }
+      
+      .input-group .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+      }
+      
+      /* Header styles */
+      .app-header {
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+        margin-bottom: 20px;
+      }
+
+      .app-logo {
+        height: 50px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .app-title {
+        color: #007bff;
+        font-size: 1.5rem;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      
+      @media (max-width: 992px) {
+        .app-title {
+          font-size: 1.25rem;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .app-title {
+          font-size: 1rem;
+        }
+      }
+      
+      .user-profile {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+      
+      .dropdown-menu {
+        min-width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading screen -->
+    <div id="loading" class="loading-screen">
+      <div class="spinner"></div>
+      <div class="loading-message">Đang tải dữ liệu, vui lòng đợi...</div>
+    </div>
+    
+    <!-- Login section -->
+    <div id="loginSection" class="container">
+      <div class="card">
+        <div class="card-header">
+          ĐĂNG NHẬP PHẦN MỀM QUẢN LÝ SỬA CHỮA
+        </div>
+        <div class="card-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="username" class="form-label">Tên đăng nhập</label>
+              <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3 password-field">
+              <label for="password" class="form-label">Mật khẩu</label>
+              <input type="password" class="form-control" id="password" required>
+              <i class="toggle-password fas fa-eye-slash" onclick="togglePassword()"></i>
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="login()">Đăng nhập</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main application -->
+    <div id="mainApp" class="section">
+      <!-- Header -->
+      <div class="app-header">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-md-8 d-flex align-items-center">
+              <img src="https://drive.google.com/thumbnail?id=16gCExt-p9JflHcqZQ2nxWLDL65bpD-Tf&sz=s100" alt="Logo" class="app-logo">
+              <span class="app-title">Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</span>
+            </div>
+            <div class="col-md-4 text-end">
+              <div class="dropdown">
+                <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img id="userAvatar" src="https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=w40" alt="User Avatar" class="user-avatar">
+                  <span id="userName">User Name</span>
+                  <i class="fas fa-chevron-down ms-2"></i>
+                </div>
+                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal"><i class="fas fa-user-edit me-2"></i>Chỉnh sửa thông tin</a></li>
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="fas fa-key me-2"></i>Đổi mật khẩu</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main content -->
+      <div class="container dashboard">
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addRepairModal">
+              <i class="fas fa-plus me-2"></i>Thêm báo hỏng
+            </button>
+          </div>
+          <div class="col-md-6">
+            <div class="input-group">
+              <input type="text" class="form-control" id="searchInput" placeholder="Nhập nội dung tìm kiếm...">
+              <button class="btn btn-primary" type="button" onclick="searchRepair()">
+                <i class="fas fa-search me-2"></i>Tìm kiếm
+              </button>
+              <button class="btn btn-secondary" type="button" onclick="cancelSearch()">
+                <i class="fas fa-times me-2"></i>Hủy tìm kiếm
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabs -->
+        <ul class="nav nav-pills mb-3" id="repairTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-baohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
+              Báo hỏng (0)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-dangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
+              Đang sửa (0)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-baohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
+              Bảo hành (0)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-suangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
+              Sửa ngoài (0)
+            </button>
+          </li>
+        </ul>
+        
+        <!-- Tab content -->
+        <div class="tab-content" id="repairTabsContent">
+          <!-- Báo hỏng tab -->
+          <div class="tab-pane fade show active" id="baohong" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_baohong">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Đang sửa tab -->
+          <div class="tab-pane fade" id="dangsua" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_dangsua">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Bảo hành tab -->
+          <div class="tab-pane fade" id="baohanh" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_baohanh">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Sửa ngoài tab -->
+          <div class="tab-pane fade" id="suangoai" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_suangoai">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Add Repair Modal -->
+    <div class="modal fade" id="addRepairModal" tabindex="-1" aria-labelledby="addRepairModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Thêm báo hỏng mới</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addRepairForm">
+              <input type="hidden" id="repairId">
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="departmentName" class="form-label">Đơn vị yêu cầu</label>
+                  <input type="text" class="form-control" id="departmentName" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="requesterName" class="form-label">Người yêu cầu</label>
+                  <input type="text" class="form-control" id="requesterName" list="requesterList">
+                  <datalist id="requesterList"></datalist>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="requesterPhone" class="form-label">Số điện thoại yêu cầu</label>
+                  <input type="text" class="form-control" id="requesterPhone" list="phoneList">
+                  <datalist id="phoneList"></datalist>
+                </div>
+                <div class="col-md-6">
+                  <label for="repairPerson" class="form-label">Người sửa chữa</label>
+                  <select class="form-select" id="repairPerson" onchange="updateRepairPersonPhone()"></select>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="repairPersonPhone" class="form-label">Số điện thoại người sửa chữa</label>
+                  <input type="text" class="form-control" id="repairPersonPhone" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentGroup" class="form-label">Nhóm thiết bị</label>
+                  <select class="form-select" id="equipmentGroup" onchange="updateEquipmentList()"></select>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentId" class="form-label">Mã thiết bị</label>
+                  <select class="form-select" id="equipmentId" onchange="updateEquipmentDetails()"></select>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentName" class="form-label">Tên thiết bị</label>
+                  <input type="text" class="form-control" id="equipmentName" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentModel" class="form-label">Model</label>
+                  <input type="text" class="form-control" id="equipmentModel" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentSerial" class="form-label">Serial</label>
+                  <input type="text" class="form-control" id="equipmentSerial" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentManufacturer" class="form-label">Hãng sản xuất</label>
+                  <input type="text" class="form-control" id="equipmentManufacturer" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentCountry" class="form-label">Nước sản xuất</label>
+                  <input type="text" class="form-control" id="equipmentCountry" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentYear" class="form-label">Năm sản xuất</label>
+                  <input type="text" class="form-control" id="equipmentYear" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentUseYear" class="form-label">Năm đưa vào sử dụng</label>
+                  <input type="text" class="form-control" id="equipmentUseYear" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentWarranty" class="form-label">Hạn bảo hành</label>
+                  <input type="text" class="form-control" id="equipmentWarranty" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentLocation" class="form-label">Vị trí đặt</label>
+                  <input type="text" class="form-control" id="equipmentLocation" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentStatus" class="form-label">Tình trạng thiết bị</label>
+                  <input type="text" class="form-control" id="equipmentStatus" list="statusList">
+                  <datalist id="statusList"></datalist>
+                </div>
+                <div class="col-md-6">
+                  <label for="priorityLevel" class="form-label">Mức độ yêu cầu</label>
+                  <select class="form-select" id="priorityLevel"></select>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="notes" class="form-label">Ghi chú</label>
+                <textarea class="form-control" id="notes" rows="3"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="saveRepair()">Lưu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit User Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Chỉnh sửa thông tin cá nhân</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="profileName" class="form-label">Tên đơn vị</label>
+              <input type="text" class="form-control" id="profileName">
+            </div>
+            <div class="mb-3">
+              <label for="profileEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="profileEmail">
+            </div>
+            <div class="mb-3">
+              <label for="profileLogo" class="form-label">URL Logo (tùy chọn)</label>
+              <input type="text" class="form-control" id="profileLogo">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="saveProfile()">Lưu thay đổi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Đổi mật khẩu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 position-relative">
+              <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="currentPassword">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('currentPassword')">
+                  <i class="fas fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mb-3 position-relative">
+              <label for="newPassword" class="form-label">Mật khẩu mới</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="newPassword">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('newPassword')">
+                  <i class="fas fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mb-3 position-relative">
+              <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="confirmPassword">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('confirmPassword')">
+                  <i class="fas fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="saveNewPassword()">Xác nhận</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Global data variables
+      let userData = {};
+      let appData = {};
+      let CONFIG_COLUMNS = {};
+      let CONFIG_ENUM = {};
+      
+      // Data loading
+      window.addEventListener('DOMContentLoaded', loadAllData);
+
+      ///////////////////////////////////
+      // 1. Nhóm hàm xử lý dữ liệu ban đầu
+      ///////////////////////////////////
+
+      // 1.1 Hàm tải dữ liệu
+      function loadAllData() {
+        google.script.run
+          .withSuccessHandler(handleDataLoaded)
+          .withFailureHandler(handleDataError)
+          .getdata();
+      }
+
+      // 1.2 Hàm xử lý dữ liệu sau khi tải thành công
+      function handleDataLoaded(dataJSON) {
+        try {
+          // Parse JSON data
+          const data = JSON.parse(dataJSON);
+          
+          // Store data in global variables
+          appData = data;
+          CONFIG_COLUMNS = data.CONFIG_COLUMNS;
+          CONFIG_ENUM = data.CONFIG_ENUM;
+          
+          // Initialize UI components
+          initializeUI();
+          
+          // Hide loading screen
+          document.getElementById('loading').classList.add('hidden');
+          
+          // Show login form
+          document.getElementById('loginSection').style.display = 'block';
+        } catch (error) {
+          console.error("Error parsing data:", error);
+          showError("Lỗi khi xử lý dữ liệu: " + error.message);
+        }
+      }
+
+      // 1.3 Hàm xử lý lỗi khi tải dữ liệu
+      function handleDataError(error) {
+        console.error("Error loading data:", error);
+        showError("Lỗi khi tải dữ liệu: " + error.message);
+      }
+
+      ///////////////////////////////////
+      // 2. Nhóm hàm thông báo
+      ///////////////////////////////////
+
+      // 2.1 Hàm thông báo lỗi
+      function showError(message) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: message,
+          confirmButtonText: 'Đóng'
+        });
+      }
+
+      // 2.2 Hàm thông báo thành công
+      function showSuccess(message) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Thành công',
+          html: message.replace(/\n/g, '<br>'),
+          confirmButtonText: 'Đóng'
+        });
+      }
+
+      // 2.3 Hàm thông báo xác nhận
+      function showConfirm(title, message, callback) {
+        // Use SweetAlert for confirmation dialogs as it's already loaded
+        Swal.fire({
+          icon: 'question',
+          title: title,
+          text: message,
+          showCancelButton: true,
+          confirmButtonText: 'Đồng ý',
+          cancelButtonText: 'Hủy',
+          backdrop: true,
+          allowOutsideClick: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            callback();
+          }
+        });
+      }
+      
+      ///////////////////////////////////
+      // 3. Nhóm hàm xử lý đăng nhập
+      ///////////////////////////////////
+
+      // 3.1 Hàm xác thực đăng nhập
+      function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) {
+          showError("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+          return;
+        }
+        
+        // Verify credentials
+        const departmentUsers = appData.val_DSUserDV;
+        
+        // Skip header row
+        for (let i = 1; i < departmentUsers.length; i++) {
+          const user = departmentUsers[i];
+          const userUsername = user[CONFIG_COLUMNS.DSUserDV.username];
+          const userPassword = user[CONFIG_COLUMNS.DSUserDV.pass];
+          
+          if (username === userUsername && password === userPassword) {
+            // Store user data
+            userData = {
+              id: user[CONFIG_COLUMNS.DSUserDV.id],
+              name: user[CONFIG_COLUMNS.DSUserDV.donvi],
+              kihieu: user[CONFIG_COLUMNS.DSUserDV.kihieu],
+              email: user[CONFIG_COLUMNS.DSUserDV.email],
+              logo: user[CONFIG_COLUMNS.DSUserDV.logo]
+            };
+            
+            // Hide login form
+            document.getElementById('loginSection').style.display = 'none';
+            
+            // Show main app
+            document.getElementById('mainApp').style.display = 'block';
+            document.querySelector('.dashboard').style.display = 'block';
+            
+            // Setup user interface
+            setupUserInterface();
+            
+            // Load repair data
+            updateRepairTables();
+            
+            return;
+          }
+        }
+        
+        // Invalid credentials
+        showError("Tên đăng nhập hoặc mật khẩu không đúng");
+      }
+
+      // 3.2 Hàm Hiển thị/ẩn mật khẩu
+      function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.querySelector('.toggle-password');
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.classList.remove('fa-eye-slash');
+          toggleIcon.classList.add('fa-eye');
+        } else {
+          passwordInput.type = 'password';
+          toggleIcon.classList.remove('fa-eye');
+          toggleIcon.classList.add('fa-eye-slash');
+        }
+      }
+      
+      ///////////////////////////////////
+      // 4. Nhóm hàm xử lý giao diện người dùng
+      ///////////////////////////////////
+
+      // 4.1 Hàm thiết lập giao diện sau khi đăng nhập
+      function setupUserInterface() {
+        // Set user name and avatar
+        document.getElementById('userName').textContent = userData.name;
+        
+        // Set avatar image if available
+        if (userData.logo) {
+          document.getElementById('userAvatar').src = userData.logo;
+        } else {
+          // Default avatar
+          document.getElementById('userAvatar').src = 'https://via.placeholder.com/40';
+        }
+        
+        // Set department name in repair form
+        document.getElementById('departmentName').value = userData.name;
+        
+        // Populate dropdown lists
+        populateDropdowns();
+        
+        // Reinitialize UI components to ensure modals and other Bootstrap components work properly
+        initializeUI();
+      }
+      
+      // 4.2 Hàm Hiển thị/ẩn menu người dùng
+      function toggleUserMenu() {
+        const userMenu = document.getElementById('userMenu');
+        if (userMenu.style.display === 'none') {
+          userMenu.style.display = 'block';
+        } else {
+          userMenu.style.display = 'none';
+        }
+      }
+      
+      // 4.3 Hàm Đăng xuất
+      function logout() {
+        showConfirm("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?", function() {
+          // Reset user data
+          userData = {};
+          
+          // Hide main app
+          document.getElementById('mainApp').style.display = 'none';
+          document.querySelector('.dashboard').style.display = 'none';
+          document.getElementById('userMenu').style.display = 'none';
+          
+          // Show login form
+          document.getElementById('loginSection').style.display = 'block';
+          
+          // Clear login form
+          document.getElementById('username').value = '';
+          document.getElementById('password').value = '';
+          
+          // Show success message
+          showSuccess("Đăng xuất thành công!");
+        });
+      }
+      
+      // Populate dropdown lists in repair form
+      function populateDropdowns() {
+        // Populate repair persons dropdown
+        const repairPersonSelect = document.getElementById('repairPerson');
+        repairPersonSelect.innerHTML = '<option value="">-- Chọn người sửa chữa --</option>';
+        
+        const repairPersons = appData.val_DSUserSua;
+        for (let i = 1; i < repairPersons.length; i++) {
+          const person = repairPersons[i];
+          const option = document.createElement('option');
+          option.value = person[CONFIG_COLUMNS.DSUserSua.id];
+          option.textContent = person[CONFIG_COLUMNS.DSUserSua.hoten];
+          repairPersonSelect.appendChild(option);
+        }
+        
+        // Populate equipment groups dropdown (Nhóm thiết bị)
+        const equipmentGroupSelect = document.getElementById('equipmentGroup');
+        equipmentGroupSelect.innerHTML = '<option value="">-- Chọn nhóm thiết bị --</option>';
+        // Lọc thiết bị thuộc đơn vị hiện tại
+        const equipment = appData.val_DSThietBi;
+        const departmentEquipment = equipment.filter(item => 
+          item[CONFIG_COLUMNS.DSThietBi.donvi] == userData.id // Theo cột "Đơn vị_TB"
+        );
+
+        // Tạo Set để lưu các nhóm thiết bị không trùng lặp của đơn vị
+        const departmentGroups = new Set();
+        departmentEquipment.forEach(item => {
+          if (item[CONFIG_COLUMNS.DSThietBi.nhomtb]) {
+            departmentGroups.add(item[CONFIG_COLUMNS.DSThietBi.nhomtb]);
+          }
+        });
+        
+        // Lọc danh sách nhóm thiết bị chỉ lấy các nhóm của đơn vị hiện tại
+        const equipmentGroups = appData.val_DSNhomTB;
+        for (let i = 1; i < equipmentGroups.length; i++) {
+          const group = equipmentGroups[i];
+          const groupName = group[CONFIG_COLUMNS.DSNhomTB.nhomtb];
+          const groupID = group[CONFIG_COLUMNS.DSNhomTB.id];
+          // Chỉ thêm nhóm thiết bị nếu đơn vị hiện tại có thiết bị thuộc nhóm đó
+          if (departmentGroups.has(groupID)) {
+            const option = document.createElement('option');
+            option.value = groupID;
+            option.textContent = groupName;
+            equipmentGroupSelect.appendChild(option);
+          }
+        }
+        
+        // Populate priority levels dropdown (Mức độ ưu tiên)
+        const prioritySelect = document.getElementById('priorityLevel');
+        prioritySelect.innerHTML = '<option value="">-- Chọn mức độ ưu tiên --</option>';
+        
+        const enumSettings = appData.val_EnumSetting;
+        const priorities = enumSettings.filter(item => item[1] === "Mức độ YC");
+        
+        for (let i = 0; i < priorities.length; i++) {
+          const priority = priorities[i];
+          const option = document.createElement('option');
+          option.value = priority[0]; // ID
+          option.textContent = priority[2]; // Tên mức độ
+          prioritySelect.appendChild(option);
+        }
+        
+        // Populate requester lists with previous requesters for this department (Danh sách người yêu cầu trước đây)
+        const repairs = appData.val_DataSC;
+        const departmentRepairs = repairs.filter(item => 
+          item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id
+        );
+        
+        const requesters = new Set();
+        const phones = new Set();
+        departmentRepairs.forEach(repair => {
+          if (repair[CONFIG_COLUMNS.DataSC.hoten]) {
+            requesters.add(repair[CONFIG_COLUMNS.DataSC.hoten]);
+          }
+          if (repair[CONFIG_COLUMNS.DataSC.sdt]) {
+            phones.add(repair[CONFIG_COLUMNS.DataSC.sdt]);
+          }
+        });
+        
+        // Danh sách người yêu cầu
+        const requesterList = document.getElementById('requesterList');
+        requesters.forEach(requester => {
+          const option = document.createElement('option');
+          option.value = requester;
+          requesterList.appendChild(option);
+        });
+        
+        // Danh sách số điện thoại
+        const phoneList = document.getElementById('phoneList');
+        phones.forEach(phone => {
+          const option = document.createElement('option');
+          option.value = phone;
+          phoneList.appendChild(option);
+        });
+        
+        // Populate equipment status datalist (Danh sách tình trạng thiết bị)
+        const statusList = document.getElementById('statusList');
+        statusList.innerHTML = '';
+        
+        const statuses = new Set();
+        departmentRepairs.forEach(repair => {
+          if (repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]) {
+            statuses.add(repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]);
+          }
+        });
+        
+        statuses.forEach(status => {
+          const option = document.createElement('option');
+          option.value = status;
+          statusList.appendChild(option);
+        });
+      }
+      
+      // Update repair person phone when repair person changes (Cập nhật số điện thoại người sửa chữa)
+      function updateRepairPersonPhone() {
+        const repairPersonId = document.getElementById('repairPerson').value;
+        if (!repairPersonId) {
+          document.getElementById('repairPersonPhone').value = '';
+          return;
+        }
+        
+        const repairPersons = appData.val_DSUserSua;
+        for (let i = 1; i < repairPersons.length; i++) {
+          const person = repairPersons[i];
+          if (person[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId) {
+            document.getElementById('repairPersonPhone').value = person[CONFIG_COLUMNS.DSUserSua.sdt] || '';
+            break;
+          }
+        }
+      }
+      
+      // Cập nhật danh sách thiết bị khi nhóm thiết bị thay đổi
+      function updateEquipmentList() {
+        // Lấy giá trị nhóm thiết bị đã chọn từ phần tử có id 'equipmentGroup'
+        const selectedGroup = document.getElementById('equipmentGroup').value;
+        // Lấy phần tử select có id 'equipmentId' để hiển thị danh sách thiết bị
+        const equipmentSelect = document.getElementById('equipmentId');
+        
+        // Đặt lại nội dung HTML của phần tử select với một option mặc định
+        equipmentSelect.innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+        
+        // Nếu không có nhóm thiết bị nào được chọn, thoát khỏi hàm
+        if (!selectedGroup) {
+          return;
+        }
+        
+        // Lấy dữ liệu danh sách thiết bị từ appData
+        const equipment = appData.val_DSThietBi;
+        
+        // Lọc danh sách thiết bị theo nhóm thiết bị đã chọn VÀ theo đơn vị hiện tại
+        const filteredEquipment = equipment.filter(item => 
+          item[CONFIG_COLUMNS.DSThietBi.nhomtb] === selectedGroup && 
+          item[CONFIG_COLUMNS.DSThietBi.donvi] == userData.id
+        );
+        
+        // Duyệt qua danh sách thiết bị đã lọc
+        for (let i = 0; i < filteredEquipment.length; i++) {
+          const item = filteredEquipment[i];
+          // Tạo phần tử option mới
+          const option = document.createElement('option');
+          // Đặt giá trị cho option là id của thiết bị
+          option.value = item[CONFIG_COLUMNS.DSThietBi.id];
+          option.textContent = item[CONFIG_COLUMNS.DSThietBi.mathietbi] + ' - ' + item[CONFIG_COLUMNS.DSThietBi.tentb];
+          equipmentSelect.appendChild(option);
+        }
+        
+          // Xóa tất cả các trường thông tin thiết bị
+          document.getElementById('equipmentName').value = '';
+          document.getElementById('equipmentModel').value = '';
+          document.getElementById('equipmentSerial').value = '';
+          document.getElementById('equipmentManufacturer').value = '';
+          document.getElementById('equipmentCountry').value = '';
+          document.getElementById('equipmentYear').value = '';
+          document.getElementById('equipmentUseYear').value = '';
+          document.getElementById('equipmentWarranty').value = '';
+          document.getElementById('equipmentLocation').value = '';
+      }
+      
+      // Update equipment details when equipment changes
+      function updateEquipmentDetails() {
+        const equipmentId = document.getElementById('equipmentId').value;
+        
+        // Clear equipment fields
+        document.getElementById('equipmentName').value = '';
+        document.getElementById('equipmentModel').value = '';
+        document.getElementById('equipmentSerial').value = '';
+        document.getElementById('equipmentManufacturer').value = '';
+        document.getElementById('equipmentCountry').value = '';
+        document.getElementById('equipmentYear').value = '';
+        document.getElementById('equipmentUseYear').value = '';
+        document.getElementById('equipmentWarranty').value = '';
+        document.getElementById('equipmentLocation').value = '';
+        
+        if (!equipmentId) {
+          return;
+        }
+        
+        const equipment = appData.val_DSThietBi;
+        for (let i = 1; i < equipment.length; i++) {
+          const item = equipment[i];
+          if (item[CONFIG_COLUMNS.DSThietBi.id] === equipmentId) {
+            document.getElementById('equipmentName').value = item[CONFIG_COLUMNS.DSThietBi.tentb] || '';
+            document.getElementById('equipmentModel').value = item[CONFIG_COLUMNS.DSThietBi.model] || '';
+            document.getElementById('equipmentSerial').value = item[CONFIG_COLUMNS.DSThietBi.serial] || '';
+            document.getElementById('equipmentManufacturer').value = item[CONFIG_COLUMNS.DSThietBi.hangsx] || '';
+            document.getElementById('equipmentCountry').value = item[CONFIG_COLUMNS.DSThietBi.nuocsx] || '';
+            document.getElementById('equipmentYear').value = item[CONFIG_COLUMNS.DSThietBi.namsx] || '';
+            document.getElementById('equipmentUseYear').value = item[CONFIG_COLUMNS.DSThietBi.namsd] || '';
+            document.getElementById('equipmentWarranty').value = item[CONFIG_COLUMNS.DSThietBi.hanbaohanh] || '';
+            document.getElementById('equipmentLocation').value = item[CONFIG_COLUMNS.DSThietBi.vitridat] || '';
+            break;
+          }
+        }
+      }
+      
+      // Show add repair modal
+      function showAddRepairModal() {
+        // Reset form
+        document.getElementById('repairId').value = '';
+        document.getElementById('requesterName').value = '';
+        document.getElementById('requesterPhone').value = '';
+        document.getElementById('repairPerson').selectedIndex = 0;
+        document.getElementById('repairPersonPhone').value = '';
+        document.getElementById('equipmentGroup').selectedIndex = 0;
+        document.getElementById('equipmentId').innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+        document.getElementById('equipmentName').value = '';
+        document.getElementById('equipmentModel').value = '';
+        document.getElementById('equipmentSerial').value = '';
+        document.getElementById('equipmentManufacturer').value = '';
+        document.getElementById('equipmentCountry').value = '';
+        document.getElementById('equipmentYear').value = '';
+        document.getElementById('equipmentUseYear').value = '';
+        document.getElementById('equipmentWarranty').value = '';
+        document.getElementById('equipmentLocation').value = '';
+        document.getElementById('equipmentStatus').value = '';
+        document.getElementById('priorityLevel').selectedIndex = 0;
+        document.getElementById('notes').value = '';
+        
+        // Show modal using Bootstrap 5 syntax
+        const modalElement = document.getElementById('addRepairModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+      
+      // Save repair data
+      function saveRepair() {
+        // Validate form
+        const repairId = document.getElementById('repairId').value;
+		
+        const requesterName = document.getElementById('requesterName').value;  //Người yêu cầu
+        const requesterPhone = document.getElementById('requesterPhone').value;  //Số điện thoại yêu cầu
+		
+		// Người sửa
+        const repairPersonSelect = document.getElementById('repairPerson');
+        const id_NguoiSua = repairPersonSelect.value; //Người sửa chữa
+        const Name_NguoiSua = repairPersonSelect.options[repairPersonSelect.selectedIndex]?.textContent || '';
+        const id_telegram_NguoiSua = appData.val_DSUserSua.find(user => user[CONFIG_COLUMNS.DSUserSua.id] === id_NguoiSua)?.[CONFIG_COLUMNS.DSUserSua.usetele] || ''; 
+		
+		// Thiết bị
+        const equipmentId = document.getElementById('equipmentId').value;  //ID thiết bị
+        const text_ThietBi = document.getElementById('equipmentName').value;  //Tên thiết bị
+        const text_Model = document.getElementById('equipmentModel').value;  //Model
+        const text_Serial = document.getElementById('equipmentSerial').value;  //Serial
+        const text_Manufacturer = document.getElementById('equipmentManufacturer').value;  //Hãng sản xuất
+        const text_Country = document.getElementById('equipmentCountry').value;  //Nước sản xuất
+        const text_Vitri = document.getElementById('equipmentLocation').value;  //Vị trí đặt
+		
+        const text_TinhTrang = document.getElementById('equipmentStatus').value;  //Tình trạng thiết bị
+        const priorityLevelSelect = document.getElementById('priorityLevel');
+        const id_MucDo = priorityLevelSelect.value;  //Mức độ yêu cầu
+        const text_MucDo_YeuCau = priorityLevelSelect.options[priorityLevelSelect.selectedIndex]?.textContent || '';
+        
+        const notes = document.getElementById('notes').value;
+
+        //Lấy textContent 
+        
+
+        if (!requesterName) {
+          showError("Vui lòng nhập người yêu cầu");
+          return;
+        }
+        
+        if (!requesterPhone) {
+          showError("Vui lòng nhập số điện thoại yêu cầu");
+          return;
+        }
+        
+        if (!text_TinhTrang) {
+          showError("Vui lòng nhập tình trạng thiết bị");
+          return;
+        }
+        
+        if (!equipmentId) {
+          showError("Vui lòng chọn thiết bị");
+          return;
+        }
+        
+        if (!id_MucDo) {
+          showError("Vui lòng chọn mức độ ưu tiên");
+          return;
+        }
+        
+        // Prepare data for saving
+        const repairData = {
+          id_repair: repairId,
+          // Đơn vị
+          iduserdv: userData.id,
+          Kyhieu_donvi: userData.kihieu,
+          Ten_donvi: userData.name,
+
+          // Người yêu cầu
+          Name_NguoiYeuCau: requesterName,
+          SDT_NguoiYeuCau: requesterPhone,
+
+          // Người sửa
+          ID_NguoiSua: id_NguoiSua,
+          Name_NguoiSua: Name_NguoiSua,
+          ID_Telegram_NguoiSua: id_telegram_NguoiSua,
+
+          // Thiết bị
+          ID_ThietBi: equipmentId,
+          Name_ThietBi: text_ThietBi,
+          text_Model: text_Model,
+          text_Serial: text_Serial,
+          text_Manufacturer: text_Manufacturer,
+          text_Country: text_Country,
+          text_Vitri: text_Vitri,
+          
+          TinhTrang_ThietBi: text_TinhTrang,
+          ID_MucDo_YeuCau: id_MucDo,
+          text_MucDo_YeuCau: text_MucDo_YeuCau,
+
+          GhiChu_repair: notes,
+          trangThai_repair: CONFIG_ENUM.TRANGTHAI.BAO_HONG
+        };
+        
+        // Log repair data to console for debugging
+        console.log('Repair data being submitted:', repairData);
+        // Show loading message
+        Swal.fire({
+          title: 'Đang xử lý',
+          text: 'Vui lòng đợi...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+
+        // Send data to server
+        if (repairId) {
+          // Update existing repair
+          google.script.run
+            .withSuccessHandler(handleRepairUpdated)
+            .withFailureHandler(handleRepairError)
+            .SC_update(repairData);
+        } else {
+          // Add new repair
+          google.script.run
+            .withSuccessHandler(handleRepairAdded)
+            .withFailureHandler(handleRepairError)
+            .SC_thembaohong(repairData);
+        }
+      }
+      
+      // Handle successful repair addition
+      function handleRepairAdded(result) {
+        Swal.close();
+        
+        if (result) {
+          // Update data
+          appData.val_DataSC = result;
+          
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById('addRepairModal')).hide();
+          
+          // Update tables
+          updateRepairTables();
+          
+          // Show success message
+          showSuccess("Thêm báo hỏng thành công");
+        } else {
+          showError("Có lỗi xảy ra khi thêm báo hỏng");
+        }
+      }
+      
+      // Handle successful repair update
+      function handleRepairUpdated(result) {
+        Swal.close();
+        
+        if (result) {
+          // Update data
+          appData.val_DataSC = result;
+          
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById('addRepairModal')).hide();
+          
+          // Update tables
+          updateRepairTables();
+          
+          // Show success message
+          showSuccess("Cập nhật báo hỏng thành công");
+        } else {
+          showError("Có lỗi xảy ra khi cập nhật báo hỏng");
+        }
+      }
+      
+      // Handle repair error
+      function handleRepairError(error) {
+        Swal.close();
+        showError("Lỗi: " + error.message);
+      }
+      
+      // Update all repair tables
+      function updateRepairTables() {
+        const countBaoHong = updateTableBaoHong();
+        const countDangSua = updateTableDangSua();
+        const countBaoHanh = updateTableBaoHanh();
+        const countSuaNgoai = updateTableSuaNgoai();
+        
+        // Calculate total count
+        const totalCount = countBaoHong + countDangSua + countBaoHanh + countSuaNgoai;
+        
+        // Log counts to console for debugging
+        console.log(`Tổng số: ${totalCount} | Báo hỏng: ${countBaoHong} | Đang sửa: ${countDangSua} | Bảo hành: ${countBaoHanh} | Sửa ngoài: ${countSuaNgoai}`);
+        
+        return {
+          total: totalCount,
+          baoHong: countBaoHong,
+          dangSua: countDangSua,
+          baoHanh: countBaoHanh,
+          suaNgoai: countSuaNgoai
+        };
+      }
+      
+      // Update báo hỏng table
+      function updateTableBaoHong() {
+        try {
+          // Get table body
+          const tableBody = document.getElementById('history_baohong');
+          tableBody.innerHTML = '';
+          
+          // Counter for repair items
+          let count = 0;
+          
+          // Process data
+          appData.val_DataSC.slice(1).forEach(item => {
+            // Check if this is a "báo hỏng" item for current user
+            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.BAO_HONG && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
+              count++;
+              
+              // Create row
+              const row = document.createElement('tr');
+              
+              // STT cell
+              const sttCell = document.createElement('td');
+              sttCell.textContent = count;
+              row.appendChild(sttCell);
+              
+              // Get equipment and repair person info
+              const equipmentId = item[CONFIG_COLUMNS.DataSC.idthietbi];
+              const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
+              
+              const repairPersonId = item[CONFIG_COLUMNS.DataSC.idusersua];
+              const repairPerson = appData.val_DSUserSua.find(rp => rp[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId);
+              
+              // Content cell
+              const contentCell = document.createElement('td');
+              contentCell.innerHTML = `
+                🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} ⚠️ ${item[CONFIG_COLUMNS.DataSC.id]}
+                <br>- Thông tin thiết bị: ♟️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.tentb] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.model] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.serial] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] : ''}
+                <br>- Thông tin người sửa: 👨${repairPerson ? repairPerson[CONFIG_COLUMNS.DSUserSua.hoten] : ''} 
+                📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
+              `;
+              row.appendChild(contentCell);
+              
+              // Action cell
+              const actionCell = document.createElement('td');
+              actionCell.classList.add('action-buttons');
+              
+              // View button
+              const viewBtn = document.createElement('button');
+              viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
+              viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+              viewBtn.title = 'Xem chi tiết';
+              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
+              actionCell.appendChild(viewBtn);
+
+              // Edit button
+              const editBtn = document.createElement('button');
+              editBtn.classList.add('btn', 'btn-primary', 'btn-sm', 'me-1');
+              editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+              editBtn.title = 'Chỉnh sửa';
+              editBtn.onclick = () => editRepair(item[CONFIG_COLUMNS.DataSC.id]);
+              actionCell.appendChild(editBtn);
+              
+              // Delete button
+              const deleteBtn = document.createElement('button');
+              deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm', 'me-1');
+              deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+              deleteBtn.title = 'Xóa';
+              deleteBtn.onclick = () => deleteRepair(item[CONFIG_COLUMNS.DataSC.id]);
+              actionCell.appendChild(deleteBtn);
+              
+              row.appendChild(actionCell);
+              
+              // Add row to table
+              tableBody.appendChild(row);
+            }
+          });
+          
+          // Update tab count
+          document.getElementById('tab-baohong').textContent = `Báo hỏng (${count})`;
+          
+          // Return the count for potential use elsewhere
+          return count;
+        } catch (error) {
+          console.error('Error updating báo hỏng table:', error);
+          showError('Lỗi khi cập nhật bảng báo hỏng: ' + error.message);
+          return 0;
+        }
+      }
+      
+      // Update đang sửa table
+      function updateTableDangSua() {
+        try {
+          // Get table body
+          const tableBody = document.getElementById('history_dangsua');
+          tableBody.innerHTML = '';
+          
+          // Counter for repair items
+          let count = 0;
+          
+          // Process data
+          appData.val_DataSC.slice(1).forEach(item => {
+            // Check if this is a "đang sửa" item for current user
+            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.DANG_SUA && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
+              count++;
+              
+              // Create row
+              const row = document.createElement('tr');
+              
+              // STT cell
+              const sttCell = document.createElement('td');
+              sttCell.textContent = count;
+              row.appendChild(sttCell);
+              
+              // Get equipment and repair person info
+              const equipmentId = item[CONFIG_COLUMNS.DataSC.idthietbi];
+              const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
+              
+              const repairPersonId = item[CONFIG_COLUMNS.DataSC.idusersua];
+              const repairPerson = appData.val_DSUserSua.find(rp => rp[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId);
+              
+              // Content cell
+              const contentCell = document.createElement('td');
+              contentCell.innerHTML = `
+                🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} ⚠️ ${item[CONFIG_COLUMNS.DataSC.id]}
+                <br>- Thông tin thiết bị: ♟️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.tentb] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.model] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.serial] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] : ''}
+                <br>- Thông tin người sửa: 👨${repairPerson ? repairPerson[CONFIG_COLUMNS.DSUserSua.hoten] : ''} 
+                📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
+              `;
+              row.appendChild(contentCell);
+              
+              // Action cell
+              const actionCell = document.createElement('td');
+              actionCell.classList.add('action-buttons');
+              
+              // View button
+              const viewBtn = document.createElement('button');
+              viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
+              viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+              viewBtn.title = 'Xem chi tiết';
+              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
+              actionCell.appendChild(viewBtn);
+              
+              row.appendChild(actionCell);
+              
+              // Add row to table
+              tableBody.appendChild(row);
+            }
+          });
+          
+          // Update tab count
+          document.getElementById('tab-dangsua').textContent = `Đang sửa (${count})`;
+          
+          // Return the count for potential use elsewhere
+          return count;
+        } catch (error) {
+          console.error('Error updating đang sửa table:', error);
+          showError('Lỗi khi cập nhật bảng đang sửa: ' + error.message);
+          return 0;
+        }
+      }
+      
+      // Update bảo hành table
+      function updateTableBaoHanh() {
+        try {
+          // Get table body
+          const tableBody = document.getElementById('history_baohanh');
+          tableBody.innerHTML = '';
+          
+          // Counter for repair items
+          let count = 0;
+          
+          // Process data
+          appData.val_DataSC.slice(1).forEach(item => {
+            // Check if this is a "bảo hành" item for current user
+            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.BAO_HANH && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
+              count++;
+              
+              // Create row
+              const row = document.createElement('tr');
+              
+              // STT cell
+              const sttCell = document.createElement('td');
+              sttCell.textContent = count;
+              row.appendChild(sttCell);
+              
+              // Get equipment and repair person info
+              const equipmentId = item[CONFIG_COLUMNS.DataSC.idthietbi];
+              const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
+              
+              const repairPersonId = item[CONFIG_COLUMNS.DataSC.idusersua];
+              const repairPerson = appData.val_DSUserSua.find(rp => rp[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId);
+              
+              // Content cell
+              const contentCell = document.createElement('td');
+              contentCell.innerHTML = `
+                🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} ⚠️ ${item[CONFIG_COLUMNS.DataSC.id]}
+                <br>- Thông tin thiết bị: ♟️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.tentb] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.model] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.serial] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] : ''}
+                <br>- Thông tin người sửa: 👨${repairPerson ? repairPerson[CONFIG_COLUMNS.DSUserSua.hoten] : ''} 
+                📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
+              `;
+              row.appendChild(contentCell);
+              
+              // Action cell
+              const actionCell = document.createElement('td');
+              actionCell.classList.add('action-buttons');
+              
+              // View button
+              const viewBtn = document.createElement('button');
+              viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
+              viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+              viewBtn.title = 'Xem chi tiết';
+              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
+              actionCell.appendChild(viewBtn);
+              
+              row.appendChild(actionCell);
+              
+              // Add row to table
+              tableBody.appendChild(row);
+            }
+          });
+          
+          // Update tab count
+          document.getElementById('tab-baohanh').textContent = `Bảo hành (${count})`;
+          
+          // Return the count for potential use elsewhere
+          return count;
+        } catch (error) {
+          console.error('Error updating bảo hành table:', error);
+          showError('Lỗi khi cập nhật bảng bảo hành: ' + error.message);
+          return 0;
+        }
+      }
+      
+      // Update sửa ngoài table
+      function updateTableSuaNgoai() {
+        try {
+          // Get table body
+          const tableBody = document.getElementById('history_suangoai');
+          tableBody.innerHTML = '';
+          
+          // Counter for repair items
+          let count = 0;
+          
+          // Process data
+          appData.val_DataSC.slice(1).forEach(item => {
+            // Check if this is a "sửa ngoài" item for current user
+            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.SUA_NGOAI && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
+              count++;
+              
+              // Create row
+              const row = document.createElement('tr');
+              
+              // STT cell
+              const sttCell = document.createElement('td');
+              sttCell.textContent = count;
+              row.appendChild(sttCell);
+              
+              // Get equipment and repair person info
+              const equipmentId = item[CONFIG_COLUMNS.DataSC.idthietbi];
+              const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
+              
+              const repairPersonId = item[CONFIG_COLUMNS.DataSC.idusersua];
+              const repairPerson = appData.val_DSUserSua.find(rp => rp[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId);
+              
+              // Content cell
+              const contentCell = document.createElement('td');
+              contentCell.innerHTML = `
+                🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} ⚠️ ${item[CONFIG_COLUMNS.DataSC.id]}
+                <br>- Thông tin thiết bị: ♟️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.tentb] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.model] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.serial] : ''} 
+                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] : ''}
+                <br>- Thông tin người sửa: 👨${repairPerson ? repairPerson[CONFIG_COLUMNS.DSUserSua.hoten] : ''} 
+                📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
+              `;
+              row.appendChild(contentCell);
+              
+              // Action cell
+              const actionCell = document.createElement('td');
+              actionCell.classList.add('action-buttons');
+              
+              // View button
+              const viewBtn = document.createElement('button');
+              viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
+              viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
+              viewBtn.title = 'Xem chi tiết';
+              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
+              actionCell.appendChild(viewBtn);
+              
+              row.appendChild(actionCell);
+              
+              // Add row to table
+              tableBody.appendChild(row);
+            }
+          });
+          
+          // Update tab count
+          document.getElementById('tab-suangoai').textContent = `Sửa ngoài (${count})`;
+          
+          // Return the count for potential use elsewhere
+          return count;
+        } catch (error) {
+          console.error('Error updating sửa ngoài table:', error);
+          showError('Lỗi khi cập nhật bảng sửa ngoài: ' + error.message);
+          return 0;
+        }
+      }
+      
+      // Edit repair function (placeholder implementation)
+      function editRepair(repairId) {
+        alert('Chức năng sửa báo hỏng đang được phát triển. ID: ' + repairId);
+      }
+      
+      // Delete repair function (placeholder implementation)
+      function deleteRepair(repairId) {
+        if (confirm('Bạn có chắc chắn muốn xóa báo hỏng này?')) {
+          google.script.run
+            .withSuccessHandler(function(result) {
+              if (result) {
+                loadAllData();
+                alert('Xóa báo hỏng thành công');
+              } else {
+                alert('Có lỗi xảy ra khi xóa báo hỏng');
+              }
+            })
+            .withFailureHandler(function(error) {
+              alert('Lỗi: ' + error.message);
+            })
+            .SC_delete(repairId);
+        }
+      }
+
+      // Edit user profile function
+      function editUserProfile() {
+        // Hide user menu
+        document.getElementById('userMenu').style.display = 'none';
+        
+        // Fill form with current user data
+        document.getElementById('profileName').value = userData.name || '';
+        document.getElementById('profileEmail').value = userData.email || '';
+        document.getElementById('profileLogo').value = userData.logo || '';
+        
+        // Show modal using Bootstrap 5 syntax
+        const modalElement = document.getElementById('editProfileModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+      
+      // Save profile changes
+      function saveProfile() {
+        // Get form values
+        const name = document.getElementById('profileName').value;
+        const email = document.getElementById('profileEmail').value;
+        const logo = document.getElementById('profileLogo').value;
+        
+        // Validate form
+        if (!name) {
+          showError("Vui lòng nhập tên đơn vị");
+          return;
+        }
+        
+        if (!email) {
+          showError("Vui lòng nhập email");
+          return;
+        }
+        
+        // Prepare data for update
+        const profileData = {
+          id: userData.id,
+          donvi: name,
+          email: email,
+          logo: logo
+        };
+        
+        // Show loading message
+        Swal.fire({
+          title: 'Đang xử lý',
+          text: 'Vui lòng đợi...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+        // Send update to server
+        google.script.run
+          .withSuccessHandler(handleProfileUpdated)
+          .withFailureHandler(handleProfileError)
+          .updateUserProfile(profileData);
+      }
+      
+      // Handle profile update success
+      function handleProfileUpdated(result) {
+        Swal.close();
+        
+        if (result) {
+          // Update user data
+          for (let i = 1; i < appData.val_DSUserDV.length; i++) {
+            if (appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.id] == userData.id) {
+              appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.donvi] = document.getElementById('profileName').value;
+              appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.email] = document.getElementById('profileEmail').value;
+              appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.logo] = document.getElementById('profileLogo').value;
+              break;
+            }
+          }
+          
+          // Update userData
+          userData.name = document.getElementById('profileName').value;
+          userData.email = document.getElementById('profileEmail').value;
+          userData.logo = document.getElementById('profileLogo').value;
+          
+          // Update UI
+          document.getElementById('userName').textContent = userData.name;
+          if (userData.logo) {
+            document.getElementById('userAvatar').src = userData.logo;
+          }
+          
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+          
+          // Show success message
+          showSuccess("Cập nhật thông tin thành công");
+        } else {
+          showError("Có lỗi xảy ra khi cập nhật thông tin");
+        }
+      }
+      
+      // Handle profile update error
+      function handleProfileError(error) {
+        Swal.close();
+        showError("Lỗi: " + error.message);
+      }
+      
+      // Change password function
+      function changePassword() {
+        // Hide user menu
+        document.getElementById('userMenu').style.display = 'none';
+        
+        // Clear form
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+        
+        // Show modal using Bootstrap 5 syntax
+        const modalElement = document.getElementById('changePasswordModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+      
+      // Toggle password visibility for any password field
+      function togglePasswordField(fieldId) {
+        const passwordInput = document.getElementById(fieldId);
+        const toggleButton = passwordInput.nextElementSibling;
+        const toggleIcon = toggleButton.querySelector('i');
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.classList.remove('fa-eye-slash');
+          toggleIcon.classList.add('fa-eye');
+        } else {
+          passwordInput.type = 'password';
+          toggleIcon.classList.remove('fa-eye');
+          toggleIcon.classList.add('fa-eye-slash');
+        }
+      }
+      
+      // Save new password
+      function saveNewPassword() {
+        // Get form values
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        
+        // Validate form
+        if (!currentPassword) {
+          showError("Vui lòng nhập mật khẩu hiện tại");
+          return;
+        }
+        
+        if (!newPassword) {
+          showError("Vui lòng nhập mật khẩu mới");
+          return;
+        }
+        
+        if (!confirmPassword) {
+          showError("Vui lòng xác nhận mật khẩu mới");
+          return;
+        }
+        
+        if (newPassword !== confirmPassword) {
+          showError("Mật khẩu mới và xác nhận mật khẩu không khớp");
+          return;
+        }
+        
+        // Verify current password (find user in departmentUsers by userData.id)
+        let currentUserPassword = '';
+        for (let i = 1; i < appData.val_DSUserDV.length; i++) {
+          if (appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.id] == userData.id) {
+            currentUserPassword = appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.pass];
+            break;
+          }
+        }
+        
+        if (currentPassword !== currentUserPassword) {
+          showError("Mật khẩu hiện tại không đúng");
+          return;
+        }
+        
+        // Prepare data for update
+        const passwordData = {
+          id: userData.id,
+          newPassword: newPassword
+        };
+        
+        // Show loading message
+        Swal.fire({
+          title: 'Đang xử lý',
+          text: 'Vui lòng đợi...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+        // Send update to server
+        google.script.run
+          .withSuccessHandler(handlePasswordUpdated)
+          .withFailureHandler(handlePasswordError)
+          .updateUserPassword(passwordData);
+      }
+      
+      // Handle password update success
+      function handlePasswordUpdated(result) {
+        Swal.close();
+        
+        if (result) {
+          // Update password in the cached data
+          for (let i = 1; i < appData.val_DSUserDV.length; i++) {
+            if (appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.id] == userData.id) {
+              appData.val_DSUserDV[i][CONFIG_COLUMNS.DSUserDV.pass] = document.getElementById('newPassword').value;
+              break;
+            }
+          }
+          
+          // Close modal
+          bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+          
+          // Show success message
+          showSuccess("Đổi mật khẩu thành công");
+        } else {
+          showError("Có lỗi xảy ra khi đổi mật khẩu");
+        }
+      }
+      
+      // Handle password update error
+      function handlePasswordError(error) {
+        Swal.close();
+        showError("Lỗi: " + error.message);
+      }
+
+      // Initialize UI components
+      function initializeUI() {
+        // Create tabs for the dashboard
+        const dashboardTabs = new bootstrap.Tab(document.querySelector('#tab-dashboard'));
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Initialize popovers
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        popoverTriggerList.map(function (popoverTriggerEl) {
+          return new bootstrap.Popover(popoverTriggerEl);
+        });
+        
+        // Initialize modals
+        const modalTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="modal"]'));
+        modalTriggerList.map(function (modalTriggerEl) {
+          return new bootstrap.Modal(document.querySelector(modalTriggerEl.getAttribute('data-bs-target')));
+        });
+        
+        // Fix for modals not allowing input
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.addEventListener('shown.bs.modal', function() {
+            // Ensure focus works correctly in the modal
+            this.querySelector('input:not([readonly]):not([disabled])') && 
+            this.querySelector('input:not([readonly]):not([disabled])').focus();
+          });
+        });
+      }
+
+      // Initialize modals when the page loads
+      document.addEventListener('DOMContentLoaded', function() {
+        // Preload modal instances to ensure they work correctly
+        const modalElements = document.querySelectorAll('.modal');
+        modalElements.forEach(element => {
+          // Create but don't show the modal
+          new bootstrap.Modal(element);
+        });
+        
+        // Add event listener for the add repair modal to reset form
+        const addRepairModal = document.getElementById('addRepairModal');
+        addRepairModal.addEventListener('show.bs.modal', function(event) {
+          // Reset form when modal is about to be shown
+          document.getElementById('repairId').value = '';
+          document.getElementById('requesterName').value = '';
+          document.getElementById('requesterPhone').value = '';
+          document.getElementById('repairPerson').selectedIndex = 0;
+          document.getElementById('repairPersonPhone').value = '';
+          document.getElementById('equipmentGroup').selectedIndex = 0;
+          document.getElementById('equipmentId').innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+          document.getElementById('equipmentName').value = '';
+          document.getElementById('equipmentModel').value = '';
+          document.getElementById('equipmentSerial').value = '';
+          document.getElementById('equipmentManufacturer').value = '';
+          document.getElementById('equipmentCountry').value = '';
+          document.getElementById('equipmentYear').value = '';
+          document.getElementById('equipmentUseYear').value = '';
+          document.getElementById('equipmentWarranty').value = '';
+          document.getElementById('equipmentLocation').value = '';
+          document.getElementById('equipmentStatus').value = '';
+          document.getElementById('priorityLevel').selectedIndex = 0;
+          document.getElementById('notes').value = '';
+        });
+      });
+
+      // Search functionality
+      function searchRepair() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        if (!searchTerm) {
+          showError("Vui lòng nhập nội dung tìm kiếm");
+          return;
+        }
+        
+        // Filter repair tables based on search term
+        filterRepairTables(searchTerm);
+      }
+      
+      // Filter repair tables based on search term
+      function filterRepairTables(searchTerm) {
+        try {
+          // Get all table rows in all tabs
+          const allTables = ['history_baohong', 'history_dangsua', 'history_baohanh', 'history_suangoai'];
+          const tabIds = ['tab-baohong', 'tab-dangsua', 'tab-baohanh', 'tab-suangoai'];
+          const tabNames = ['Báo hỏng', 'Đang sửa', 'Bảo hành', 'Sửa ngoài'];
+          
+          let totalMatchCount = 0;
+          let matchCountPerTab = [0, 0, 0, 0];
+          
+          // Search in each tab and count matches
+          allTables.forEach((tableId, index) => {
+            const tableBody = document.getElementById(tableId);
+            const rows = tableBody.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+              const content = rows[i].innerText.toLowerCase();
+              if (content.includes(searchTerm)) {
+                rows[i].style.display = '';
+                totalMatchCount++;
+                matchCountPerTab[index]++;
+              } else {
+                rows[i].style.display = 'none';
+              }
+            }
+            
+            // Update tab name with match count
+            document.getElementById(tabIds[index]).textContent = `${tabNames[index]} (${matchCountPerTab[index]})`;
+          });
+          
+          if (totalMatchCount === 0) {
+            showError("Không tìm thấy kết quả phù hợp");
+          } else {
+            // Create a detailed message with counts per tab
+            let detailMessage = `Tìm thấy ${totalMatchCount} kết quả phù hợp:\n`;
+            allTables.forEach((tableId, index) => {
+              if (matchCountPerTab[index] > 0) {
+                detailMessage += `- ${tabNames[index]}: ${matchCountPerTab[index]} kết quả\n`;
+              }
+            });
+            
+            showSuccess(detailMessage);
+          }
+        } catch (error) {
+          console.error('Error filtering repair tables:', error);
+          showError('Lỗi khi lọc dữ liệu tìm kiếm: ' + error.message);
+        }
+      }
+      
+      // Cancel search function - updated to restore original tab counts
+      function cancelSearch() {
+        // Clear search input
+        document.getElementById('searchInput').value = '';
+        
+        // Reset repair tables to show all items
+        updateRepairTables();
+      }
+    </script>
+  </body>
+</html> 

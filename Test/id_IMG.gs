@@ -1,0 +1,24 @@
+function doGet(e) {
+    var htmlOutput =  HtmlService.createTemplateFromFile('DisplayFile');  
+    var pictures = getPictures();  
+    htmlOutput.pictures = pictures;
+    return htmlOutput.evaluate();
+  }
+  
+  function getPictures()
+  {
+      var destination_id = '1ZBHcflpz3ZqImXm5nELRD61ajZWB38zl';  // ID OF GOOGLE DRIVE DIRECTORY;
+      var destination = DriveApp.getFolderById(destination_id);
+      
+      var files = destination.getFiles();
+      var file_array = [];
+      
+      while (files.hasNext()) 
+      {
+        var file = files.next();
+        file_array.push(file.getId());
+      }
+  
+      return file_array;
+  }
+  

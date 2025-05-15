@@ -1,0 +1,1980 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</title>
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- FileSaver -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    
+    <!-- Google Platform -->
+    <script src="https://apis.google.com/js/platform.js"></script>
+    
+    <style>
+      body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+      }
+
+      .container {
+        max-width: 100%;
+        margin-top: 20px;
+      }
+      
+      /* Loading screen */
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f4f4f4;
+        z-index: 9999;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+
+      .loading-screen.hidden {
+        opacity: 0;
+        visibility: hidden;
+      }
+
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #ddd;
+        border-top-color: #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      .loading-message {
+        margin-top: 20px;
+        font-size: 16px;
+        color: #333;
+        text-align: center;
+      }
+      
+      /* Login form */
+      #loginSection {
+        width: 400px;
+        margin: 100px auto;
+        padding: 20px;
+        display: none;
+      }
+      
+      .card {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        border: none;
+        padding: 10px;
+      }
+
+      .card-header {
+        background-color: #007bff;
+        color: #fff;
+        font-size: 1.25rem;
+        font-weight: bold;
+        text-align: center;
+      }
+
+      .password-field {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        cursor: pointer;
+      }
+      
+      /* Main sections */
+      .section {
+        display: none;
+        padding: 5px;
+      }
+
+      .dashboard {
+        margin-left: 10px;
+        margin-right: 10px;
+        display: none;
+      }
+
+      .nav-pills .nav-link.active {
+        background-color: #007bff;
+        color: #fff;
+      }
+
+      .tab-content .tab-pane {
+        padding: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-top: none;
+        background-color: #ffffff;
+      }
+      
+      /* Tables */
+      .custom-table {
+        border-collapse: collapse;
+        width: 100%;
+        border: 1px solid #ddd;
+        font-size: 18px;
+      }
+
+      .custom-table th,
+      .custom-table td {
+        text-align: left;
+        padding: 12px;
+      }
+
+      .custom-table tr {
+        border-bottom: 1px solid #ddd;
+      }
+
+      .custom-table tr.tb_header,
+      .custom-table tr:hover {
+        background-color: #f1f1f1;
+      }
+      
+      /* Action buttons */
+      .action-buttons button {
+        padding: 5px 10px;
+        margin: 2px;
+        cursor: pointer;
+      }
+
+      .edit-button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+      }
+
+      .delete-button {
+        background-color: #f44336;
+        color: white;
+        border: none;
+      }
+      
+      /* Modal */
+      .modal {
+        z-index: 1050;
+      }
+
+      .modal-backdrop {
+        z-index: 1040;
+      }
+
+      .modal-dialog {
+        z-index: 1050;
+        margin: 1.75rem auto;
+      }
+
+      .modal-content {
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        z-index: 1050;
+      }
+      
+      .modal-header {
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+      }
+      
+      /* Password field styling */
+      .input-group .btn-outline-secondary {
+        border-color: #ced4da;
+      }
+      
+      .input-group .btn-outline-secondary:hover {
+        background-color: #f8f9fa;
+      }
+      
+      /* Header styles */
+      .app-header {
+        background-color: #fff;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+        margin-bottom: 20px;
+      }
+
+      .app-logo {
+        height: 50px;
+        margin-right: 15px;
+        flex-shrink: 0;
+      }
+      
+      .app-title {
+        color: #007bff;
+        font-size: 1.5rem;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      
+      @media (max-width: 992px) {
+        .app-title {
+          font-size: 1.25rem;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .app-title {
+          font-size: 1rem;
+        }
+      }
+      
+      .user-profile {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+      
+      .dropdown-menu {
+        min-width: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Loading screen -->
+    <div id="loading" class="loading-screen">
+      <div class="spinner"></div>
+      <div class="loading-message">Đang tải dữ liệu, vui lòng đợi...</div>
+    </div>
+    
+    <!-- Login section -->
+    <div id="loginSection" class="container">
+      <div class="card">
+        <div class="card-header">
+          ĐĂNG NHẬP PHẦN MỀM QUẢN LÝ SỬA CHỮA
+        </div>
+        <div class="card-body">
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="username" class="form-label">Tên đăng nhập</label>
+              <input type="text" class="form-control" id="username" required>
+            </div>
+            <div class="mb-3 password-field">
+              <label for="password" class="form-label">Mật khẩu</label>
+              <input type="password" class="form-control" id="password" required>
+              <i class="toggle-password fas fa-eye-slash" onclick="togglePassword()"></i>
+            </div>
+            <button type="button" class="btn btn-primary w-100" onclick="login()">Đăng nhập</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Main application -->
+    <div id="mainApp" class="section">
+      <!-- Header -->
+      <div class="app-header">
+        <div class="container">
+          <div class="row align-items-center">
+            <div class="col-md-8 d-flex align-items-center">
+              <img src="https://drive.google.com/thumbnail?id=16gCExt-p9JflHcqZQ2nxWLDL65bpD-Tf&sz=s100" alt="Logo" class="app-logo">
+              <span class="app-title">Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</span>
+            </div>
+            <div class="col-md-4 text-end">
+              <div class="dropdown">
+                <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img id="userAvatar" src="https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100" alt="User Avatar" class="user-avatar">
+                  <span id="userName">User Name</span>
+                  <i class="fas fa-chevron-down ms-2"></i>
+                </div>
+                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal"><i class="fas fa-user-edit me-2"></i>Chỉnh sửa thông tin</a></li>
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="fas fa-key me-2"></i>Đổi mật khẩu</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Main content -->
+      <div class="container dashboard">
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <button class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#addRepairModal">
+              <i class="fas fa-plus me-2"></i>Thêm báo hỏng
+            </button>
+          </div>
+          <div class="col-md-6">
+            <div class="input-group">
+              <input type="text" class="form-control" id="searchInput" placeholder="Nhập nội dung tìm kiếm...">
+              <button class="btn btn-primary" type="button" onclick="searchRepair()">
+                <i class="fas fa-search me-2"></i>Tìm kiếm
+              </button>
+              <button class="btn btn-secondary" type="button" onclick="cancelSearch()">
+                <i class="fas fa-times me-2"></i>Hủy tìm kiếm
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Tabs -->
+        <ul class="nav nav-pills mb-3" id="repairTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-baohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
+              Báo hỏng (0)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-dangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
+              Đang sửa (0)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-baohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
+              Bảo hành (0)
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-suangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
+              Sửa ngoài (0)
+            </button>
+          </li>
+        </ul>
+        
+        <!-- Tab content -->
+        <div class="tab-content" id="repairTabsContent">
+          <!-- Báo hỏng tab -->
+          <div class="tab-pane fade show active" id="baohong" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_baohong">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Đang sửa tab -->
+          <div class="tab-pane fade" id="dangsua" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_dangsua">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Bảo hành tab -->
+          <div class="tab-pane fade" id="baohanh" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_baohanh">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Sửa ngoài tab -->
+          <div class="tab-pane fade" id="suangoai" role="tabpanel">
+            <table class="custom-table">
+              <thead>
+                <tr class="tb_header">
+                  <th style="width: 5%;">STT</th>
+                  <th style="width: 75%;">Nội dung</th>
+                  <th style="width: 20%;">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="history_suangoai">
+                <!-- Data will be populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Add Repair Modal -->
+    <div class="modal fade" id="addRepairModal" tabindex="-1" aria-labelledby="addRepairModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Thêm báo hỏng mới</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="addRepairForm">
+              <input type="hidden" id="repairId">
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="departmentName" class="form-label">Đơn vị yêu cầu</label>
+                  <input type="text" class="form-control" id="departmentName" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="requesterName" class="form-label">Người yêu cầu</label>
+                  <input type="text" class="form-control" id="requesterName" list="requesterList">
+                  <datalist id="requesterList"></datalist>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="requesterPhone" class="form-label">Số điện thoại yêu cầu</label>
+                  <input type="text" class="form-control" id="requesterPhone" list="phoneList">
+                  <datalist id="phoneList"></datalist>
+                </div>
+                <div class="col-md-6">
+                  <label for="repairPerson" class="form-label">Người sửa chữa</label>
+                  <select class="form-select" id="repairPerson"></select>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="repairPersonPhone" class="form-label">Số điện thoại người sửa chữa</label>
+                  <input type="text" class="form-control" id="repairPersonPhone" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentGroup" class="form-label">Nhóm thiết bị</label>
+                  <select class="form-select" id="equipmentGroup"></select>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentId" class="form-label">Mã thiết bị</label>
+                  <select class="form-select" id="equipmentId"></select>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentName" class="form-label">Tên thiết bị</label>
+                  <input type="text" class="form-control" id="equipmentName" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentModel" class="form-label">Model</label>
+                  <input type="text" class="form-control" id="equipmentModel" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentSerial" class="form-label">Serial</label>
+                  <input type="text" class="form-control" id="equipmentSerial" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentManufacturer" class="form-label">Hãng sản xuất</label>
+                  <input type="text" class="form-control" id="equipmentManufacturer" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentCountry" class="form-label">Nước sản xuất</label>
+                  <input type="text" class="form-control" id="equipmentCountry" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentYear" class="form-label">Năm sản xuất</label>
+                  <input type="text" class="form-control" id="equipmentYear" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentUseYear" class="form-label">Năm đưa vào sử dụng</label>
+                  <input type="text" class="form-control" id="equipmentUseYear" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentWarranty" class="form-label">Hạn bảo hành</label>
+                  <input type="text" class="form-control" id="equipmentWarranty" readonly>
+                </div>
+                <div class="col-md-6">
+                  <label for="equipmentLocation" class="form-label">Vị trí đặt</label>
+                  <input type="text" class="form-control" id="equipmentLocation" readonly>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="equipmentStatus" class="form-label">Tình trạng thiết bị</label>
+                  <input type="text" class="form-control" id="equipmentStatus" list="statusList">
+                  <datalist id="statusList"></datalist>
+                </div>
+                <div class="col-md-6">
+                  <label for="priorityLevel" class="form-label">Mức độ yêu cầu</label>
+                  <select class="form-select" id="priorityLevel"></select>
+                </div>
+              </div>
+              
+              <div class="mb-3">
+                <label for="notes" class="form-label">Ghi chú</label>
+                <textarea class="form-control" id="notes" rows="3"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="RepairFormManager.saveRepair()">Lưu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit User Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Chỉnh sửa thông tin cá nhân</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="profileName" class="form-label">Tên đơn vị</label>
+              <input type="text" class="form-control" id="profileName">
+            </div>
+            <div class="mb-3">
+              <label for="profileEmail" class="form-label">Email</label>
+              <input type="email" class="form-control" id="profileEmail">
+            </div>
+            <div class="mb-3">
+              <label for="profileLogo" class="form-label">URL Logo (tùy chọn)</label>
+              <input type="text" class="form-control" id="profileLogo">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="saveProfile()">Lưu thay đổi</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">Đổi mật khẩu</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 position-relative">
+              <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="currentPassword">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('currentPassword')">
+                  <i class="fas fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mb-3 position-relative">
+              <label for="newPassword" class="form-label">Mật khẩu mới</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="newPassword">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('newPassword')">
+                  <i class="fas fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+            <div class="mb-3 position-relative">
+              <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="confirmPassword">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordField('confirmPassword')">
+                  <i class="fas fa-eye-slash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="button" class="btn btn-primary" onclick="saveNewPassword()">Xác nhận</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Global data variables
+      let userData = {};
+      let appData = {};
+      let CONFIG_COLUMNS = {};
+
+      // Form state management
+      const FormState = {
+        CREATE: 'create',
+        EDIT: 'edit',
+        VIEW: 'view'
+      };
+
+      // Repair form manager
+      const RepairFormManager = {
+        currentState: null,
+        currentRepairId: null,
+        
+        // Initialize form
+        initForm: function() {
+          try {
+            // Bind events
+            this.bindEvents();
+            
+            // Initialize equipment list
+            this.updateEquipmentList();
+            
+            // Set initial state
+            this.currentState = FormState.CREATE;
+            this.currentRepairId = null;
+            
+            // Update tables
+            updateRepairTables();
+            
+            console.log('Form initialized successfully');
+          } catch (error) {
+            console.error('Error initializing form:', error);
+            showError('Lỗi khi khởi tạo form: ' + error.message);
+          }
+        },
+
+        // Bind events
+        bindEvents: function() {
+          try {
+            // Equipment group change
+            const equipmentGroupSelect = document.getElementById('equipmentGroup');
+            if (equipmentGroupSelect) {
+              equipmentGroupSelect.addEventListener('change', () => {
+                this.updateEquipmentList();
+              });
+            }
+
+            // Equipment selection change
+            const equipmentSelect = document.getElementById('equipmentId');
+            if (equipmentSelect) {
+              equipmentSelect.addEventListener('change', () => {
+                this.updateEquipmentDetails();
+              });
+            }
+
+            // Repair person change
+            const repairPersonSelect = document.getElementById('repairPerson');
+            if (repairPersonSelect) {
+              repairPersonSelect.addEventListener('change', () => {
+                this.updateRepairPersonPhone();
+              });
+            }
+
+            console.log('Events bound successfully');
+          } catch (error) {
+            console.error('Error binding events:', error);
+            showError('Lỗi khi gắn sự kiện: ' + error.message);
+          }
+        },
+
+        // Show form with specific state
+        showForm: function(state, repairId = null) {
+          try {
+            this.currentState = state || FormState.CREATE;
+            this.currentRepairId = repairId;
+            
+            // Reset form first
+            this.resetForm();
+            
+            // Update modal title based on state
+            const modalTitleElement = document.querySelector('#addRepairModal .modal-title');
+            if (modalTitleElement) {
+              switch (this.currentState) {
+                case FormState.EDIT:
+                  modalTitleElement.textContent = 'Sửa thông tin báo hỏng';
+                  break;
+                case FormState.VIEW:
+                  modalTitleElement.textContent = 'Xem thông tin báo hỏng';
+                  break;
+                case FormState.CREATE:
+                default:
+                  modalTitleElement.textContent = 'Thêm báo hỏng mới';
+                  break;
+              }
+            }
+            
+            // Update the save button based on state
+            const saveButton = document.querySelector('#addRepairModal .modal-footer .btn-primary');
+            if (saveButton) {
+              if (this.currentState === FormState.VIEW) {
+                saveButton.style.display = 'none'; // Hide save button in view mode
+              } else {
+                saveButton.style.display = ''; // Show save button in create/edit mode
+                saveButton.textContent = this.currentState === FormState.EDIT ? 'Cập nhật' : 'Lưu';
+              }
+            }
+            
+            // Make fields readonly in view mode
+            const formInputs = document.querySelectorAll('#addRepairForm input, #addRepairForm select, #addRepairForm textarea');
+            formInputs.forEach(input => {
+              if (!input) return;
+              
+              if (this.currentState === FormState.VIEW) {
+                if (!input.hasAttribute('readonly')) {
+                  input.setAttribute('data-original-readonly', 'false');
+                  input.setAttribute('readonly', true);
+                }
+                if (input.tagName === 'SELECT') {
+                  input.setAttribute('disabled', true);
+                }
+              } else {
+                if (input.getAttribute('data-original-readonly') === 'false') {
+                  input.removeAttribute('readonly');
+                }
+                if (input.tagName === 'SELECT') {
+                  input.removeAttribute('disabled');
+                }
+              }
+            });
+            
+            // Load data if editing or viewing
+            if (this.currentState !== FormState.CREATE && repairId) {
+              this.loadRepairData(repairId);
+            }
+            
+            // Show modal
+            this.showModal();
+            
+            console.log(`Form shown in ${this.currentState} mode`);
+          } catch (error) {
+            console.error('Error showing form:', error);
+            showError('Lỗi khi hiển thị biểu mẫu: ' + error.message);
+          }
+        },
+
+        // Load repair data
+        loadRepairData: function(repairId) {
+          try {
+            const repair = appData.val_DataSC.find(item => 
+              item && item[CONFIG_COLUMNS.DataSC.id] === repairId
+            );
+            
+            if (!repair) {
+              showError("Không tìm thấy thông tin báo hỏng");
+              return;
+            }
+
+            // Fill basic information
+            document.getElementById('repairId').value = repairId;
+            document.getElementById('requesterName').value = repair[CONFIG_COLUMNS.DataSC.hoten] || '';
+            document.getElementById('requesterPhone').value = repair[CONFIG_COLUMNS.DataSC.sdt] || '';
+            
+            // Fill repair person info
+            const repairPersonSelect = document.getElementById('repairPerson');
+            if (repairPersonSelect) {
+              repairPersonSelect.value = repair[CONFIG_COLUMNS.DataSC.idnguoisua] || '';
+              this.updateRepairPersonPhone();
+            }
+            
+            // Fill equipment info
+            const equipmentGroupSelect = document.getElementById('equipmentGroup');
+            if (equipmentGroupSelect) {
+              equipmentGroupSelect.value = repair[CONFIG_COLUMNS.DataSC.nhomtb] || '';
+              this.updateEquipmentList(repair[CONFIG_COLUMNS.DataSC.idtb]);
+            }
+            
+            // Fill equipment details
+            document.getElementById('equipmentName').value = repair[CONFIG_COLUMNS.DataSC.tentb] || '';
+            document.getElementById('equipmentModel').value = repair[CONFIG_COLUMNS.DataSC.model] || '';
+            document.getElementById('equipmentSerial').value = repair[CONFIG_COLUMNS.DataSC.serial] || '';
+            document.getElementById('equipmentManufacturer').value = repair[CONFIG_COLUMNS.DataSC.hangsx] || '';
+            document.getElementById('equipmentCountry').value = repair[CONFIG_COLUMNS.DataSC.nuocsx] || '';
+            document.getElementById('equipmentYear').value = repair[CONFIG_COLUMNS.DataSC.namsx] || '';
+            document.getElementById('equipmentUseYear').value = repair[CONFIG_COLUMNS.DataSC.namsd] || '';
+            document.getElementById('equipmentWarranty').value = repair[CONFIG_COLUMNS.DataSC.hanbaohanh] || '';
+            document.getElementById('equipmentLocation').value = repair[CONFIG_COLUMNS.DataSC.vitridat] || '';
+            
+            // Fill other information
+            document.getElementById('equipmentStatus').value = repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao] || '';
+            document.getElementById('priorityLevel').value = repair[CONFIG_COLUMNS.DataSC.mucdouutien] || '';
+            document.getElementById('notes').value = repair[CONFIG_COLUMNS.DataSC.ghichu] || '';
+
+            console.log('Repair data loaded successfully');
+          } catch (error) {
+            console.error('Error loading repair data:', error);
+            showError('Lỗi khi tải dữ liệu báo hỏng: ' + error.message);
+          }
+        },
+
+        // Set repair person
+        setRepairPerson(repairPersonId) {
+          const repairPersonSelect = document.getElementById('repairPerson');
+          repairPersonSelect.value = repairPersonId || '';
+          this.updateRepairPersonPhone();
+        },
+
+        // Set equipment
+        setEquipment(equipmentId, repairData = null) {
+          if (!equipmentId) return;
+
+          const equipment = appData.val_DSThietBi.find(item => 
+            item[CONFIG_COLUMNS.DSThietBi.id] === equipmentId
+          );
+          
+          if (equipment) {
+            // Set equipment group
+            const equipmentGroupSelect = document.getElementById('equipmentGroup');
+            equipmentGroupSelect.value = equipment[CONFIG_COLUMNS.DSThietBi.nhomtb] || '';
+            
+            // Update equipment list
+            this.updateEquipmentList(equipmentId);
+            
+            // Update equipment details
+            this.updateEquipmentDetails(repairData);
+          }
+        },
+
+        // Update equipment list
+        updateEquipmentList: function(selectedEquipmentId = null) {
+          try {
+            const selectedGroup = document.getElementById('equipmentGroup').value;
+            const equipmentSelect = document.getElementById('equipmentId');
+            
+            if (!equipmentSelect) {
+              console.error('Equipment select element not found');
+              return;
+            }
+            
+            // Reset equipment select
+            equipmentSelect.innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+            
+            if (!selectedGroup) {
+              return;
+            }
+            
+            // Filter equipment by group and department
+            const filteredEquipment = appData.val_DSThietBi.filter(item => 
+              item && 
+              item[CONFIG_COLUMNS.DSThietBi.nhomtb] === selectedGroup && 
+              item[CONFIG_COLUMNS.DSThietBi.donvi] == userData.id
+            );
+            
+            // Add options
+            filteredEquipment.forEach(item => {
+              const option = document.createElement('option');
+              option.value = item[CONFIG_COLUMNS.DSThietBi.id];
+              option.textContent = `${item[CONFIG_COLUMNS.DSThietBi.mathietbi]} - ${item[CONFIG_COLUMNS.DSThietBi.tentb]}`;
+              equipmentSelect.appendChild(option);
+            });
+            
+            // Select equipment if provided
+            if (selectedEquipmentId) {
+              equipmentSelect.value = selectedEquipmentId;
+              // Trigger change event to update equipment details
+              const event = new Event('change');
+              equipmentSelect.dispatchEvent(event);
+            }
+
+            console.log('Equipment list updated successfully');
+          } catch (error) {
+            console.error('Error updating equipment list:', error);
+            showError('Lỗi khi cập nhật danh sách thiết bị: ' + error.message);
+          }
+        },
+
+        // Update equipment details
+        updateEquipmentDetails: function(repairData = null) {
+          try {
+            // Get equipment ID
+            const equipmentId = document.getElementById('equipmentId').value;
+            
+            // Clear equipment fields
+            document.getElementById('equipmentName').value = '';
+            document.getElementById('equipmentModel').value = '';
+            document.getElementById('equipmentSerial').value = '';
+            document.getElementById('equipmentManufacturer').value = '';
+            document.getElementById('equipmentCountry').value = '';
+            document.getElementById('equipmentYear').value = '';
+            document.getElementById('equipmentUseYear').value = '';
+            document.getElementById('equipmentWarranty').value = '';
+            document.getElementById('equipmentLocation').value = '';
+            
+            if (!equipmentId) {
+              return;
+            }
+            
+            // Find equipment info
+            const equipment = appData.val_DSThietBi.find(item => 
+              item && item[CONFIG_COLUMNS.DSThietBi.id] === equipmentId
+            );
+            
+            if (equipment) {
+              if (repairData) {
+                // If editing, prioritize repair data
+                document.getElementById('equipmentName').value = repairData[CONFIG_COLUMNS.DataSC.tentb] || equipment[CONFIG_COLUMNS.DSThietBi.tentb] || '';
+                document.getElementById('equipmentModel').value = repairData[CONFIG_COLUMNS.DataSC.model] || equipment[CONFIG_COLUMNS.DSThietBi.model] || '';
+                document.getElementById('equipmentSerial').value = repairData[CONFIG_COLUMNS.DataSC.serial] || equipment[CONFIG_COLUMNS.DSThietBi.serial] || '';
+                document.getElementById('equipmentManufacturer').value = repairData[CONFIG_COLUMNS.DataSC.hangsx] || equipment[CONFIG_COLUMNS.DSThietBi.hangsx] || '';
+                document.getElementById('equipmentCountry').value = repairData[CONFIG_COLUMNS.DataSC.nuocsx] || equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] || '';
+                document.getElementById('equipmentYear').value = repairData[CONFIG_COLUMNS.DataSC.namsx] || equipment[CONFIG_COLUMNS.DSThietBi.namsx] || '';
+                document.getElementById('equipmentUseYear').value = repairData[CONFIG_COLUMNS.DataSC.namsd] || equipment[CONFIG_COLUMNS.DSThietBi.namsd] || '';
+                document.getElementById('equipmentWarranty').value = repairData[CONFIG_COLUMNS.DataSC.hanbaohanh] || equipment[CONFIG_COLUMNS.DSThietBi.hanbaohanh] || '';
+                document.getElementById('equipmentLocation').value = repairData[CONFIG_COLUMNS.DataSC.vitridat] || equipment[CONFIG_COLUMNS.DSThietBi.vitridat] || '';
+              } else {
+                // If adding new, use equipment data
+                document.getElementById('equipmentName').value = equipment[CONFIG_COLUMNS.DSThietBi.tentb] || '';
+                document.getElementById('equipmentModel').value = equipment[CONFIG_COLUMNS.DSThietBi.model] || '';
+                document.getElementById('equipmentSerial').value = equipment[CONFIG_COLUMNS.DSThietBi.serial] || '';
+                document.getElementById('equipmentManufacturer').value = equipment[CONFIG_COLUMNS.DSThietBi.hangsx] || '';
+                document.getElementById('equipmentCountry').value = equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] || '';
+                document.getElementById('equipmentYear').value = equipment[CONFIG_COLUMNS.DSThietBi.namsx] || '';
+                document.getElementById('equipmentUseYear').value = equipment[CONFIG_COLUMNS.DSThietBi.namsd] || '';
+                document.getElementById('equipmentWarranty').value = equipment[CONFIG_COLUMNS.DSThietBi.hanbaohanh] || '';
+                document.getElementById('equipmentLocation').value = equipment[CONFIG_COLUMNS.DSThietBi.vitridat] || '';
+              }
+            }
+            
+            console.log('Equipment details updated successfully');
+          } catch (error) {
+            console.error('Error updating equipment details:', error);
+            showError('Lỗi khi cập nhật thông tin thiết bị: ' + error.message);
+          }
+        },
+
+        // Update repair person phone
+        updateRepairPersonPhone: function() {
+          try {
+            const repairPersonId = document.getElementById('repairPerson').value;
+            const phoneInput = document.getElementById('repairPersonPhone');
+            
+            if (!phoneInput) {
+              console.error('Repair person phone input not found');
+              return;
+            }
+            
+            // Clear phone
+            phoneInput.value = '';
+            
+            if (!repairPersonId) {
+              return;
+            }
+            
+            // Find repair person
+            const repairPerson = appData.val_DSUserSua.find(person => 
+              person && person[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId
+            );
+            
+            if (repairPerson) {
+              phoneInput.value = repairPerson[CONFIG_COLUMNS.DSUserSua.sdt] || '';
+            }
+            
+            console.log('Repair person phone updated successfully');
+          } catch (error) {
+            console.error('Error updating repair person phone:', error);
+            showError('Lỗi khi cập nhật số điện thoại người sửa: ' + error.message);
+          }
+        },
+
+        // Get repair person telegram
+        getRepairPersonTelegram() {
+          const repairPersonId = document.getElementById('repairPerson').value;
+          return appData.val_DSUserSua.find(user => 
+            user[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId
+          )?.[CONFIG_COLUMNS.DSUserSua.usetele] || '';
+        },
+
+        // Show modal
+        showModal() {
+          const modalElement = document.getElementById('addRepairModal');
+          const modal = new bootstrap.Modal(modalElement);
+          modal.show();
+        },
+
+        // Show loading
+        showLoading() {
+          Swal.fire({
+            title: 'Đang xử lý',
+            text: 'Vui lòng đợi...',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+        },
+
+        // Reset form
+        resetForm: function() {
+          try {
+            // Reset hidden fields
+            document.getElementById('repairId').value = '';
+            
+            // Reset requester fields
+            document.getElementById('requesterName').value = '';
+            document.getElementById('requesterPhone').value = '';
+            
+            // Reset repair person fields
+            const repairPersonSelect = document.getElementById('repairPerson');
+            if (repairPersonSelect) {
+              repairPersonSelect.selectedIndex = 0;
+            }
+            document.getElementById('repairPersonPhone').value = '';
+            
+            // Reset equipment fields
+            const equipmentGroupSelect = document.getElementById('equipmentGroup');
+            if (equipmentGroupSelect) {
+              equipmentGroupSelect.selectedIndex = 0;
+            }
+            
+            const equipmentSelect = document.getElementById('equipmentId');
+            if (equipmentSelect) {
+              equipmentSelect.innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+            }
+            
+            // Reset all equipment detail fields
+            const equipmentFields = [
+              'equipmentName', 'equipmentModel', 'equipmentSerial',
+              'equipmentManufacturer', 'equipmentCountry', 'equipmentYear',
+              'equipmentUseYear', 'equipmentWarranty', 'equipmentLocation'
+            ];
+            
+            equipmentFields.forEach(field => {
+              const element = document.getElementById(field);
+              if (element) {
+                element.value = '';
+              }
+            });
+            
+            // Reset other fields
+            document.getElementById('equipmentStatus').value = '';
+            
+            const prioritySelect = document.getElementById('priorityLevel');
+            if (prioritySelect) {
+              prioritySelect.selectedIndex = 0;
+            }
+            
+            document.getElementById('notes').value = '';
+            
+            // Set department name
+            if (userData && userData.name) {
+              document.getElementById('departmentName').value = userData.name;
+            }
+            
+            console.log('Form reset successfully');
+          } catch (error) {
+            console.error('Error resetting form:', error);
+            showError('Lỗi khi đặt lại biểu mẫu: ' + error.message);
+          }
+        },
+
+        // Validate form
+        validateForm: function() {
+          try {
+            // Define required fields with error messages
+            const requiredFields = [
+              { id: 'requesterName', message: 'Vui lòng nhập người yêu cầu' },
+              { id: 'requesterPhone', message: 'Vui lòng nhập số điện thoại yêu cầu' },
+              { id: 'equipmentId', message: 'Vui lòng chọn thiết bị' },
+              { id: 'equipmentStatus', message: 'Vui lòng nhập tình trạng thiết bị' },
+              { id: 'priorityLevel', message: 'Vui lòng chọn mức độ ưu tiên' }
+            ];
+            
+            // Check each required field
+            for (const field of requiredFields) {
+              const element = document.getElementById(field.id);
+              if (!element || !element.value.trim()) {
+                showError(field.message);
+                if (element) {
+                  element.focus();
+                }
+                return false;
+              }
+            }
+            
+            // Validate phone number format
+            const phoneInput = document.getElementById('requesterPhone');
+            if (phoneInput && phoneInput.value) {
+              const phoneRegex = /^[0-9]{10,11}$/;
+              if (!phoneRegex.test(phoneInput.value.replace(/\s/g, ''))) {
+                showError('Số điện thoại không hợp lệ. Vui lòng nhập 10-11 chữ số.');
+                phoneInput.focus();
+                return false;
+              }
+            }
+            
+            return true;
+          } catch (error) {
+            console.error('Error validating form:', error);
+            showError('Lỗi khi xác thực biểu mẫu: ' + error.message);
+            return false;
+          }
+        },
+
+        // Save repair function
+        saveRepair: function() {
+          try {
+            // Validate form
+            if (!this.validateForm()) {
+              return;
+            }
+
+            // Get form data
+            const formData = {
+              id_repair: document.getElementById('repairId').value || null,
+              iduserdv: userData.id,
+              Kyhieu_donvi: userData.kihieu,
+              Ten_donvi: userData.name,
+              
+              // Requester info
+              Name_NguoiYeuCau: document.getElementById('requesterName').value,
+              SDT_NguoiYeuCau: document.getElementById('requesterPhone').value,
+              
+              // Repair person info
+              ID_NguoiSua: document.getElementById('repairPerson').value,
+              Name_NguoiSua: document.getElementById('repairPerson').options[document.getElementById('repairPerson').selectedIndex].text,
+              ID_Telegram_NguoiSua: this.getRepairPersonTelegram(),
+              
+              // Equipment info
+              ID_ThietBi: document.getElementById('equipmentId').value,
+              Name_ThietBi: document.getElementById('equipmentName').value,
+              text_Model: document.getElementById('equipmentModel').value,
+              text_Serial: document.getElementById('equipmentSerial').value,
+              text_Manufacturer: document.getElementById('equipmentManufacturer').value,
+              text_Country: document.getElementById('equipmentCountry').value,
+              text_Vitri: document.getElementById('equipmentLocation').value,
+              
+              // Status and priority
+              TinhTrang_ThietBi: document.getElementById('equipmentStatus').value,
+              ID_MucDo_YeuCau: document.getElementById('priorityLevel').value,
+              text_MucDo_YeuCau: document.getElementById('priorityLevel').options[document.getElementById('priorityLevel').selectedIndex].text,
+              
+              // Notes and status
+              GhiChu_repair: document.getElementById('notes').value,
+              trangThai_repair: CONFIG_ENUM.TRANGTHAI.BAO_HONG // Default status for new repairs
+            };
+
+            // Show loading
+            this.showLoading();
+
+            // Call API to save repair
+            const apiFunction = formData.id_repair ? 'SC_update' : 'SC_thembaohong';
+            google.script.run
+              .withSuccessHandler((result) => {
+                Swal.close();
+                if (result && result.length > 0) {
+                  appData.val_DataSC = result;
+                  updateRepairTables();
+                  showSuccess(formData.id_repair ? "Cập nhật báo sửa thành công" : "Thêm báo sửa thành công");
+                  bootstrap.Modal.getInstance(document.getElementById('addRepairModal')).hide();
+                  this.resetForm(); // Reset form after successful save
+                } else {
+                  showError("Có lỗi xảy ra khi lưu báo sửa");
+                }
+              })
+              .withFailureHandler((error) => {
+                Swal.close();
+                showError("Lỗi: " + error.message);
+              })
+              [apiFunction](formData);
+          } catch (error) {
+            console.error('Error saving repair:', error);
+            showError('Lỗi khi lưu báo sửa: ' + error.message);
+          }
+        },
+
+        // Handle repair added
+        handleRepairAdded(result) {
+          Swal.close();
+          
+          if (result) {
+            // Update data
+            appData.val_DataSC = result;
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('addRepairModal')).hide();
+            
+            // Update tables
+            updateRepairTables();
+            
+            // Show success message
+            showSuccess("Thêm báo hỏng thành công");
+          } else {
+            showError("Có lỗi xảy ra khi thêm báo hỏng");
+          }
+        },
+
+        // Handle repair updated
+        handleRepairUpdated(result) {
+          Swal.close();
+          
+          if (result) {
+            // Update data
+            appData.val_DataSC = result;
+            
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('addRepairModal')).hide();
+            
+            // Update tables
+            updateRepairTables();
+            
+            // Show success message
+            showSuccess("Cập nhật báo hỏng thành công");
+          } else {
+            showError("Có lỗi xảy ra khi cập nhật báo hỏng");
+          }
+        },
+
+        // Handle repair error
+        handleRepairError(error) {
+          Swal.close();
+          showError("Lỗi: " + error.message);
+        }
+      };
+
+      // Data loading
+      window.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing app...');
+        
+        try {
+          // Initialize form manager
+          if (RepairFormManager) {
+            RepairFormManager.initForm();
+            console.log('Form manager initialized');
+          }
+          
+          // Load data
+          loadAllData();
+          
+        } catch (error) {
+          console.error('Error initializing app:', error);
+          showError('Lỗi khi khởi tạo ứng dụng: ' + error.message);
+        }
+      });
+
+      function loadAllData() {
+        try {
+          // Show loading screen
+          document.getElementById('loading').classList.remove('hidden');
+          
+          // Load data from server
+          google.script.run
+            .withSuccessHandler(handleDataLoaded)
+            .withFailureHandler(handleDataError)
+            .getdata();
+            
+        } catch (error) {
+          console.error('Error loading data:', error);
+          showError('Lỗi khi tải dữ liệu: ' + error.message);
+        }
+      }
+
+      function handleDataLoaded(dataJSON) {
+        try {
+          // Parse JSON data
+          const data = JSON.parse(dataJSON);
+          
+          // Store data in global variables
+          appData = data;
+          CONFIG_COLUMNS = data.CONFIG_COLUMNS;
+          CONFIG_ENUM = data.CONFIG_ENUM;
+          
+          // Initialize UI components
+          initializeUI();
+          
+          // Hide loading screen
+          document.getElementById('loading').classList.add('hidden');
+          
+          // Show login form
+          document.getElementById('loginSection').style.display = 'block';
+        } catch (error) {
+          console.error("Error parsing data:", error);
+          showError("Lỗi khi xử lý dữ liệu: " + error.message);
+        }
+      }
+
+      function handleDataError(error) {
+        console.error("Error loading data:", error);
+        showError("Lỗi khi tải dữ liệu: " + error.message);
+      }
+
+      // Show error message
+      function showError(message) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Lỗi',
+          text: message,
+          confirmButtonText: 'Đóng'
+        });
+      }
+
+      // Show success message
+      function showSuccess(message) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Thành công',
+          html: message.replace(/\n/g, '<br>'),
+          confirmButtonText: 'Đóng'
+        });
+      }
+
+      // Show confirmation dialog
+      function showConfirm(title, message, callback) {
+        // Use SweetAlert for confirmation dialogs as it's already loaded
+        Swal.fire({
+          icon: 'question',
+          title: title,
+          text: message,
+          showCancelButton: true,
+          confirmButtonText: 'Đồng ý',
+          cancelButtonText: 'Hủy',
+          backdrop: true,
+          allowOutsideClick: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            callback();
+          }
+        });
+      }
+      
+      // Login functionality
+      function login() {
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        
+        if (!username || !password) {
+          showError("Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu");
+          return;
+        }
+        
+        // Verify credentials
+        const departmentUsers = appData.val_DSUserDV;
+        
+        // Skip header row
+        for (let i = 1; i < departmentUsers.length; i++) {
+          const user = departmentUsers[i];
+          const userUsername = user[CONFIG_COLUMNS.DSUserDV.username];
+          const userPassword = user[CONFIG_COLUMNS.DSUserDV.pass];
+          
+          if (username === userUsername && password === userPassword) {
+            // Store user data
+            userData = {
+              id: user[CONFIG_COLUMNS.DSUserDV.id],
+              name: user[CONFIG_COLUMNS.DSUserDV.donvi],
+              kihieu: user[CONFIG_COLUMNS.DSUserDV.kihieu],
+              email: user[CONFIG_COLUMNS.DSUserDV.email],
+              logo: user[CONFIG_COLUMNS.DSUserDV.logo]
+            };
+            
+            // Hide login form
+            document.getElementById('loginSection').style.display = 'none';
+            
+            // Show main app
+            document.getElementById('mainApp').style.display = 'block';
+            document.querySelector('.dashboard').style.display = 'block';
+            
+            // Setup user interface
+            setupUserInterface();
+            
+            // Load repair data
+            updateRepairTables();
+            
+            return;
+          }
+        }
+        
+        // Invalid credentials
+        showError("Tên đăng nhập hoặc mật khẩu không đúng");
+      }
+      
+      // Toggle password visibility
+      function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.querySelector('.toggle-password');
+        
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          toggleIcon.classList.remove('fa-eye-slash');
+          toggleIcon.classList.add('fa-eye');
+        } else {
+          passwordInput.type = 'password';
+          toggleIcon.classList.remove('fa-eye');
+          toggleIcon.classList.add('fa-eye-slash');
+        }
+      }
+      
+      // Setup user interface after login
+      function setupUserInterface() {
+        // Set user name and avatar
+        document.getElementById('userName').textContent = userData.name;
+        
+        // Set avatar image if available
+        //const avatarUrl = `https://ui-avatars.com/api/?name=${userData.kihieu || "DV"}&length=5&font-size=0.3&background=random&rounded=true&size=64`;
+        //document.getElementById('userAvatar').src = avatarUrl;
+        
+        // Set department name in repair form
+        document.getElementById('departmentName').value = userData.name;
+        
+        // Populate dropdown lists
+        populateDropdowns();
+        
+        // Reinitialize UI components to ensure modals and other Bootstrap components work properly
+        initializeUI();
+      }
+      
+      // Toggle user menu
+      function toggleUserMenu() {
+        const userMenu = document.getElementById('userMenu');
+        if (userMenu.style.display === 'none') {
+          userMenu.style.display = 'block';
+        } else {
+          userMenu.style.display = 'none';
+        }
+      }
+      
+      // Logout functionality
+      function logout() {
+        showConfirm("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?", function() {
+          // Reset user data
+          userData = {};
+          
+          // Hide main app
+          document.getElementById('mainApp').style.display = 'none';
+          document.querySelector('.dashboard').style.display = 'none';
+          document.getElementById('userMenu').style.display = 'none';
+          
+          // Show login form
+          document.getElementById('loginSection').style.display = 'block';
+          
+          // Clear login form
+          document.getElementById('username').value = '';
+          document.getElementById('password').value = '';
+          
+          // Show success message
+          showSuccess("Đăng xuất thành công!");
+        });
+      }
+      
+      // Populate dropdown lists in repair form
+      function populateDropdowns() {
+        // Populate repair persons dropdown
+        const repairPersonSelect = document.getElementById('repairPerson');
+        repairPersonSelect.innerHTML = '<option value="">-- Chọn người sửa chữa --</option>';
+        
+        const repairPersons = appData.val_DSUserSua;
+        for (let i = 1; i < repairPersons.length; i++) {
+          const person = repairPersons[i];
+          const option = document.createElement('option');
+          option.value = person[CONFIG_COLUMNS.DSUserSua.id];
+          option.textContent = person[CONFIG_COLUMNS.DSUserSua.hoten];
+          repairPersonSelect.appendChild(option);
+        }
+        
+        // Populate equipment groups dropdown (Nhóm thiết bị)
+        const equipmentGroupSelect = document.getElementById('equipmentGroup');
+        equipmentGroupSelect.innerHTML = '<option value="">-- Chọn nhóm thiết bị --</option>';
+        // Lọc thiết bị thuộc đơn vị hiện tại
+        const equipment = appData.val_DSThietBi;
+        const departmentEquipment = equipment.filter(item => 
+          item[CONFIG_COLUMNS.DSThietBi.donvi] == userData.id // Theo cột "Đơn vị_TB"
+        );
+
+        // Tạo Set để lưu các nhóm thiết bị không trùng lặp của đơn vị
+        const departmentGroups = new Set();
+        departmentEquipment.forEach(item => {
+          if (item[CONFIG_COLUMNS.DSThietBi.nhomtb]) {
+            departmentGroups.add(item[CONFIG_COLUMNS.DSThietBi.nhomtb]);
+          }
+        });
+        
+        // Lọc danh sách nhóm thiết bị chỉ lấy các nhóm của đơn vị hiện tại
+        const equipmentGroups = appData.val_DSNhomTB;
+        for (let i = 1; i < equipmentGroups.length; i++) {
+          const group = equipmentGroups[i];
+          const groupName = group[CONFIG_COLUMNS.DSNhomTB.nhomtb];
+          const groupID = group[CONFIG_COLUMNS.DSNhomTB.id];
+          // Chỉ thêm nhóm thiết bị nếu đơn vị hiện tại có thiết bị thuộc nhóm đó
+          if (departmentGroups.has(groupID)) {
+            const option = document.createElement('option');
+            option.value = groupID;
+            option.textContent = groupName;
+            equipmentGroupSelect.appendChild(option);
+          }
+        }
+        
+        // Populate priority levels dropdown (Mức độ ưu tiên)
+        const prioritySelect = document.getElementById('priorityLevel');
+        prioritySelect.innerHTML = '<option value="">-- Chọn mức độ ưu tiên --</option>';
+        
+        const enumSettings = appData.val_EnumSetting;
+        const priorities = enumSettings.filter(item => item[1] === "Mức độ YC");
+        
+        for (let i = 0; i < priorities.length; i++) {
+          const priority = priorities[i];
+          const option = document.createElement('option');
+          option.value = priority[0]; // ID
+          option.textContent = priority[2]; // Tên mức độ
+          prioritySelect.appendChild(option);
+        }
+        
+        // Populate requester lists with previous requesters for this department (Danh sách người yêu cầu trước đây)
+        const repairs = appData.val_DataSC;
+        const departmentRepairs = repairs.filter(item => 
+          item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id
+        );
+        
+        const requesters = new Set();
+        const phones = new Set();
+        departmentRepairs.forEach(repair => {
+          if (repair[CONFIG_COLUMNS.DataSC.hoten]) {
+            requesters.add(repair[CONFIG_COLUMNS.DataSC.hoten]);
+          }
+          if (repair[CONFIG_COLUMNS.DataSC.sdt]) {
+            phones.add(repair[CONFIG_COLUMNS.DataSC.sdt]);
+          }
+        });
+        
+        // Danh sách người yêu cầu
+        const requesterList = document.getElementById('requesterList');
+        requesters.forEach(requester => {
+          const option = document.createElement('option');
+          option.value = requester;
+          requesterList.appendChild(option);
+        });
+        
+        // Danh sách số điện thoại
+        const phoneList = document.getElementById('phoneList');
+        phones.forEach(phone => {
+          const option = document.createElement('option');
+          option.value = phone;
+          phoneList.appendChild(option);
+        });
+        
+        // Populate equipment status datalist (Danh sách tình trạng thiết bị)
+        const statusList = document.getElementById('statusList');
+        statusList.innerHTML = '';
+        
+        const statuses = new Set();
+        departmentRepairs.forEach(repair => {
+          if (repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]) {
+            statuses.add(repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]);
+          }
+        });
+        
+        statuses.forEach(status => {
+          const option = document.createElement('option');
+          option.value = status;
+          statusList.appendChild(option);
+        });
+      }
+      
+      // Initialize UI components
+      function initializeUI() {
+        // Create tabs for the dashboard
+        const dashboardTabs = new bootstrap.Tab(document.querySelector('#tab-dashboard'));
+        
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Initialize popovers
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        popoverTriggerList.map(function (popoverTriggerEl) {
+          return new bootstrap.Popover(popoverTriggerEl);
+        });
+        
+        // Initialize modals
+        const modalTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="modal"]'));
+        modalTriggerList.map(function (modalTriggerEl) {
+          return new bootstrap.Modal(document.querySelector(modalTriggerEl.getAttribute('data-bs-target')));
+        });
+        
+        // Fix for modals not allowing input
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.addEventListener('shown.bs.modal', function() {
+            // Ensure focus works correctly in the modal
+            this.querySelector('input:not([readonly]):not([disabled])') && 
+            this.querySelector('input:not([readonly]):not([disabled])').focus();
+          });
+        });
+      }
+
+      // Search functionality
+      function searchRepair() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        if (!searchTerm) {
+          showError("Vui lòng nhập nội dung tìm kiếm");
+          return;
+        }
+        
+        // Filter repair tables based on search term
+        filterRepairTables(searchTerm);
+      }
+      
+      // Filter repair tables based on search term
+      function filterRepairTables(searchTerm) {
+        try {
+          // Get all table rows in all tabs
+          const allTables = ['history_baohong', 'history_dangsua', 'history_baohanh', 'history_suangoai'];
+          const tabIds = ['tab-baohong', 'tab-dangsua', 'tab-baohanh', 'tab-suangoai'];
+          const tabNames = ['Báo hỏng', 'Đang sửa', 'Bảo hành', 'Sửa ngoài'];
+          
+          let totalMatchCount = 0;
+          let matchCountPerTab = [0, 0, 0, 0];
+          
+          // Search in each tab and count matches
+          allTables.forEach((tableId, index) => {
+            const tableBody = document.getElementById(tableId);
+            const rows = tableBody.getElementsByTagName('tr');
+            
+            for (let i = 0; i < rows.length; i++) {
+              const content = rows[i].innerText.toLowerCase();
+              if (content.includes(searchTerm)) {
+                rows[i].style.display = '';
+                totalMatchCount++;
+                matchCountPerTab[index]++;
+              } else {
+                rows[i].style.display = 'none';
+              }
+            }
+            
+            // Update tab name with match count
+            document.getElementById(tabIds[index]).textContent = `${tabNames[index]} (${matchCountPerTab[index]})`;
+          });
+          
+          if (totalMatchCount === 0) {
+            showError("Không tìm thấy kết quả phù hợp");
+          } else {
+            // Create a detailed message with counts per tab
+            let detailMessage = `Tìm thấy ${totalMatchCount} kết quả phù hợp:\n`;
+            allTables.forEach((tableId, index) => {
+              if (matchCountPerTab[index] > 0) {
+                detailMessage += `- ${tabNames[index]}: ${matchCountPerTab[index]} kết quả\n`;
+              }
+            });
+            
+            showSuccess(detailMessage);
+          }
+        } catch (error) {
+          console.error('Error filtering repair tables:', error);
+          showError('Lỗi khi lọc dữ liệu tìm kiếm: ' + error.message);
+        }
+      }
+      
+      // Cancel search function - updated to restore original tab counts
+      function cancelSearch() {
+        // Clear search input
+        document.getElementById('searchInput').value = '';
+        
+        // Reset repair tables to show all items
+        updateRepairTables();
+        showSuccess("Đã hủy tìm kiếm và hiển thị lại tất cả dữ liệu");
+      }
+
+      // Global functions for compatibility with inline events
+      function showAddRepairModal() {
+        RepairFormManager.showForm(FormState.CREATE);
+      }
+      
+      function editRepair(repairId) {
+        RepairFormManager.showForm(FormState.EDIT, repairId);
+      }
+      
+      function viewRepair(repairId) {
+        RepairFormManager.showForm(FormState.VIEW, repairId);
+      }
+      
+      function saveRepair() {
+        RepairFormManager.saveRepair();
+      }
+      
+      function updateEquipmentList() {
+        RepairFormManager.updateEquipmentList();
+      }
+      
+      function updateEquipmentDetails() {
+        RepairFormManager.updateEquipmentDetails();
+      }
+      
+      function updateRepairPersonPhone() {
+        RepairFormManager.updateRepairPersonPhone();
+      }
+
+      // Update repair tables
+      function updateRepairTables() {
+        try {
+          // Check if data exists
+          if (!appData || !appData.val_DataSC) {
+            console.warn('No repair data available');
+            return;
+          }
+
+          // Get all table bodies
+          const tableBodies = {
+            baohong: document.getElementById('history_baohong'),
+            dangsua: document.getElementById('history_dangsua'),
+            baohanh: document.getElementById('history_baohanh'),
+            suangoai: document.getElementById('history_suangoai')
+          };
+          
+          // Check if all table bodies exist
+          for (const [key, tbody] of Object.entries(tableBodies)) {
+            if (!tbody) {
+              console.error(`Table body for ${key} not found`);
+              return;
+            }
+          }
+          
+          // Clear all tables
+          Object.values(tableBodies).forEach(tbody => {
+            tbody.innerHTML = '';
+          });
+          
+          // Initialize counters
+          const counts = {
+            baohong: 0,
+            dangsua: 0,
+            baohanh: 0,
+            suangoai: 0
+          };
+          
+          // Filter repairs for current department
+          const departmentRepairs = appData.val_DataSC.filter(repair => 
+            repair && repair[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id
+          );
+          
+          // Sort repairs by date (newest first)
+          departmentRepairs.sort((a, b) => {
+            const dateA = new Date(a[CONFIG_COLUMNS.DataSC.ngaytao] || 0);
+            const dateB = new Date(b[CONFIG_COLUMNS.DataSC.ngaytao] || 0);
+            return dateB - dateA;
+          });
+          
+          // Process each repair
+          departmentRepairs.forEach((repair, index) => {
+            if (!repair) return;
+
+            const status = repair[CONFIG_COLUMNS.DataSC.trangthai];
+            let targetTable;
+            
+            // Determine which table to add the repair to
+            switch(status) {
+              case CONFIG_ENUM.TRANGTHAI.BAO_HONG:
+                targetTable = 'baohong';
+                break;
+              case CONFIG_ENUM.TRANGTHAI.DANG_SUA:
+                targetTable = 'dangsua';
+                break;
+              case CONFIG_ENUM.TRANGTHAI.BAO_HANH:
+                targetTable = 'baohanh';
+                break;
+              case CONFIG_ENUM.TRANGTHAI.SUA_NGOAI:
+                targetTable = 'suangoai';
+                break;
+              default:
+                return; // Skip unknown status
+            }
+            
+            // Create row
+            const row = document.createElement('tr');
+            
+            // Format date
+            const createdDate = repair[CONFIG_COLUMNS.DataSC.ngaytao] ? 
+              new Date(repair[CONFIG_COLUMNS.DataSC.ngaytao]).toLocaleString('vi-VN') : 
+              'Chưa có';
+            
+            // Add columns
+            row.innerHTML = `
+              <td>${counts[targetTable] + 1}</td>
+              <td>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>${repair[CONFIG_COLUMNS.DataSC.tentb] || 'Chưa có'}</strong><br>
+                    <small class="text-muted">
+                      Người yêu cầu: ${repair[CONFIG_COLUMNS.DataSC.hoten] || 'Chưa có'}<br>
+                      Ngày tạo: ${createdDate}<br>
+                      Tình trạng: ${repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao] || 'Chưa có'}<br>
+                      Ghi chú: ${repair[CONFIG_COLUMNS.DataSC.ghichu] || 'Chưa có'}
+                    </small>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button class="btn btn-sm btn-info" onclick="viewRepair('${repair[CONFIG_COLUMNS.DataSC.id]}')" title="Xem chi tiết">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button class="btn btn-sm btn-primary" onclick="editRepair('${repair[CONFIG_COLUMNS.DataSC.id]}')" title="Sửa">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteRepair('${repair[CONFIG_COLUMNS.DataSC.id]}')" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </td>
+            `;
+            
+            // Add row to appropriate table
+            if (tableBodies[targetTable]) {
+              tableBodies[targetTable].appendChild(row);
+              counts[targetTable]++;
+            }
+          });
+          
+          // Update tab counts
+          const tabElements = {
+            baohong: document.getElementById('tab-baohong'),
+            dangsua: document.getElementById('tab-dangsua'),
+            baohanh: document.getElementById('tab-baohanh'),
+            suangoai: document.getElementById('tab-suangoai')
+          };
+
+          Object.entries(counts).forEach(([key, count]) => {
+            if (tabElements[key]) {
+              tabElements[key].textContent = `${key === 'baohong' ? 'Báo hỏng' : 
+                                              key === 'dangsua' ? 'Đang sửa' : 
+                                              key === 'baohanh' ? 'Bảo hành' : 'Sửa ngoài'} (${count})`;
+            }
+          });
+          
+          console.log('Repair tables updated successfully');
+        } catch (error) {
+          console.error('Error updating repair tables:', error);
+          showError('Lỗi khi cập nhật danh sách báo sửa: ' + error.message);
+        }
+      }
+
+      // Format date helper function
+      function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
+
+      // Delete repair function
+      function deleteRepair(repairId) {
+        showConfirm(
+          "Xóa báo sửa",
+          "Bạn có chắc chắn muốn xóa báo sửa này?",
+          function() {
+            google.script.run
+              .withSuccessHandler(function(result) {
+                if (result) {
+                  appData.val_DataSC = result;
+                  updateRepairTables();
+                  showSuccess("Xóa báo sửa thành công");
+                } else {
+                  showError("Có lỗi xảy ra khi xóa báo sửa");
+                }
+              })
+              .withFailureHandler(function(error) {
+                showError("Lỗi: " + error.message);
+              })
+              .SC_xoa(repairId);
+          }
+        );
+      }
+
+      // Save new password
+      function saveNewPassword() {
+        try {
+          const currentPassword = document.getElementById('currentPassword').value;
+          const newPassword = document.getElementById('newPassword').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
+          
+          if (!currentPassword || !newPassword || !confirmPassword) {
+            showError("Vui lòng nhập đầy đủ thông tin");
+            return;
+          }
+          
+          if (newPassword !== confirmPassword) {
+            showError("Mật khẩu mới không khớp");
+            return;
+          }
+          
+          // Show loading
+          Swal.fire({
+            title: 'Đang xử lý',
+            text: 'Vui lòng đợi...',
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
+          });
+          
+          // Call API to change password
+          google.script.run
+            .withSuccessHandler(function(result) {
+              Swal.close();
+              if (result) {
+                showSuccess("Đổi mật khẩu thành công");
+                bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                // Clear form
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmPassword').value = '';
+              } else {
+                showError("Mật khẩu hiện tại không đúng");
+              }
+            })
+            .withFailureHandler(function(error) {
+              Swal.close();
+              showError("Lỗi: " + error.message);
+            })
+            .SC_changePassword(currentPassword, newPassword);
+        } catch (error) {
+          console.error('Error changing password:', error);
+          showError('Lỗi khi đổi mật khẩu: ' + error.message);
+        }
+      }
+    </script>
+  </body>
+</html> 
