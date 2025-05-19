@@ -138,203 +138,56 @@ function SC_update(inputdata) {
  * 5. Hoàn thành và trả về kết quả
  */
 function SC_thembaohong(repairData) {
+  // Validate repair data structure
   const msgData = [];
   msgData.push([new Date(), "[SC_thembaohong] - Starting new repair report creation"]);
-  // Log the repair data for debugging
-  msgData.push([new Date(), "[SC_thembaohong] - Repair data received: " + JSON.stringify(repairData)]);
-  
-  // Validate repair data structure
-  if (!repairData) {
-    throw new Error("Repair data is missing");
+
+  if (!repairData || !repairData.arr_repairDataMain) {
+    msgData.push([new Date(), "[SC_thembaohong] - ERROR: Repair data or repair data array is missing"]);
+    logDebugData(msgData);
+    throw new Error("Repair data or repair data array is missing");
   }
-  
-  // Log each component of the repair data
-  msgData.push([new Date(), "[SC_thembaohong] - Repair data components:"]);
-  msgData.push([new Date(), "  - id_repair: " + repairData.id_repair]);
-  
-  // Đơn vị (Department)
-  msgData.push([new Date(), "  - iduserdv: " + repairData.iduserdv]);
-  msgData.push([new Date(), "  - Kyhieu_donvi: " + repairData.Kyhieu_donvi]);
-  msgData.push([new Date(), "  - Ten_donvi: " + repairData.Ten_donvi]);
-  
-  // Người yêu cầu (Requester)
-  msgData.push([new Date(), "  - Name_NguoiYeuCau: " + repairData.Name_NguoiYeuCau]);
-  msgData.push([new Date(), "  - SDT_NguoiYeuCau: " + repairData.SDT_NguoiYeuCau]);
-  
-  // Người sửa (Repair person)
-  msgData.push([new Date(), "  - ID_NguoiSua: " + repairData.ID_NguoiSua]);
-  msgData.push([new Date(), "  - Name_NguoiSua: " + repairData.Name_NguoiSua]);
-  msgData.push([new Date(), "  - ID_Telegram_NguoiSua: " + repairData.ID_Telegram_NguoiSua]);
-  
-  // Thiết bị (Equipment)
-  msgData.push([new Date(), "  - ID_ThietBi: " + repairData.ID_ThietBi]);
-  msgData.push([new Date(), "  - Name_ThietBi: " + repairData.Name_ThietBi]);
-  msgData.push([new Date(), "  - text_Model: " + repairData.text_Model]);
-  msgData.push([new Date(), "  - text_Serial: " + repairData.text_Serial]);
-  msgData.push([new Date(), "  - text_Manufacturer: " + repairData.text_Manufacturer]);
-  msgData.push([new Date(), "  - text_Country: " + repairData.text_Country]);
-  msgData.push([new Date(), "  - text_Vitri: " + repairData.text_Vitri]);
-  
-  // Tình trạng và mức độ (Status and priority)
-  msgData.push([new Date(), "  - TinhTrang_ThietBi: " + repairData.TinhTrang_ThietBi]);
-  msgData.push([new Date(), "  - ID_MucDo_YeuCau: " + repairData.ID_MucDo_YeuCau]);
-  msgData.push([new Date(), "  - text_MucDo_YeuCau: " + repairData.text_MucDo_YeuCau]);
-  
-  // Ghi chú và trạng thái (Notes and status)
-  msgData.push([new Date(), "  - GhiChu_repair: " + repairData.GhiChu_repair]);
-  msgData.push([new Date(), "  - trangThai_repair: " + repairData.trangThai_repair]);
+
   try {
     //1. Lấy dữ liệu sheet DataSC
-    // Open spreadsheet
+    msgData.push([new Date(), "[SC_thembaohong] - Opening DataSC spreadsheet"]);
     const sph_DataSC = SpreadsheetApp.openById(CONFIG_FILE_IDS.idSH_DataSC);
-    
-    // Get all necessary sheets
     const sh_DataSC = sph_DataSC.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
+    // Check if ID already exists in sheet
+    const existingData = sh_DataSC.getDataRange().getValues();
+    const idColumnIndex = CONFIG_COLUMNS.DataSC.id;
+    const newId = repairData.arr_repairDataMain[idColumnIndex];
     
-    // Get data from sheets
-    const val_DataSC = sh_DataSC.getDataRange().getValues();
-    
-    //2. Tạo ID sửa chữa
-    const IDSC_New = generateRepairID(val_DataSC, repairData.iduserdv, repairData.Kyhieu_donvi);  
-    msgData.push([new Date(), "[SC_thembaohong] - Generated repair ID: " + IDSC_New]);
-    
-    // Get current date/time
-    const currentDateTime = new Date();
-    const formattedDateTime = Utilities.formatDate(currentDateTime, Session.getScriptTimeZone(), 'dd/MM/yyyy HH:mm:ss');
-    
-    // Create new repair record data
-    const newRow = Array(val_DataSC[0].length).fill(""); // Initialize with empty values matching the width of val_DataSC
-    // Set values for required fields
-    newRow[CONFIG_COLUMNS.DataSC.id] = IDSC_New;
-    newRow[CONFIG_COLUMNS.DataSC.trangthai] = repairData.trangThai_repair;
-    newRow[CONFIG_COLUMNS.DataSC.mucdo] = repairData.ID_MucDo_YeuCau;
-    newRow[CONFIG_COLUMNS.DataSC.iduserdv] = repairData.iduserdv;
-    newRow[CONFIG_COLUMNS.DataSC.idusersua] = repairData.ID_NguoiSua;
-    newRow[CONFIG_COLUMNS.DataSC.idthietbi] = repairData.ID_ThietBi;
-    newRow[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao] = repairData.TinhTrang_ThietBi;
-    newRow[CONFIG_COLUMNS.DataSC.ngaydonvibao] = formattedDateTime;
-    newRow[CONFIG_COLUMNS.DataSC.ghichu] = repairData.GhiChu_repair;
-    newRow[CONFIG_COLUMNS.DataSC.hoten] = repairData.Name_NguoiYeuCau;
-    newRow[CONFIG_COLUMNS.DataSC.sdt] = repairData.SDT_NguoiYeuCau;
-    newRow[CONFIG_COLUMNS.DataSC.history] = `* Ngày ${formattedDateTime}\n   - ${repairData.Name_NguoiYeuCau}: Báo hỏng`;
-    newRow[CONFIG_COLUMNS.DataSC.timeupdate] = currentDateTime;
-    
-    msgData.push([new Date(), "[SC_thembaohong] - New repair row data: " + JSON.stringify(newRow)]);
-    
-    //3. Ghi vào sheet DataSC
+    const idExists = existingData.some(row => row[idColumnIndex] === newId);
+    if (idExists) {
+      msgData.push([new Date(), "[SC_thembaohong] - ERROR: Duplicate repair ID found"]);
+      logDebugData(msgData);
+      throw new Error("Do 2 người cùng thao tác nên dữ liệu đang tải đã cũ.\nĐề nghị cập nhật lại dữ liệu và thực hiện lại");
+    }
+    //2. Ghi vào sheet DataSC
+    msgData.push([new Date(), "[SC_thembaohong] - Appending new repair data to sheet"]);
     // Append the new row to the end of the sheet
-    sh_DataSC.appendRow(newRow);
+    sh_DataSC.appendRow(repairData.arr_repairDataMain);
     
-    // Get the last row index after appending
-    const lr = sh_DataSC.getLastRow();
+    //3. Gửi thông báo Telegram nếu có
+    if (repairData.textTelegram && repairData.idTelegram_UserRepair) {
+      msgData.push([new Date(), "[SC_thembaohong] - Sending Telegram notifications"]);
+      // Gửi tin nhắn cho nhóm
+      tele_sendsms_group(repairData.textTelegram);
+
+      // Gửi tin nhắn cho người dùng
+      tele_sendsms_user(repairData.textTelegram, repairData.idTelegram_UserRepair);
+    }
     
-    // Get the data from the newly added row - only write to the last row
-    sh_DataSC.getRange(lr, 1, 1, sh_DataSC.getLastColumn()).getValues()[0];
-    
-    //4. Gửi thông báo Telegram
-    // Update repairData with the generated repair ID
-    repairData.id_repair = IDSC_New;
-    msgData.push([new Date(), "[SC_thembaohong] - Updated repairData with ID: " + IDSC_New]);
-    tele_sendsms_group(repairData);
-    
-    tele_sendsms_user(repairData);
-    
-    // //5. Tạo tài liệu sửa chữa
-    // msgData.push([new Date(), "[SC_thembaohong] - Creating repair document"]);
-    // createfile_bm0901(repairData);
-    
-    msgData.push([new Date(), "[SC_thembaohong] - Successfully created new repair report "]);
+    msgData.push([new Date(), "[SC_thembaohong] - Successfully created new repair report"]);
     logDebugData(msgData);
     
-    return sh_DataSC.getDataRange().getValues();
+    //4. Trả về dữ liệu mới
+    return repairData.arr_repairDataMain;
+
   } catch (error) {
+    // Log error và ném lại exception
     msgData.push([new Date(), "[SC_thembaohong] - ERROR: " + error.toString()]);
-    logDebugData(msgData);
-    throw error;
-  }
-}
-
-
-/**
- * Generates a repair ID based on the unit code
- * @param {string} Kyhieu_donvi - The unit code
- * @returns {string} The generated repair ID
- */
-function generateRepairID(val_DataSC, iduserdv, Kyhieu_donvi) {
-  const msgData = [];
-  msgData.push([new Date(), "[generateRepairID] - Starting ID generation for unit: " + Kyhieu_donvi]);
-  
-  try {
-    // Default unit code
-    const unit = Kyhieu_donvi || "XX";
-    
-    // Lọc dữ liệu theo đơn vị
-    let userDeptRepairs = [];
-    if (val_DataSC && val_DataSC.length > 0 && iduserdv) {
-      userDeptRepairs = val_DataSC.filter(function(row) {
-        return row[CONFIG_COLUMNS.DataSC.iduserdv] === iduserdv;
-      });
-      
-      msgData.push([new Date(), "[generateRepairID] - Filtered " + userDeptRepairs.length + " repairs for user department ID: " + iduserdv]);
-    } else {
-      msgData.push([new Date(), "[generateRepairID] - No user department ID provided or no repair data available"]);
-    }
-
-    // Tìm giá trị lớn nhất
-    let maxSequence = 0;
-    
-    if (userDeptRepairs.length > 0) {
-      // Extract sequence numbers from existing repair IDs
-      const sequenceNumbers = userDeptRepairs
-        .map(function(row) {
-          const repairId = row[CONFIG_COLUMNS.DataSC.id];
-          if (repairId && typeof repairId === 'string') {
-            // Extract the sequence part (xxx) from the ID format SC.UNIT.DATE.xxx
-            const parts = repairId.split('.');
-            if (parts.length === 4) {
-              return parseInt(parts[3], 10);
-            }
-          }
-          return 0;
-        })
-        .filter(function(num) {
-          return !isNaN(num);
-        });
-      
-      // Find the maximum sequence number
-      if (sequenceNumbers.length > 0) {
-        maxSequence = Math.max(...sequenceNumbers);
-      }
-      
-      msgData.push([new Date(), "[generateRepairID] - Max sequence found: " + maxSequence]);
-    } else {
-      msgData.push([new Date(), "[generateRepairID] - No existing repairs for this department, starting from 0"]);
-    }
-
-    // Lấy thời gian hiện tại theo định dạng yymmdd
-    const now = new Date();
-    const year = now.getFullYear().toString().slice(-2);
-    const month = ("0" + (now.getMonth() + 1)).slice(-2);
-    const day = ("0" + now.getDate()).slice(-2);
-    const datePart = year + month + day;
-    
-    msgData.push([new Date(), "[generateRepairID] - Date part: " + datePart]);
-    
-    // Tạo ID sửa chữa
-    let nextSequence = maxSequence + 1;
-    // Reset sequence to 1 if it exceeds 999
-    if (nextSequence > 999) {
-      nextSequence = 1;
-    }
-    const sequenceNumber = ("000" + nextSequence).slice(-3);
-    const repairID = "SC." + unit + "." + datePart + "." + sequenceNumber;
-    
-    msgData.push([new Date(), "[generateRepairID] - Generated ID: " + repairID]);
-    logDebugData(msgData);
-    
-    return repairID;
-  } catch (error) {
-    msgData.push([new Date(), "[generateRepairID] - ERROR: " + error.toString()]);
     logDebugData(msgData);
     throw error;
   }

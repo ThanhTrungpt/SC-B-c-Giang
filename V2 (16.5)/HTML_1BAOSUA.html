@@ -10,10 +10,7 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    
+
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     
@@ -349,34 +346,34 @@
         </div>
         
         <!-- Tabs -->
-        <ul class="nav nav-tabs mb-3" id="repairTabs" role="tablist">
+        <ul class="nav nav-pills mb-3" id="repairTabs" role="tablist">
           <li class="nav-item" role="presentation">
-            <a class="nav-link active" id="tab-baohong" onclick="showTab('WebUI_ds_baohong', this, event)" href="#">
+            <button class="nav-link active" id="tab-baohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
               Báo hỏng (0)
-            </a>
+            </button>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" id="tab-dangsua" onclick="showTab('WebUI_ds_dangsua', this, event)" href="#">
+            <button class="nav-link" id="tab-dangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
               Đang sửa (0)
-            </a>
+            </button>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" id="tab-baohanh" onclick="showTab('WebUI_ds_baohanh', this, event)" href="#">
+            <button class="nav-link" id="tab-baohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
               Bảo hành (0)
-            </a>
+            </button>
           </li>
           <li class="nav-item" role="presentation">
-            <a class="nav-link" id="tab-suangoai" onclick="showTab('WebUI_ds_suangoai', this, event)" href="#">
+            <button class="nav-link" id="tab-suangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
               Sửa ngoài (0)
-            </a>
+            </button>
           </li>
         </ul>
         
-                  <!-- Tab content -->
+        <!-- Tab content -->
         <div class="tab-content" id="repairTabsContent">
           <!-- Báo hỏng tab -->
-          <div id="WebUI_ds_baohong" class="tab" style="display: block;">
-            <table id="table_baohong" class="custom-table">
+          <div class="tab-pane fade show active" id="baohong" role="tabpanel">
+            <table class="custom-table">
               <thead>
                 <tr class="tb_header">
                   <th style="width: 5%;">STT</th>
@@ -391,8 +388,8 @@
           </div>
           
           <!-- Đang sửa tab -->
-          <div id="WebUI_ds_dangsua" class="tab" style="display: none;">
-            <table id="table_dangsua" class="custom-table">
+          <div class="tab-pane fade" id="dangsua" role="tabpanel">
+            <table class="custom-table">
               <thead>
                 <tr class="tb_header">
                   <th style="width: 5%;">STT</th>
@@ -407,8 +404,8 @@
           </div>
           
           <!-- Bảo hành tab -->
-          <div id="WebUI_ds_baohanh" class="tab" style="display: none;">
-            <table id="table_baohanh" class="custom-table">
+          <div class="tab-pane fade" id="baohanh" role="tabpanel">
+            <table class="custom-table">
               <thead>
                 <tr class="tb_header">
                   <th style="width: 5%;">STT</th>
@@ -423,8 +420,8 @@
           </div>
           
           <!-- Sửa ngoài tab -->
-          <div id="WebUI_ds_suangoai" class="tab" style="display: none;">
-            <table id="table_suangoai" class="custom-table">
+          <div class="tab-pane fade" id="suangoai" role="tabpanel">
+            <table class="custom-table">
               <thead>
                 <tr class="tb_header">
                   <th style="width: 5%;">STT</th>
@@ -651,12 +648,12 @@
       let CONFIG_COLUMNS = {};
       let CONFIG_ENUM = {};
       
-      // Data loading
-      window.addEventListener('DOMContentLoaded', loadAllData);
 
       ///////////////////////////////////
       // 1. Nhóm hàm xử lý dữ liệu ban đầu
       ///////////////////////////////////
+      // Data loading
+      window.addEventListener('DOMContentLoaded', loadAllData);
 
       // 1.1 Hàm tải dữ liệu
       function loadAllData() {
@@ -815,36 +812,55 @@
       ///////////////////////////////////
       // 4.1 Hàm thiết lập giao diện
       function initializeUI() {
-        // Create tabs for the dashboard
+        // Khởi tạo tab cho dashboard
+        // Tạo một instance của Bootstrap Tab cho tab dashboard
         const dashboardTabs = new bootstrap.Tab(document.querySelector('#tab-dashboard'));
         
-        // Initialize tooltips
+        // Khởi tạo tooltips (gợi ý khi hover)
+        // Lấy tất cả các phần tử có thuộc tính data-bs-toggle="tooltip"
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        // Khởi tạo tooltip cho từng phần tử
         tooltipTriggerList.map(function (tooltipTriggerEl) {
           return new bootstrap.Tooltip(tooltipTriggerEl);
         });
         
-        // Initialize popovers
+        // Khởi tạo popovers (hộp thông tin popup)
+        // Lấy tất cả các phần tử có thuộc tính data-bs-toggle="popover" 
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        // Khởi tạo popover cho từng phần tử
         popoverTriggerList.map(function (popoverTriggerEl) {
           return new bootstrap.Popover(popoverTriggerEl);
         });
         
-        // Initialize modals
+        // Khởi tạo modals (hộp thoại)
+        // Lấy tất cả các phần tử có thuộc tính data-bs-toggle="modal"
         const modalTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="modal"]'));
+        // Khởi tạo modal cho từng phần tử
         modalTriggerList.map(function (modalTriggerEl) {
           return new bootstrap.Modal(document.querySelector(modalTriggerEl.getAttribute('data-bs-target')));
         });
         
-        // Fix for modals not allowing input
+        // Sửa lỗi modal không cho phép nhập liệu
+        // Duyệt qua tất cả các modal và thiết lập focus cho input
         document.querySelectorAll('.modal').forEach(modal => {
-          modal.addEventListener('shown.bs.modal', function() {
-            // Ensure focus works correctly in the modal
-            this.querySelector('input:not([readonly]):not([disabled])') && 
-            this.querySelector('input:not([readonly]):not([disabled])').focus();
-          });
+          setupModalFocus(modal);
         });
       }
+
+      function setupModalFocus(modal) {
+  modal.addEventListener('shown.bs.modal', function() {
+    // Tìm input field đầu tiên có thể edit
+    const firstInput = this.querySelector('input:not([readonly]):not([disabled])');
+    
+    // Chỉ focus nếu tìm thấy input field phù hợp
+    if (firstInput) {
+      firstInput.focus();
+      
+      // Optional: Select all text trong input
+      firstInput.select();
+    }
+  });
+}
 
       // 4.2 Hàm thiết lập giao diện sau khi đăng nhập
       function setupUserInterface() {
@@ -2045,7 +2061,6 @@
             .SC_delete(repairId);
         }
       }
-
     </script>
   </body>
 </html> 

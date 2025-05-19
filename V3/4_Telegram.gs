@@ -19,33 +19,20 @@ const TELEGRAM_CONFIG = {
  * @param {Array} departmentData - Array with department data
  * @returns {Object} - Response from Telegram API
  */
-function tele_sendsms_group(repairData) {
+function tele_sendsms_group(textTelegram) {
   const msgData = [];
-  msgData.push([new Date(), "[tele_sendsms_group] - Sending group notification for repair ID: " + repairData[CONFIG_COLUMNS.DataSC.id]]);
+  msgData.push([new Date(), "[tele_sendsms_group] - Sending group notification for repair ID: " + textTelegram]);
   
   try {
     // Check if we have all required data
-    if (!repairData) {
+    if (!textTelegram) {
       msgData.push([new Date(), "[tele_sendsms_group] - Missing required data for notification"]);
       logDebugData(msgData);
       return null;
     }
     
-    // Format message with emojis and proper formatting
-    const message = `🔔 *BÁO HỎNG THIẾT BỊ MỚI* 🔔
-━━━━━━━━━━━━━━━━━━━━━━━━
-🆔 *ID:* ${repairData.id_repair}
-🏥 *Đơn vị báo hỏng:* ${repairData.Ten_donvi}
-🔧 *Thiết bị:* ${repairData.Name_ThietBi}
-📋 *Model:* ${repairData.text_Model}
-🔢 *Serial:* ${repairData.text_Serial}
-⚠️ *Tình trạng:* ${repairData.TinhTrang_ThietBi}
-⏱️ *Mức độ ưu tiên:* ${repairData.text_MucDo_YeuCau}
-👤 *Người yêu cầu:* ${repairData.Name_NguoiYeuCau} (${repairData.SDT_NguoiYeuCau})
-${repairData.Name_NguoiSua ? `👨‍🔧 *Người phụ trách:* ${repairData.Name_NguoiSua}` : ""}`;
-
     // Send message to group
-    const response = sendTelegramMessage(TELEGRAM_CONFIG.group_chat_id, message, true);
+    const response = sendTelegramMessage(TELEGRAM_CONFIG.group_chat_id, textTelegram, true);
     
     msgData.push([new Date(), "[tele_sendsms_group] - Message sent successfully"]);
     logDebugData(msgData);
@@ -61,53 +48,26 @@ ${repairData.Name_NguoiSua ? `👨‍🔧 *Người phụ trách:* ${repairData.
 
 /**
  * Sends a repair notification to an individual user
- * @param {Array} repairData - Array with repair data
- * @param {Array} equipmentData - Array with equipment data
- * @param {Array} repairPersonData - Array with repair personnel data
- * @param {Array} departmentData - Array with department data
- * @param {string} chatId - Telegram chat ID of the user
+ * @param {string} textTelegram - Text to send
+ * @param {string} idTelegram_UserRepair - Telegram chat ID of the user
  * @returns {Object} - Response from Telegram API
  */
-function tele_sendsms_user(repairData) {
+function tele_sendsms_user(textTelegram, idTelegram_UserRepair) {
   const msgData = [];
-  msgData.push([new Date(), "[tele_sendsms_user] - Sending user notification to: " + repairData.ID_Telegram_NguoiSua]);
+  msgData.push([new Date(), "[tele_sendsms_user] - Sending user notification to: " + idTelegram_UserRepair]);
   
   try {
     // Check if we have all required data
-    if (!repairData) {
+    if (!textTelegram || !idTelegram_UserRepair) {
       msgData.push([new Date(), "[tele_sendsms_user] - Missing required data for notification"]);
       logDebugData(msgData);
       return null;
     }
     
-    // Get the chat ID of the repair person
-    const chatId = repairData.ID_Telegram_NguoiSua;
-    
-    if (!chatId) {
-      msgData.push([new Date(), "[tele_sendsms_user] - No Telegram ID found for repair person"]);
-      logDebugData(msgData);
-      return null;
-    }
-    
-    // Format message with emojis and proper formatting
-    const message = `🔔 *THÔNG BÁO NHIỆM VỤ MỚI* 🔔
-━━━━━━━━━━━━━━━━━━━━━━━━
-🆔 *ID:* ${repairData.id_repair}
-🏢 *Đơn vị báo hỏng:* ${repairData.Ten_donvi}
-🔧 *Thiết bị:* ${repairData.Name_ThietBi}
-📋 *Model:* ${repairData.text_Model}
-📌 *Serial:* ${repairData.text_Serial}
-⚠️ *Tình trạng:* ${repairData.TinhTrang_ThietBi}
-🚨 *Mức độ ưu tiên:* ${repairData.text_MucDo_YeuCau}
-👤 *Người yêu cầu:* ${repairData.Name_NguoiYeuCau} (${repairData.SDT_NguoiYeuCau})
-━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Vui lòng kiểm tra và xử lý sớm.
-🙏 Cảm ơn!`;
-
     // Send message to user
-    const response = sendTelegramMessage(chatId, message, true);
+    const response = sendTelegramMessage(idTelegram_UserRepair, textTelegram, true);
     
-    msgData.push([new Date(), "[tele_sendsms_user] - Message sent successfully to: " + chatId]);
+    msgData.push([new Date(), "[tele_sendsms_user] - Message sent successfully to: " + idTelegram_UserRepair]);
     logDebugData(msgData);
     
     return response;
@@ -127,13 +87,17 @@ function tele_sendsms_user(repairData) {
  * @returns {Object} - Response from Telegram API
  */
 function sendTelegramMessage(chatId, message, markdown = false) {
+  const msgData = [];
   if (!chatId || !message) {
+    msgData.push([new Date(), "[sendTelegramMessage] - Missing chatId or message"]);
+    logDebugData(msgData);
     return null;
   }
   
   try {
     // Prepare API URL
     const apiUrl = `https://api.telegram.org/bot${TELEGRAM_CONFIG.api_token}/sendMessage`;
+    msgData.push([new Date(), "[sendTelegramMessage] - Preparing to send message to: " + chatId]);
     
     // Prepare payload
     const payload = {
@@ -151,8 +115,12 @@ function sendTelegramMessage(chatId, message, markdown = false) {
     
     // Send request
     const response = UrlFetchApp.fetch(apiUrl, options);
+    msgData.push([new Date(), "[sendTelegramMessage] - Message sent successfully"]);
+    logDebugData(msgData);
     return JSON.parse(response.getContentText());
   } catch (error) {
+    msgData.push([new Date(), "[sendTelegramMessage] - ERROR: " + error.toString()]);
+    logDebugData(msgData);
     console.error("Error sending Telegram message: " + error);
     return null;
   }
