@@ -309,7 +309,9 @@
               <img src="https://drive.google.com/thumbnail?id=16gCExt-p9JflHcqZQ2nxWLDL65bpD-Tf&sz=s100" alt="Logo" class="app-logo">
               <span class="app-title">Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</span>
             </div>
-            <div class="col-md-4 text-end">
+            <div class="col-md-2 d-none d-md-block">
+            </div>
+            <div class="col-md-2 text-end">
               <div class="dropdown">
                 <div class="user-profile dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                   <img id="userAvatar" src="https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100" alt="User Avatar" class="user-avatar">
@@ -317,6 +319,8 @@
                   <i class="fas fa-chevron-down ms-2"></i>
                 </div>
                 <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                  <li><a class="dropdown-item" href="#" onclick="refreshData()"><i class="fas fa-sync-alt me-2"></i>Cập nhật dữ liệu</a></li>
+                  <li><hr class="dropdown-divider"></li>
                   <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal"><i class="fas fa-user-edit me-2"></i>Chỉnh sửa thông tin</a></li>
                   <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal"><i class="fas fa-key me-2"></i>Đổi mật khẩu</a></li>
                   <li><hr class="dropdown-divider"></li>
@@ -336,7 +340,9 @@
               <i class="fas fa-plus me-2"></i>Thêm báo hỏng
             </button>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-2 d-none d-md-block">
+          </div>
+          <div class="col-md-7">
             <div class="input-group">
               <input type="text" class="form-control" id="searchInput" placeholder="Nhập nội dung tìm kiếm...">
               <button class="btn btn-primary" type="button" onclick="searchRepair()">
@@ -454,111 +460,238 @@
             <form id="addRepairForm">
               <input type="hidden" id="repairId">
               
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="departmentName" class="form-label">Đơn vị yêu cầu</label>
-                  <input type="text" class="form-control" id="departmentName" readonly>
+              <!-- Nhóm Đơn vị yêu cầu -->
+              <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                  <h6 class="mb-0">Thông tin đơn vị yêu cầu</h6>
                 </div>
-                <div class="col-md-6">
-                  <label for="requesterName" class="form-label">Người yêu cầu</label>
-                  <input type="text" class="form-control" id="requesterName" list="requesterList">
-                  <datalist id="requesterList"></datalist>
-                </div>
-              </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="requesterPhone" class="form-label">Số điện thoại yêu cầu</label>
-                  <input type="text" class="form-control" id="requesterPhone" list="phoneList">
-                  <datalist id="phoneList"></datalist>
-                </div>
-                <div class="col-md-6">
-                  <label for="repairPerson" class="form-label">Người sửa chữa</label>
-                  <select class="form-select" id="repairPerson" onchange="updateRepairPersonPhone()"></select>
-                </div>
-              </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="repairPersonPhone" class="form-label">Số điện thoại người sửa chữa</label>
-                  <input type="text" class="form-control" id="repairPersonPhone" readonly>
-                </div>
-                <div class="col-md-6">
-                  <label for="equipmentGroup" class="form-label">Nhóm thiết bị</label>
-                  <select class="form-select" id="equipmentGroup" onchange="updateEquipmentList()"></select>
-                </div>
-              </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="equipmentId" class="form-label">Mã thiết bị</label>
-                  <select class="form-select" id="equipmentId" onchange="updateEquipmentDetails()"></select>
-                </div>
-                <div class="col-md-6">
-                  <label for="equipmentName" class="form-label">Tên thiết bị</label>
-                  <input type="text" class="form-control" id="equipmentName" readonly>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="mb-3">
+                        <div class="d-flex align-items-center mb-2">
+                          <label for="departmentName" class="me-2 mb-0">Đơn vị yêu cầu:</label>
+                          <div class="input-group" style="max-width: 300px;">
+                            <span class="input-group-text"><i class="fas fa-hospital"></i></span>
+                            <input type="text" class="form-control" id="departmentName" readonly>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="requesterName" class="form-label">Người yêu cầu</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-user"></i></span>
+                          <input type="text" class="form-control" id="requesterName" list="requesterList">
+                          <datalist id="requesterList"></datalist>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="requesterPhone" class="form-label">Số điện thoại yêu cầu</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                          <input type="text" class="form-control" id="requesterPhone" list="phoneList">
+                          <datalist id="phoneList"></datalist>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="equipmentModel" class="form-label">Model</label>
-                  <input type="text" class="form-control" id="equipmentModel" readonly>
+
+              <!-- Nhóm Người sửa chữa -->
+              <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                  <h6 class="mb-0">Thông tin người sửa chữa</h6>
                 </div>
-                <div class="col-md-6">
-                  <label for="equipmentSerial" class="form-label">Serial</label>
-                  <input type="text" class="form-control" id="equipmentSerial" readonly>
-                </div>
-              </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="equipmentManufacturer" class="form-label">Hãng sản xuất</label>
-                  <input type="text" class="form-control" id="equipmentManufacturer" readonly>
-                </div>
-                <div class="col-md-6">
-                  <label for="equipmentCountry" class="form-label">Nước sản xuất</label>
-                  <input type="text" class="form-control" id="equipmentCountry" readonly>
-                </div>
-              </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="equipmentYear" class="form-label">Năm sản xuất</label>
-                  <input type="text" class="form-control" id="equipmentYear" readonly>
-                </div>
-                <div class="col-md-6">
-                  <label for="equipmentUseYear" class="form-label">Năm đưa vào sử dụng</label>
-                  <input type="text" class="form-control" id="equipmentUseYear" readonly>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="repairPerson" class="form-label">Người sửa chữa</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-user-cog"></i></span>
+                          <select class="form-select" id="repairPerson"></select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="repairPersonPhone" class="form-label">Số điện thoại người sửa chữa</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                          <input type="text" class="form-control" id="repairPersonPhone" readonly>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="equipmentWarranty" class="form-label">Hạn bảo hành</label>
-                  <input type="text" class="form-control" id="equipmentWarranty" readonly>
+
+              <!-- Nhóm Thiết bị -->
+              <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                  <h6 class="mb-0">Thông tin thiết bị</h6>
                 </div>
-                <div class="col-md-6">
-                  <label for="equipmentLocation" class="form-label">Vị trí đặt</label>
-                  <input type="text" class="form-control" id="equipmentLocation" readonly>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentGroup" class="form-label">Nhóm thiết bị</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
+                          <select class="form-select" id="equipmentGroup"></select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentId" class="form-label">Mã thiết bị</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                          <select class="form-select" id="equipmentId"></select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Các trường thông tin thiết bị khác -->
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentName" class="form-label">Tên thiết bị</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                          <input type="text" class="form-control" id="equipmentName" readonly>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentModel" class="form-label">Model</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
+                          <input type="text" class="form-control" id="equipmentModel" readonly>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentSerial" class="form-label">Serial</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-qrcode"></i></span>
+                          <input type="text" class="form-control" id="equipmentSerial" readonly>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentManufacturer" class="form-label">Hãng sản xuất</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-industry"></i></span>
+                          <input type="text" class="form-control" id="equipmentManufacturer" readonly>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentYear" class="form-label">Năm sản xuất</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                          <input type="text" class="form-control" id="equipmentYear" readonly>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentUseYear" class="form-label">Năm đưa vào sử dụng</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
+                          <input type="text" class="form-control" id="equipmentUseYear" readonly>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentWarranty" class="form-label">Hạn bảo hành</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                          <input type="text" class="form-control" id="equipmentWarranty" readonly>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentLocation" class="form-label">Vị trí đặt</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                          <input type="text" class="form-control" id="equipmentLocation" readonly>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-              
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label for="equipmentStatus" class="form-label">Tình trạng thiết bị</label>
-                  <input type="text" class="form-control" id="equipmentStatus" list="statusList">
-                  <datalist id="statusList"></datalist>
+
+              <!-- Nhóm Tình trạng -->
+              <div class="card mb-3">
+                <div class="card-header bg-info text-white">
+                  <h6 class="mb-0">Thông tin tình trạng thiết bị</h6>
                 </div>
-                <div class="col-md-6">
-                  <label for="priorityLevel" class="form-label">Mức độ yêu cầu</label>
-                  <select class="form-select" id="priorityLevel"></select>
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="equipmentStatus" class="form-label">Tình trạng thiết bị</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-exclamation-triangle"></i></span>
+                          <input type="text" class="form-control" id="equipmentStatus" list="statusList">
+                          <datalist id="statusList"></datalist>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label for="priorityLevel" class="form-label">Mức độ yêu cầu</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                          <select class="form-select" id="priorityLevel"></select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="mb-3">
+                        <label for="notes" class="form-label">Ghi chú</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-sticky-note"></i></span>
+                          <textarea class="form-control" id="notes" rows="3"></textarea>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <div class="row" id="historySection" style="display: none;">
+                  <div class="col-md-12">
+                    <div class="mb-3">
+                      <label for="history" class="form-label">Lịch sử</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-history"></i></span>
+                        <textarea class="form-control" id="history" rows="3"></textarea>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              
-              <div class="mb-3">
-                <label for="notes" class="form-label">Ghi chú</label>
-                <textarea class="form-control" id="notes" rows="3"></textarea>
+                </div>
               </div>
             </form>
           </div>
@@ -646,84 +779,124 @@
     </div>
 
     <script>
+      let formRepairModalInstance = null;
       // Global data variables
       let userData = {};
       let appData = {};
+      let data_Repair_DV = {};
       let CONFIG_COLUMNS = {};
       let CONFIG_ENUM = {};
-      let Max_Count_RepairID = 0;
-      let TrangThai_Form = 0;
-      const CONFIG_HTML = {
-          FORM_STATUS: {
-            ADD: 1,
-            EDIT: 2,
-            VIEW: 3,
-            DELETE: 4
-          }
+      let val_Repair = {
+        MaxId_Count: 0,
+        MaxRow_Id: 0,
+        CurrentRow_Id: 0
       };
       
       ///////////////////////////////////
       // 1. Nhóm hàm xử lý dữ liệu ban đầu
       ///////////////////////////////////
-      // Data loading
+      // 1.1. Bắt sự kiện để tải dữ liệu
       document.addEventListener('DOMContentLoaded', function() {
         // Load data
         loadAllData();
-        
-        // Initialize modals
-        const modalElements = document.querySelectorAll('.modal');
-        modalElements.forEach(element => {
-          new bootstrap.Modal(element);
-          
-          // Add hidden.bs.modal event listener
-          element.addEventListener('hidden.bs.modal', function() {
-            // Remove modal backdrop
-            const backdrop = document.querySelector('.modal-backdrop');
-            if (backdrop) {
-              backdrop.remove();
-            }
-            // Remove modal-open class and styles from body
-            document.body.classList.remove('modal-open');
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
-          });
-        });
       });
-      // 1.1 Hàm tải dữ liệu
+
+      // 1.2. Hàm tải dữ liệu
       function loadAllData() {
         console.log('Starting to load data...');
-
+        
         google.script.run
           .withSuccessHandler(handleDataLoaded)
           .withFailureHandler(handleScriptError)
           .getdata();
       }
 
-      // 1.2 Hàm xử lý dữ liệu sau khi tải thành công
+      // 1.3. Hàm xử lý dữ liệu đã tải
       function handleDataLoaded(dataJSON) {
         try {
-          // Parse JSON data
-          const data = JSON.parse(dataJSON);
-          
-          // Store data in global variables
-          appData = data;
-          CONFIG_COLUMNS = data.CONFIG_COLUMNS;
-          CONFIG_ENUM = data.CONFIG_ENUM;
-          
-          // Initialize UI components
+          // Lưu dữ liệu vào biến toàn cục
+          appData = JSON.parse(dataJSON);
+          CONFIG_COLUMNS = appData.CONFIG_COLUMNS;
+          CONFIG_ENUM = appData.CONFIG_ENUM;
+
+          // Khởi tạo các thành phần giao diện
           initializeUI();
           
-          // Hide loading screen
+          // Khởi tạo RepairModalManager
+          RepairModalManager.initialize();
+          
+          // Ẩn màn hình đang tải
           document.getElementById('loading').classList.add('hidden');
           
-          // Show login form
+          // Hiển thị form đăng nhập
           document.getElementById('loginSection').style.display = 'block';
-        } catch (error) {
-          console.error("Error parsing data:", error);
+        } catch (error) {      
           showError("Lỗi khi xử lý dữ liệu: " + error.message);
         }
       }
 
+      // 1.4. Hàm khởi tạo giao diện
+      function initializeUI() {
+        // Khởi tạo các modal
+        const modalElements = document.querySelectorAll('.modal');
+        modalElements.forEach(element => {
+          new bootstrap.Modal(element);
+        });
+
+        // Khởi tạo tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Khởi tạo popovers
+        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+        popoverTriggerList.map(function (popoverTriggerEl) {
+          return new bootstrap.Popover(popoverTriggerEl);
+        });
+
+        // Khởi tạo bắt các sự kiện cho các trường dữ liệu
+        setupFormEventListeners();
+      }
+
+      // 1.6. Khởi tạo bắt các sự kiện cho các trường dữ liệu
+      function setupFormEventListeners() {
+        // Nhóm thiết bị thay đổi
+        document.getElementById('equipmentGroup').addEventListener('change', function() {
+          RepairModalManager.updateEquipmentList();
+        });
+
+        // Mã thiết bị thay đổi
+        document.getElementById('equipmentId').addEventListener('change', function() {
+          RepairModalManager.updateEquipmentDetails();
+        });
+
+        // Người sửa chữa thay đổi
+        document.getElementById('repairPerson').addEventListener('change', function() {
+          RepairModalManager.updateRepairPersonPhone();
+        });
+
+        // Người yêu cầu thay đổi
+        document.getElementById('requesterName').addEventListener('change', function() {
+          RepairModalManager.updateRequesterPhone();
+        });
+
+        // Lắng nghe sự kiện cho tất cả các modal
+        document.querySelectorAll('.modal').forEach(modal => {
+          modal.addEventListener('shown.bs.modal', () => {
+            setupModalFocus(modal); // Gọi hàm setupModalFocus mỗi khi modal được hiển thị
+          });
+        });
+      }
+      
+      // 1.5. Khởi tạo xử lý focus cho modal
+      function setupModalFocus(modal) {
+        // Focus first input
+        const firstInput = modal.querySelector('input:not([readonly]):not([disabled])');
+        if (firstInput) {
+          firstInput.focus();
+        }
+      }
       ///////////////////////////////////
       // 2. Nhóm hàm thông báo
       ///////////////////////////////////
@@ -860,58 +1033,6 @@
       ///////////////////////////////////
       // 4. Nhóm hàm xử lý giao diện người dùng
       ///////////////////////////////////
-      // 4.1 Hàm thiết lập giao diện
-      function initializeUI() {
-        // Khởi tạo tab cho dashboard
-        // Tạo một instance của Bootstrap Tab cho tab dashboard
-        const dashboardTabs = new bootstrap.Tab(document.querySelector('#tab-dashboard'));
-        
-        // Khởi tạo tooltips (gợi ý khi hover)
-        // Lấy tất cả các phần tử có thuộc tính data-bs-toggle="tooltip"
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        // Khởi tạo tooltip cho từng phần tử
-        tooltipTriggerList.map(function (tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-        
-        // Khởi tạo popovers (hộp thông tin popup)
-        // Lấy tất cả các phần tử có thuộc tính data-bs-toggle="popover" 
-        const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-        // Khởi tạo popover cho từng phần tử
-        popoverTriggerList.map(function (popoverTriggerEl) {
-          return new bootstrap.Popover(popoverTriggerEl);
-        });
-        
-        // Khởi tạo modals (hộp thoại)
-        // Lấy tất cả các phần tử có thuộc tính data-bs-toggle="modal"
-        const modalTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="modal"]'));
-        // Khởi tạo modal cho từng phần tử
-        modalTriggerList.map(function (modalTriggerEl) {
-          return new bootstrap.Modal(document.querySelector(modalTriggerEl.getAttribute('data-bs-target')));
-        });
-        
-        // Sửa lỗi modal không cho phép nhập liệu
-        // Duyệt qua tất cả các modal và thiết lập focus cho input
-        document.querySelectorAll('.modal').forEach(modal => {
-          setupModalFocus(modal);
-        });
-      }
-
-      function setupModalFocus(modal) {
-        modal.addEventListener('shown.bs.modal', function() {
-          // Tìm input field đầu tiên có thể edit
-          const firstInput = this.querySelector('input:not([readonly]):not([disabled])');
-          
-          // Chỉ focus nếu tìm thấy input field phù hợp
-          if (firstInput) {
-            firstInput.focus();
-            
-            // Optional: Select all text trong input
-            firstInput.select();
-          }
-        });
-      }
-
       // 4.2 Hàm thiết lập giao diện sau khi đăng nhập
       function setupUserInterface() {
         // Set user name and avatar
@@ -925,8 +1046,8 @@
         // Set department name in repair form
         document.getElementById('departmentName').value = userData.name;
         
-        // Populate dropdown lists
-        populateDropdowns();
+        RepairModalManager.ListDropDowns();
+        RepairModalManager.ListDropDowns_Requester();
         
         // Reinitialize UI components to ensure modals and other Bootstrap components work properly
         initializeUI();
@@ -950,6 +1071,41 @@
       ///////////////////////////////////
       // 5.1. Nhóm hàm xử lý hồ sơ cá nhân
       ///////////////////////////////////
+      // 5.1.0. Hàm tải lại dữ liệu
+      function refreshData() {
+        // Show loading message
+        showLoading();
+        
+        // Reload DataSC table
+        google.script.run
+          .withSuccessHandler(function(data) {
+            console.log('Data reloaded successfully:', data);
+            Swal.close();
+            // Update appData with new data
+            appData.val_DataSC = data;
+            console.log('appData updated with new DataSC');
+            
+            // Refresh dropdowns
+            RepairModalManager.ListDropDowns();
+            RepairModalManager.ListDropDowns_Requester();
+            console.log('Dropdowns refreshed');
+            
+            // Refresh tables
+            if (typeof refreshTables === 'function') {
+              refreshTables();
+              console.log('Tables refreshed');
+            }
+            
+            // Show success message
+            showSuccess('Dữ liệu đã được cập nhật');
+            console.log('Data refresh completed successfully');
+          })
+          .withFailureHandler(function(error) {
+            Swal.close();
+            showError('Lỗi khi tải dữ liệu: ' + error.message);
+          })
+          .getDataSC();
+      }
       // 5.1.1. Hàm sửa hồ sơ người dùng
       function editUserProfile() {
         // Hide user menu
@@ -1241,8 +1397,7 @@
             
             showSuccess(detailMessage);
           }
-        } catch (error) {
-          console.error('Error filtering repair tables:', error);
+        } catch (error) {          
           showError('Lỗi khi lọc dữ liệu tìm kiếm: ' + error.message);
         }
       }
@@ -1262,10 +1417,10 @@
       ///////////////////////////////////
       // 7.1. Hàm cập nhật tất cả các bảng báo hỏng
       function updateRepairTables() {
-        const countBaoHong = updateTableBaoHong();
-        const countDangSua = updateTableDangSua();
-        const countBaoHanh = updateTableBaoHanh();
-        const countSuaNgoai = updateTableSuaNgoai();
+        const countBaoHong = updateTable('baohong', CONFIG_ENUM.TRANGTHAI.BAO_HONG);
+        const countDangSua = updateTable('dangsua', CONFIG_ENUM.TRANGTHAI.DANG_SUA);
+        const countBaoHanh = updateTable('baohanh', CONFIG_ENUM.TRANGTHAI.BAO_HANH);
+        const countSuaNgoai = updateTable('suangoai', CONFIG_ENUM.TRANGTHAI.SUA_NGOAI);
         
         // Calculate total count
         const totalCount = countBaoHong + countDangSua + countBaoHanh + countSuaNgoai;
@@ -1282,11 +1437,11 @@
         };
       }
       
-      // 7.2. Hàm cập nhật bảng báo hỏng
-      function updateTableBaoHong() {
+      // 7.2. Hàm cập nhật bảng theo trạng thái
+      function updateTable(tableType, status) {
         try {
           // Get table body
-          const tableBody = document.getElementById('history_baohong');
+          const tableBody = document.getElementById(`history_${tableType}`);
           tableBody.innerHTML = '';
           
           // Counter for repair items
@@ -1294,8 +1449,8 @@
           
           // Process data
           appData.val_DataSC.slice(1).forEach(item => {
-            // Check if this is a "báo hỏng" item for current user
-            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.BAO_HONG && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
+            // Check if this item matches the status and current user
+            if (item[CONFIG_COLUMNS.DataSC.trangthai] == status && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
               count++;
               
               // Create row
@@ -1335,15 +1490,17 @@
               viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
               viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
               viewBtn.title = 'Xem chi tiết';
-              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
+              viewBtn.onclick = () => showViewRepairModal(item[CONFIG_COLUMNS.DataSC.id]);
               actionCell.appendChild(viewBtn);
 
+              // Add edit and delete buttons only for "báo hỏng" status
+              if (status === CONFIG_ENUM.TRANGTHAI.BAO_HONG) {
               // Edit button
               const editBtn = document.createElement('button');
               editBtn.classList.add('btn', 'btn-primary', 'btn-sm', 'me-1');
               editBtn.innerHTML = '<i class="fas fa-edit"></i>';
               editBtn.title = 'Chỉnh sửa';
-              editBtn.onclick = () => editRepair(item[CONFIG_COLUMNS.DataSC.id]);
+                editBtn.onclick = () => showEditRepairModal(item[CONFIG_COLUMNS.DataSC.id]);
               actionCell.appendChild(editBtn);
               
               // Delete button
@@ -1351,8 +1508,9 @@
               deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm', 'me-1');
               deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
               deleteBtn.title = 'Xóa';
-              deleteBtn.onclick = () => deleteRepair(item[CONFIG_COLUMNS.DataSC.id]);
+                deleteBtn.onclick = () => showDeleteRepairModal(item[CONFIG_COLUMNS.DataSC.id]);
               actionCell.appendChild(deleteBtn);
+              }
               
               row.appendChild(actionCell);
               
@@ -1362,305 +1520,516 @@
           });
           
           // Update tab count
-          document.getElementById('tab-baohong').textContent = `Báo hỏng (${count})`;
+          document.getElementById(`tab-${tableType}`).textContent = `${getTableTitle(tableType)} (${count})`;
           
           // Return the count for potential use elsewhere
           return count;
-        } catch (error) {
-          console.error('Error updating báo hỏng table:', error);
-          showError('Lỗi khi cập nhật bảng báo hỏng: ' + error.message);
+        } catch (error) {          
+          showError(`Lỗi khi cập nhật bảng ${getTableTitle(tableType)}: ${error.message}`);
           return 0;
         }
       }
       
-      // 7.3. Hàm cập nhật bảng đang sửa
-      function updateTableDangSua() {
-        try {
-          // Get table body
-          const tableBody = document.getElementById('history_dangsua');
-          tableBody.innerHTML = '';
-          
-          // Counter for repair items
-          let count = 0;
-          
-          // Process data
-          appData.val_DataSC.slice(1).forEach(item => {
-            // Check if this is a "đang sửa" item for current user
-            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.DANG_SUA && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
-              count++;
-              
-              // Create row
-              const row = document.createElement('tr');
-              
-              // STT cell
-              const sttCell = document.createElement('td');
-              sttCell.textContent = count;
-              row.appendChild(sttCell);
-              
-              // Get equipment and repair person info
-              const equipmentId = item[CONFIG_COLUMNS.DataSC.idthietbi];
-              const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
-              
-              const repairPersonId = item[CONFIG_COLUMNS.DataSC.idusersua];
-              const repairPerson = appData.val_DSUserSua.find(rp => rp[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId);
-              
-              // Content cell
-              const contentCell = document.createElement('td');
-              contentCell.innerHTML = `
-                🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} ⚠️ ${item[CONFIG_COLUMNS.DataSC.id]}
-                <br>- Thông tin thiết bị: ♟️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.tentb] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.model] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.serial] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] : ''}
-                <br>- Thông tin người sửa: 👨${repairPerson ? repairPerson[CONFIG_COLUMNS.DSUserSua.hoten] : ''} 
-                📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
-              `;
-              row.appendChild(contentCell);
-              
-              // Action cell
-              const actionCell = document.createElement('td');
-              actionCell.classList.add('action-buttons');
-              
-              // View button
-              const viewBtn = document.createElement('button');
-              viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
-              viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
-              viewBtn.title = 'Xem chi tiết';
-              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
-              actionCell.appendChild(viewBtn);
-              
-              row.appendChild(actionCell);
-              
-              // Add row to table
-              tableBody.appendChild(row);
-            }
-          });
-          
-          // Update tab count
-          document.getElementById('tab-dangsua').textContent = `Đang sửa (${count})`;
-          
-          // Return the count for potential use elsewhere
-          return count;
-        } catch (error) {
-          console.error('Error updating đang sửa table:', error);
-          showError('Lỗi khi cập nhật bảng đang sửa: ' + error.message);
-          return 0;
-        }
+      // Helper function to get table title
+      function getTableTitle(tableType) {
+        const titles = {
+          'baohong': 'Báo hỏng',
+          'dangsua': 'Đang sửa',
+          'baohanh': 'Bảo hành',
+          'suangoai': 'Sửa ngoài'
+        };
+        return titles[tableType] || tableType;
       }
-      
-      // 7.4. Hàm cập nhật bảng bảo hành
-      function updateTableBaoHanh() {
-        try {
-          // Get table body
-          const tableBody = document.getElementById('history_baohanh');
-          tableBody.innerHTML = '';
-          
-          // Counter for repair items
-          let count = 0;
-          
-          // Process data
-          appData.val_DataSC.slice(1).forEach(item => {
-            // Check if this is a "bảo hành" item for current user
-            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.BAO_HANH && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
-              count++;
-              
-              // Create row
-              const row = document.createElement('tr');
-              
-              // STT cell
-              const sttCell = document.createElement('td');
-              sttCell.textContent = count;
-              row.appendChild(sttCell);
-              
-              // Get equipment and repair person info
-              const equipmentId = item[CONFIG_COLUMNS.DataSC.idthietbi];
-              const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
-              
-              const repairPersonId = item[CONFIG_COLUMNS.DataSC.idusersua];
-              const repairPerson = appData.val_DSUserSua.find(rp => rp[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId);
-              
-              // Content cell
-              const contentCell = document.createElement('td');
-              contentCell.innerHTML = `
-                🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} ⚠️ ${item[CONFIG_COLUMNS.DataSC.id]}
-                <br>- Thông tin thiết bị: ♟️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.tentb] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.model] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.serial] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] : ''}
-                <br>- Thông tin người sửa: 👨${repairPerson ? repairPerson[CONFIG_COLUMNS.DSUserSua.hoten] : ''} 
-                📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
-              `;
-              row.appendChild(contentCell);
-              
-              // Action cell
-              const actionCell = document.createElement('td');
-              actionCell.classList.add('action-buttons');
-              
-              // View button
-              const viewBtn = document.createElement('button');
-              viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
-              viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
-              viewBtn.title = 'Xem chi tiết';
-              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
-              actionCell.appendChild(viewBtn);
-              
-              row.appendChild(actionCell);
-              
-              // Add row to table
-              tableBody.appendChild(row);
-            }
-          });
-          
-          // Update tab count
-          document.getElementById('tab-baohanh').textContent = `Bảo hành (${count})`;
-          
-          // Return the count for potential use elsewhere
-          return count;
-        } catch (error) {
-          console.error('Error updating bảo hành table:', error);
-          showError('Lỗi khi cập nhật bảng bảo hành: ' + error.message);
-          return 0;
-        }
-      }
-      
-      // 7.5. Hàm cập nhật bảng sửa ngoài
-      function updateTableSuaNgoai() {
-        try {
-          // Get table body
-          const tableBody = document.getElementById('history_suangoai');
-          tableBody.innerHTML = '';
-          
-          // Counter for repair items
-          let count = 0;
-          
-          // Process data
-          appData.val_DataSC.slice(1).forEach(item => {
-            // Check if this is a "sửa ngoài" item for current user
-            if (item[CONFIG_COLUMNS.DataSC.trangthai] == CONFIG_ENUM.TRANGTHAI.SUA_NGOAI && item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id) {
-              count++;
-              
-              // Create row
-              const row = document.createElement('tr');
-              
-              // STT cell
-              const sttCell = document.createElement('td');
-              sttCell.textContent = count;
-              row.appendChild(sttCell);
-              
-              // Get equipment and repair person info
-              const equipmentId = item[CONFIG_COLUMNS.DataSC.idthietbi];
-              const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
-              
-              const repairPersonId = item[CONFIG_COLUMNS.DataSC.idusersua];
-              const repairPerson = appData.val_DSUserSua.find(rp => rp[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId);
-              
-              // Content cell
-              const contentCell = document.createElement('td');
-              contentCell.innerHTML = `
-                🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} ⚠️ ${item[CONFIG_COLUMNS.DataSC.id]}
-                <br>- Thông tin thiết bị: ♟️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.tentb] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.model] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.serial] : ''} 
-                ⚙️${equipment ? equipment[CONFIG_COLUMNS.DSThietBi.nuocsx] : ''}
-                <br>- Thông tin người sửa: 👨${repairPerson ? repairPerson[CONFIG_COLUMNS.DSUserSua.hoten] : ''} 
-                📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
-              `;
-              row.appendChild(contentCell);
-              
-              // Action cell
-              const actionCell = document.createElement('td');
-              actionCell.classList.add('action-buttons');
-              
-              // View button
-              const viewBtn = document.createElement('button');
-              viewBtn.classList.add('btn', 'btn-success', 'btn-sm', 'me-1');
-              viewBtn.innerHTML = '<i class="fas fa-eye"></i>';
-              viewBtn.title = 'Xem chi tiết';
-              viewBtn.onclick = () => viewRepair(item[CONFIG_COLUMNS.DataSC.id]);
-              actionCell.appendChild(viewBtn);
-              
-              row.appendChild(actionCell);
-              
-              // Add row to table
-              tableBody.appendChild(row);
-            }
-          });
-          
-          // Update tab count
-          document.getElementById('tab-suangoai').textContent = `Sửa ngoài (${count})`;
-          
-          // Return the count for potential use elsewhere
-          return count;
-        } catch (error) {
-          console.error('Error updating sửa ngoài table:', error);
-          showError('Lỗi khi cập nhật bảng sửa ngoài: ' + error.message);
-          return 0;
-        }
-      }
-      
+
       ///////////////////////////////////
       // 8. NHÓM HÀM XỬ LÝ FORM DỮ LIỆU (THÊM, SỬA, XÓA)
       ///////////////////////////////////
+      // 8.1. Hàm điền dữ liệu cho các dropdown list: Người sửa chữa, Nhóm thiết bị, Mức độ ưu tiên
 
-      // 8.1. Hàm tạo ID sửa chữa
-      function generateRepairID() {
-        const Time_now = new Date();
-        
-        // Tìm Max_Count_RepairID
-        if (Max_Count_RepairID == 0) {
-          // Lọc dữ liệu theo đơn vị
-          let userDeptRepairs = [];
-          if (appData.val_DataSC && appData.val_DataSC.length > 0 && userData.id) {
-              userDeptRepairs = appData.val_DataSC.filter(function(row) {
-                  return row[CONFIG_COLUMNS.DataSC.iduserdv] === userData.id;
-              });
+      // Hàm cập nhật dữ liệu sau khi thêm/sửa/xóa
+      function updateData(result) {
+        try {
+          // Cập nhật dữ liệu trong appData
+          if (result) {
+            // Tìm vị trí của bản ghi trong mảng
+            const index = appData.val_DataSC.findIndex(item => 
+              item[CONFIG_COLUMNS.DataSC.id] === result[CONFIG_COLUMNS.DataSC.id]
+            );
+
+            if (index !== -1) {
+              // Nếu đã tồn tại, cập nhật
+              appData.val_DataSC[index] = result;
+            } else {
+              // Nếu chưa tồn tại, thêm mới
+              appData.val_DataSC.push(result);
+            }
           }
-          
-          // Lọc lấy giá trị và tìm số lớn nhất trong cột ID
-          if (userDeptRepairs.length > 0) {
-                const sequenceNumbers = userDeptRepairs
-                    .map(row => {
-                        const parts = row[CONFIG_COLUMNS.DataSC.id]?.split('.');
-                        // Check if ID has correct format and year matches current year
-                        if (parts?.length === 4) {
-                            const currentYear = Time_now.getFullYear().toString().slice(-2);
-                            const idYear = parts[2].slice(0, 2);
-                            return idYear === currentYear ? parseInt(parts[3], 10) : 0;
-                        }
-                        return 0;
-                    })
-                    .filter(num => !isNaN(num));
-              
-              // Find the maximum sequence number
-              if (sequenceNumbers.length > 0) {
-                      Max_Count_RepairID = Math.max(...sequenceNumbers);
-                  }
-              }
+        } catch (error) {
+          console.error("Error in updateData:", error);
+          throw error;
         }
+      }
 
-        const sequenceNumber = ("000" + (Max_Count_RepairID + 1)).slice(-3);
-        console.log('Formatted sequence number:', sequenceNumber);
+      // Hàm cập nhật giao diện sau khi thay đổi dữ liệu
+      function updateUI() {
+        try {
+          // Cập nhật các bảng hiển thị
+          updateRepairTables();
+          
+          // Cập nhật các dropdown list
+          RepairModalManager.ListDropDowns();
+        } catch (error) {
+          console.error("Error in updateUI:", error);
+          throw error;
+        }
+      }
 
-        // Lấy thời gian hiện tại theo định dạng yymmdd
-        const year = Time_now.getFullYear().toString().slice(-2);
-        const month = ("0" + (Time_now.getMonth() + 1)).slice(-2);
-        const day = ("0" + Time_now.getDate()).slice(-2);
-        const datePart = year + month + day;
-        console.log('Generated date part:', datePart);
-        
-        // Tạo ID sửa chữa  
-        const repairID = "SC." + userData.kihieu + "." + datePart + "." + sequenceNumber;
-        console.log('Generated repair ID:', repairID);
-        
-        return repairID;
+      // 8.8. Helper to get a single instance of FormRepairModal
+      function getFormRepairModalInstance() {
+        const modalElement = document.getElementById('FormRepairModal');
+        if (formRepairModalInstance) {
+          formRepairModalInstance.dispose(); // Cleanup instance cũ
+        }
+        formRepairModalInstance = new bootstrap.Modal(modalElement, {
+          backdrop: 'static', // Ngăn click outside để đóng
+        });
+        return formRepairModalInstance;
+      }
+
+      // 8.9. Hàm hiển thị modal thêm báo hỏng
+      function showAddRepairModal() {
+        try {
+          console.log('Opening repair add form');
+          RepairModalManager.open(RepairModalManager.MODE.ADD);
+        } catch (error) {          
+          showError('Có lỗi khi mở form thêm mới: ' + error.message);
+        }
+      }
+
+      // 8.10. Hàm hiển thị modal sửa báo hỏng
+      function showEditRepairModal(repairId) {
+        try {
+          console.log('Opening repair edit for ID:', repairId);
+          if (!repairId) {
+            showError('ID báo hỏng không hợp lệ');
+            return;
+          }
+          RepairModalManager.open(RepairModalManager.MODE.EDIT, repairId);
+        } catch (error) {          
+          showError('Có lỗi khi mở form chỉnh sửa: ' + error.message);
+        }
       }
       
-      // 8.2. Hàm điền dữ liệu cho các dropdown list: Người sửa chữa, Nhóm thiết bị, Mức độ ưu tiên
-      function populateDropdowns() {
-        // Populate repair persons dropdown
+      // 8.11. Hàm hiển thị modal xem chi tiết báo hỏng
+      function showViewRepairModal(repairId) {
+        try {
+          console.log('Opening repair details for ID:', repairId);
+          if (!repairId) {
+            showError('ID báo hỏng không hợp lệ');
+            return;
+          }
+          RepairModalManager.open(RepairModalManager.MODE.VIEW, repairId);
+        } catch (error) {          
+          showError('Có lỗi khi mở chi tiết báo hỏng: ' + error.message);
+        }
+      }
+      
+      // 8.12. Hàm hiển thị modal xóa báo hỏng
+      function showDeleteRepairModal(repairId) {
+        showConfirm("Xóa báo hỏng", "Bạn có chắc chắn muốn xóa báo hỏng này?", function() {
+          showLoading();
+          google.script.run
+            .withSuccessHandler(function(result) {
+              Swal.close();
+              if (result) {
+                // Remove from appData
+                const index = appData.val_DataSC.findIndex(item => 
+                  item[CONFIG_COLUMNS.DataSC.id] === repairId
+                );
+                if (index !== -1) {
+                  appData.val_DataSC.splice(index, 1);
+                }
+                
+                // Refresh repair tables
+                updateRepairTables();
+                
+                showSuccess("Xóa báo hỏng thành công");
+              } else {
+                showError("Có lỗi xảy ra khi xóa báo hỏng");
+              }
+            })
+            .withFailureHandler(handleScriptError)
+            .SC_delete(repairId);
+        });
+      }
+      
+      function saveRepair() {
+        try {
+          // Collect form data
+          const formData = RepairModalManager.collectFormData();
+          
+          // Validate form data
+          if (!formData.Name_NguoiYeuCau) {
+            showError("Vui lòng nhập người yêu cầu");
+            return;
+          }
+          
+          if (!formData.SDT_NguoiYeuCau) {
+            showError("Vui lòng nhập số điện thoại yêu cầu");
+            return;
+          }
+          
+          if (!formData.TinhTrang_ThietBi) {
+            showError("Vui lòng nhập tình trạng thiết bị");
+            return;
+          }
+          
+          if (!formData.ID_ThietBi) {
+            showError("Vui lòng chọn thiết bị");
+            return;
+          }
+          
+          if (!formData.ID_MucDo_YeuCau) {
+            showError("Vui lòng chọn mức độ ưu tiên");
+            return;
+          }
+
+          // Prepare data for saving
+          const arr_repairDataMain = RepairModalManager.arr_MainSC_prepare(formData);
+          const textTelegram = RepairModalManager.textTelegram_prepare(formData);
+          const idTelegram_UserRepair = appData.val_DSUserSua.find(
+            item => item[CONFIG_COLUMNS.DSUserSua.id] === formData.ID_NguoiSua
+          )?.[CONFIG_COLUMNS.DSUserSua.usetele] || '';
+          
+
+          const repairData = {
+            TrangThai_Form: RepairModalManager.state.mode,
+            arr_repairDataMain: arr_repairDataMain,
+            idTelegram_UserRepair: idTelegram_UserRepair,
+            textTelegram: textTelegram
+          };
+
+          // Show loading message
+          showLoading();
+
+          // Handle based on mode
+          switch (RepairModalManager.state.mode) {
+            case RepairModalManager.MODE.ADD:
+              google.script.run
+                .withSuccessHandler(handleAddRepair)
+                .withFailureHandler(handleScriptError)
+                .SC_thembaohong(repairData);
+              break;
+              
+            case RepairModalManager.MODE.EDIT:
+              google.script.run
+                .withSuccessHandler(handleEditRepair)
+                .withFailureHandler(handleScriptError)
+                .SC_suabaohong(repairData);
+              break;
+          }
+        } catch (error) {          
+          showError("Có lỗi xảy ra: " + error.message);
+        }
+      }
+
+      function handleAddRepair(result) {
+        try {
+          if (result) {
+            // Đóng SweetAlert loading
+            Swal.close();
+
+            // Cập nhật dữ liệu và giao diện
+            updateData(result);
+            updateUI();
+
+            // Đóng modal
+            const modalElement = document.getElementById('FormRepairModal');
+            const modalInstance = bootstrap.Modal.getInstance(modalElement);
+            if (modalInstance) {
+              modalInstance.hide();
+            }
+
+            // Thông báo thành công
+            showSuccess("Thêm báo hỏng thành công");
+          } else {
+            showError("Không nhận được dữ liệu từ server");
+          }
+        } catch (error) {          
+          showError("Có lỗi xảy ra: " + error.message);
+        }
+      }
+
+      function handleEditRepair(result) {
+        try {
+          Swal.close();
+          
+          if (result) {
+            // Đóng modal
+            const modalInstance = getFormRepairModalInstance(); // Lấy instance
+            modalInstance.hide(); // Gọi phương thức hide để đóng modal
+
+            // Update appData with edited repair data
+            const index = appData.val_DataSC.findIndex(item => 
+              item[CONFIG_COLUMNS.DataSC.id] === result[CONFIG_COLUMNS.DataSC.id]
+            );
+            if (index !== -1) {
+              appData.val_DataSC[index] = result;
+            }
+            
+            // Refresh repair tables
+            updateRepairTables();
+            
+            // Show success message
+            showSuccess("Cập nhật báo hỏng thành công");
+          } else {
+            showError("Có lỗi xảy ra khi cập nhật báo hỏng");
+          }
+        } catch (error) {          
+          showError("Có lỗi xảy ra: " + error.message);
+        }
+      }
+
+      // RepairModalManager object to handle repair modal operations
+      const RepairModalManager = {
+        // 1. Quản lý trạng thái
+        state: {
+          isOpen: false,      // Modal open/close state
+          mode: null,         // Operation mode (ADD/EDIT/VIEW)
+          formData: null,     // Current form data
+          originalData: null  // Original data (for EDIT/VIEW)
+        },
+
+        // 2. Các hằng số mode
+        MODE: {
+          ADD: 1,
+          EDIT: 2,
+          VIEW: 3,
+          DELETE: 4
+        },
+
+        // 3. Khởi tạo modal manager
+        initialize() {
+          const modalElement = document.getElementById('FormRepairModal');
+          
+          // 3.1. Listen for modal hidden event
+          modalElement.addEventListener('hidden.bs.modal', () => {
+            this.handleModalHidden();
+          });
+          
+          // 3.2. Listen for modal shown event  
+          modalElement.addEventListener('shown.bs.modal', () => {
+            this.handleModalShown();
+          });
+        },
+
+        // 3.3. Handle modal hidden event
+        handleModalHidden() {
+          this.state.isOpen = false;
+          this.state.mode = null;
+          this.state.formData = null;
+          this.state.originalData = null;
+          
+          // Cleanup backdrop
+          const backdrop = document.querySelector('.modal-backdrop');
+          if (backdrop) {
+            backdrop.remove();
+          }
+          
+          // Dispose modal instance
+          if (formRepairModalInstance) {
+            formRepairModalInstance.dispose();
+            formRepairModalInstance = null;
+          }
+        },
+
+        // 3.4. Handle modal shown event
+        handleModalShown() {
+          this.state.isOpen = true;
+        },
+
+        // 3.6. Mở modal với mode và ID sửa chữa
+        open(mode, repairId = null) {
+          try {
+            // Cleanup trước khi mở modal mới
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+              backdrop.remove();
+            }
+            
+            this.state.mode = mode;
+            const modalElement = document.getElementById('FormRepairModal');
+            const modalTitle = modalElement.querySelector('.modal-title');
+            const saveButton = modalElement.querySelector('button[onclick="saveRepair()"]');
+            this.ListDropDowns_Requester();
+
+            // Configure UI based on mode
+            switch (mode) {
+              case this.MODE.ADD:
+                modalTitle.textContent = 'Thêm báo hỏng mới';
+                saveButton.style.display = 'block';
+                saveButton.textContent = 'Lưu';
+                document.getElementById('repairId').value = this.generateRepairID();
+                this.valFormRepair_Add();
+                this.EnDisableField_Add();
+                break;
+
+              case this.MODE.EDIT:
+                modalTitle.textContent = 'Chỉnh sửa báo hỏng';
+                saveButton.style.display = 'block';
+                saveButton.textContent = 'Cập nhật';
+                this.valFormRepair_Edit_View(repairId);
+                this.EnDisableField_Edit();
+                break;
+
+              case this.MODE.VIEW:
+                modalTitle.textContent = 'Chi tiết báo hỏng';
+                saveButton.style.display = 'none';
+                this.valFormRepair_Edit_View(repairId);
+                this.EnDisableField_View();
+                break;
+            }
+
+            // Show modal sau khi đã setup xong
+            getFormRepairModalInstance().show();
+
+          } catch (error) {
+            // Cleanup nếu có lỗi
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+              backdrop.remove();
+            }
+            showError('Có lỗi khi mở form: ' + error.message);
+          }
+        },
+
+        // 3.7. Hàm tạo ID sửa chữa
+        generateRepairID() {
+          const Time_now = new Date();
+          
+          // Find val_Repair.Max Id_Count
+          if (val_Repair.MaxId_Count == 0) {
+            // Filter data by department
+            const userDeptRepairs = appData.val_DataSC.filter(row => 
+              row && row[CONFIG_COLUMNS.DataSC.iduserdv] === userData.id
+            );
+            
+            if (userDeptRepairs.length > 0) {
+              const sequenceNumbers = userDeptRepairs
+                .map(row => {
+                  if (!row || !row[CONFIG_COLUMNS.DataSC.id]) return 0;
+                  
+                  const parts = row[CONFIG_COLUMNS.DataSC.id].split('.');
+                  if (parts.length < 4) return 0;
+                  
+                  const currentYear = Time_now.getFullYear().toString().slice(-2);
+                  const idYear = parts[2].slice(0, 2);
+                  return idYear === currentYear ? parseInt(parts[3], 10) : 0;
+                })
+                .filter(num => !isNaN(num));
+              
+              if (sequenceNumbers.length > 0) {
+                val_Repair.MaxId_Count = Math.max(...sequenceNumbers);
+              }
+            }
+          }
+
+          const sequenceNumber = ("000" + (val_Repair.MaxId_Count + 1)).slice(-3);
+          const year = Time_now.getFullYear().toString().slice(-2);
+          const month = ("0" + (Time_now.getMonth() + 1)).slice(-2);
+          const day = ("0" + Time_now.getDate()).slice(-2);
+          const datePart = year + month + day;
+          const milisecondPart = Time_now.getMilliseconds().toString().padStart(3, '0');
+          const repairID = "SC." + userData.kihieu + "." + datePart + "." + sequenceNumber + "." + milisecondPart;
+          console.log('Generated repair ID:', repairID);
+          
+          return repairID;
+        },
+
+        // 3.8. Giá trị mặc định cho form thêm báo hỏng
+        valFormRepair_Add() {
+          document.getElementById('equipmentGroup').selectedIndex = 0;
+          document.getElementById('equipmentId').innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+          document.getElementById('equipmentStatus').value = '';
+          document.getElementById('priorityLevel').selectedIndex = 0;
+          document.getElementById('notes').value = '';
+          this.clearEquipmentDetails();
+        },
+
+        // 3.9. Giá trị cho form chỉnh sửa/xem báo hỏng
+        valFormRepair_Edit_View(repairId) {
+          const repair = appData.val_DataSC.find(item => 
+            item[CONFIG_COLUMNS.DataSC.id] === repairId
+          );
+
+          if (repair) {
+            // Fill form with repair data
+            document.getElementById('repairId').value = repair[CONFIG_COLUMNS.DataSC.id];
+            document.getElementById('requesterName').value = repair[CONFIG_COLUMNS.DataSC.hoten];
+            document.getElementById('requesterPhone').value = repair[CONFIG_COLUMNS.DataSC.sdt];
+            document.getElementById('repairPerson').value = repair[CONFIG_COLUMNS.DataSC.idusersua];
+            
+            this.updateRepairPersonPhone();
+            
+            // Load equipment details
+            const equipmentId = repair[CONFIG_COLUMNS.DataSC.idthietbi];
+            const equipment = appData.val_DSThietBi.find(eq => eq[CONFIG_COLUMNS.DSThietBi.id] === equipmentId);
+            
+            if (equipment) {
+              document.getElementById('equipmentGroup').value = equipment[CONFIG_COLUMNS.DSThietBi.nhomtb];
+              this.updateEquipmentList();
+              document.getElementById('equipmentId').value = equipmentId;
+              this.updateEquipmentDetails();
+            }
+
+            document.getElementById('equipmentStatus').value = repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao];
+            document.getElementById('priorityLevel').value = repair[CONFIG_COLUMNS.DataSC.mucdo];
+            document.getElementById('notes').value = repair[CONFIG_COLUMNS.DataSC.ghichu];
+          }
+        },
+
+        // 3.10. En/Disable các trường trong form xem báo hỏng
+        EnDisableField_View() {
+          document.getElementById('requesterName').disabled = true;
+          document.getElementById('requesterPhone').disabled = true;
+          document.getElementById('repairPerson').disabled = true;
+          document.getElementById('equipmentGroup').disabled = true;
+          document.getElementById('equipmentId').disabled = true;
+          document.getElementById('equipmentStatus').disabled = true;
+          document.getElementById('priorityLevel').disabled = true;
+          document.getElementById('notes').disabled = true;
+        },
+
+        // 3.11. En/Disable các trường trong form thêm báo hỏng
+        EnDisableField_Add() {
+          document.getElementById('requesterName').disabled = false;
+          document.getElementById('requesterPhone').disabled = false;
+          document.getElementById('repairPerson').disabled = false;
+          document.getElementById('equipmentGroup').disabled = false;
+          document.getElementById('equipmentId').disabled = false;
+          document.getElementById('equipmentStatus').disabled = false; 
+          document.getElementById('priorityLevel').disabled = false; 
+          document.getElementById('notes').disabled = false; 
+        },
+
+        // 3.12. En/Disable các trường trong form chỉnh sửa
+        EnDisableField_Edit() {
+          document.getElementById('requesterName').disabled = false;
+          document.getElementById('requesterPhone').disabled = false;
+          document.getElementById('repairPerson').disabled = false;
+          document.getElementById('equipmentGroup').disabled = false;
+          document.getElementById('equipmentId').disabled = false;
+          document.getElementById('equipmentStatus').disabled = false;
+          document.getElementById('priorityLevel').disabled = false;
+          document.getElementById('notes').disabled = false;
+        },
+
+        
+        // 3.5. Hàm điền dữ liệu cho các dropdown list: Người sửa chữa, Nhóm thiết bị, Mức độ ưu tiên
+        ListDropDowns() {
+          // 3.5.1. Dropdown Người sửa chữa
         const repairPersonSelect = document.getElementById('repairPerson');
         repairPersonSelect.innerHTML = '<option value="">-- Chọn người sửa chữa --</option>';
-        
         const repairPersons = appData.val_DSUserSua;
         for (let i = 1; i < repairPersons.length; i++) {
           const person = repairPersons[i];
@@ -1669,25 +2038,22 @@
           option.textContent = person[CONFIG_COLUMNS.DSUserSua.hoten];
           repairPersonSelect.appendChild(option);
         }
-        
-        // Populate equipment groups dropdown (Nhóm thiết bị)
+          // 3.5.2. Dropdown Nhóm thiết bị
         const equipmentGroupSelect = document.getElementById('equipmentGroup');
         equipmentGroupSelect.innerHTML = '<option value="">-- Chọn nhóm thiết bị --</option>';
-        // Lọc thiết bị thuộc đơn vị hiện tại
+          // Lọc thiết bị thuộc đơn vị hiện tại
         const equipment = appData.val_DSThietBi;
         const departmentEquipment = equipment.filter(item => 
           item[CONFIG_COLUMNS.DSThietBi.donvi] == userData.id // Theo cột "Đơn vị_TB"
         );
-
-        // Tạo Set để lưu các nhóm thiết bị không trùng lặp của đơn vị
+          // Tạo Set để lưu các nhóm thiết bị không trùng lặp của đơn vị
         const departmentGroups = new Set();
         departmentEquipment.forEach(item => {
           if (item[CONFIG_COLUMNS.DSThietBi.nhomtb]) {
             departmentGroups.add(item[CONFIG_COLUMNS.DSThietBi.nhomtb]);
           }
         });
-        
-        // Lọc danh sách nhóm thiết bị chỉ lấy các nhóm của đơn vị hiện tại
+          // Lọc Nhóm thiết bị theo thiết bị
         const equipmentGroups = appData.val_DSNhomTB;
         for (let i = 1; i < equipmentGroups.length; i++) {
           const group = equipmentGroups[i];
@@ -1701,14 +2067,11 @@
             equipmentGroupSelect.appendChild(option);
           }
         }
-        
-        // Populate priority levels dropdown (Mức độ ưu tiên)
+          // 3.5.3. Mức độ ưu tiên
         const prioritySelect = document.getElementById('priorityLevel');
         prioritySelect.innerHTML = '<option value="">-- Chọn mức độ ưu tiên --</option>';
-        
         const enumSettings = appData.val_EnumSetting;
         const priorities = enumSettings.filter(item => item[1] === "Mức độ YC");
-        
         for (let i = 0; i < priorities.length; i++) {
           const priority = priorities[i];
           const option = document.createElement('option');
@@ -1716,171 +2079,183 @@
           option.textContent = priority[2]; // Tên mức độ
           prioritySelect.appendChild(option);
         }
-        
-        // Populate requester lists with previous requesters for this department (Danh sách người yêu cầu trước đây)
-        const repairs = appData.val_DataSC;
-        const departmentRepairs = repairs.filter(item => 
-          item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id
-        );
-        
-        const requesters = new Set();
-        const phones = new Set();
-        departmentRepairs.forEach(repair => {
-          if (repair[CONFIG_COLUMNS.DataSC.hoten]) {
-            requesters.add(repair[CONFIG_COLUMNS.DataSC.hoten]);
-          }
-          if (repair[CONFIG_COLUMNS.DataSC.sdt]) {
-            phones.add(repair[CONFIG_COLUMNS.DataSC.sdt]);
-          }
-        });
-        
-        // Danh sách người yêu cầu
-        const requesterList = document.getElementById('requesterList');
-        requesters.forEach(requester => {
-          const option = document.createElement('option');
-          option.value = requester;
-          requesterList.appendChild(option);
-        });
-        
-        // Danh sách số điện thoại
-        const phoneList = document.getElementById('phoneList');
-        phones.forEach(phone => {
-          const option = document.createElement('option');
-          option.value = phone;
-          phoneList.appendChild(option);
-        });
-        
-        // Populate equipment status datalist (Danh sách tình trạng thiết bị)
+        },
+
+        // 3.13. Hàm điền dữ liệu cho các dropdown list: Người yêu cầu
+        ListDropDowns_Requester() {
+          const repairs = appData.val_DataSC;
+          // Lọc báo hỏng thuộc đơn vị hiện tại
+          const departmentRepairs = repairs.filter(item => 
+            item[CONFIG_COLUMNS.DataSC.iduserdv] == userData.id
+          );
+
+          const requesters = new Set();
+
+          // Lọc và thêm tên người yêu cầu không trùng lặp vào Set
+          departmentRepairs.forEach(repair => {
+            if (repair[CONFIG_COLUMNS.DataSC.hoten]) {
+              requesters.add(repair[CONFIG_COLUMNS.DataSC.hoten]);
+            }
+          });
+
+          // Dropdown Người yêu cầu
+          const requesterList = document.getElementById('requesterList');
+          requesterList.innerHTML = ''; // Xóa các tùy chọn cũ
+          requesters.forEach(requester => {
+            const option = document.createElement('option');
+            option.value = requester;
+            requesterList.appendChild(option);
+          });
+
+            // 3.5.10. Dropdown Tình trạng thiết bị
         const statusList = document.getElementById('statusList');
         statusList.innerHTML = '';
-        
         const statuses = new Set();
         departmentRepairs.forEach(repair => {
           if (repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]) {
             statuses.add(repair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]);
           }
         });
-        
         statuses.forEach(status => {
           const option = document.createElement('option');
           option.value = status;
           statusList.appendChild(option);
         });
-      }
+        },
 
-      // 8.3. Hàm cập nhật số điện thoại người sửa chữa khi người sửa chữa thay đổi
-      function updateRepairPersonPhone() {
-        const repairPersonId = document.getElementById('repairPerson').value;
-        if (!repairPersonId) {
-          document.getElementById('repairPersonPhone').value = '';
-          return;
-        }
-        
-        const repairPersons = appData.val_DSUserSua;
-        for (let i = 1; i < repairPersons.length; i++) {
-          const person = repairPersons[i];
-          if (person[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId) {
-            document.getElementById('repairPersonPhone').value = person[CONFIG_COLUMNS.DSUserSua.sdt] || '';
-            break;
+        // 3. 14 Hàm cập nhật số điện thoại người báo sửa khi người báo sửa thay đổi
+        updateRequesterPhone() {
+          const Name_requester = document.getElementById('requesterName').value;
+          const unitId = userData.id; // Giả sử userData.id là ID đơn vị của người dùng hiện tại
+          console.log('Name_requester:', Name_requester);
+          if (!Name_requester) {
+            console.log('No requester selected');
+            document.getElementById('requesterPhone').value = '';
+            return;
           }
-        }
-      }
-      
-      // 8.4. Hàm cập nhật danh sách thiết bị khi nhóm thiết bị thay đổi
-      function updateEquipmentList() {
-        // Lấy giá trị nhóm thiết bị đã chọn từ phần tử có id 'equipmentGroup'
-        const selectedGroup = document.getElementById('equipmentGroup').value;
-        // Lấy phần tử select có id 'equipmentId' để hiển thị danh sách thiết bị
-        const equipmentSelect = document.getElementById('equipmentId');
-        
-        // Đặt lại nội dung HTML của phần tử select với một option mặc định
-        equipmentSelect.innerHTML = '<option value="">-- Chọn thiết bị --</option>';
-        
-        // Nếu không có nhóm thiết bị nào được chọn, thoát khỏi hàm
-        if (!selectedGroup) {
-          return;
-        }
-        
-        // Lấy dữ liệu danh sách thiết bị từ appData
-        const equipment = appData.val_DSThietBi;
-        
-        // Lọc danh sách thiết bị theo nhóm thiết bị đã chọn VÀ theo đơn vị hiện tại
-        const filteredEquipment = equipment.filter(item => 
-          item[CONFIG_COLUMNS.DSThietBi.nhomtb] === selectedGroup && 
-          item[CONFIG_COLUMNS.DSThietBi.donvi] == userData.id
-        );
-        
-        // Duyệt qua danh sách thiết bị đã lọc
-        for (let i = 0; i < filteredEquipment.length; i++) {
-          const item = filteredEquipment[i];
-          // Tạo phần tử option mới
-          const option = document.createElement('option');
-          // Đặt giá trị cho option là id của thiết bị
-          option.value = item[CONFIG_COLUMNS.DSThietBi.id];
-          option.textContent = item[CONFIG_COLUMNS.DSThietBi.mathietbi] + ' - ' + item[CONFIG_COLUMNS.DSThietBi.tentb];
-          equipmentSelect.appendChild(option);
-        }
-        
-          // Xóa tất cả các trường thông tin thiết bị
-          document.getElementById('equipmentName').value = '';
-          document.getElementById('equipmentModel').value = '';
-          document.getElementById('equipmentSerial').value = '';
-          document.getElementById('equipmentManufacturer').value = '';
-          document.getElementById('equipmentCountry').value = '';
-          document.getElementById('equipmentYear').value = '';
-          document.getElementById('equipmentUseYear').value = '';
-          document.getElementById('equipmentWarranty').value = '';
-          document.getElementById('equipmentLocation').value = '';
-      }
-      
-      // 8.5. Hàm cập nhật chi tiết thiết bị khi thiết bị thay đổi
-      function updateEquipmentDetails() {
-        const equipmentId = document.getElementById('equipmentId').value;
-        
-        // Clear equipment fields
-        document.getElementById('equipmentName').value = '';
-        document.getElementById('equipmentModel').value = '';
-        document.getElementById('equipmentSerial').value = '';
-        document.getElementById('equipmentManufacturer').value = '';
-        document.getElementById('equipmentCountry').value = '';
-        document.getElementById('equipmentYear').value = '';
-        document.getElementById('equipmentUseYear').value = '';
-        document.getElementById('equipmentWarranty').value = '';
-        document.getElementById('equipmentLocation').value = '';
-        
-        if (!equipmentId) {
-          return;
-        }
-        
-        const equipment = appData.val_DSThietBi;
-        for (let i = 1; i < equipment.length; i++) {
-          const item = equipment[i];
-          if (item[CONFIG_COLUMNS.DSThietBi.id] === equipmentId) {
-            document.getElementById('equipmentName').value = item[CONFIG_COLUMNS.DSThietBi.tentb] || '';
-            document.getElementById('equipmentModel').value = item[CONFIG_COLUMNS.DSThietBi.model] || '';
-            document.getElementById('equipmentSerial').value = item[CONFIG_COLUMNS.DSThietBi.serial] || '';
-            document.getElementById('equipmentManufacturer').value = item[CONFIG_COLUMNS.DSThietBi.hangsx] || '';
-            document.getElementById('equipmentCountry').value = item[CONFIG_COLUMNS.DSThietBi.nuocsx] || '';
-            document.getElementById('equipmentYear').value = item[CONFIG_COLUMNS.DSThietBi.namsx] || '';
-            document.getElementById('equipmentUseYear').value = item[CONFIG_COLUMNS.DSThietBi.namsd] || '';
-            document.getElementById('equipmentWarranty').value = item[CONFIG_COLUMNS.DSThietBi.hanbaohanh] || '';
-            document.getElementById('equipmentLocation').value = item[CONFIG_COLUMNS.DSThietBi.vitridat] || '';
-            break;
-          }
-        }
-      }
 
-      // 8.6. Hàm lưu dữ liệu báo hỏng
-      function saveRepair() {
-        // Validate form
-        const repairDataForm = {
-            id_repair: document.getElementById('repairId').value, //ID báo hỏng
-            Name_NguoiYeuCau: document.getElementById('requesterName').value, //Người yêu cầu
-            SDT_NguoiYeuCau: document.getElementById('requesterPhone').value, //Số điện thoại yêu cầu
-            ID_NguoiSua: document.getElementById('repairPerson').value, //Người sửa chữa
-            ID_ThietBi: document.getElementById('equipmentId').value, //Thiết bị
-            TinhTrang_ThietBi: document.getElementById('equipmentStatus').value, //Tình trạng thiết bị
-            ID_MucDo_YeuCau: document.getElementById('priorityLevel').value, //Mức độ ưu tiên
+          // Tìm người yêu cầu trong appData.val_DataSC theo cả tên và ID đơn vị
+          console.log('Finding requester with name:', Name_requester, 'and unit ID:', unitId);
+          const Sdt_requester = appData.val_DataSC.find(item => 
+            item[CONFIG_COLUMNS.DataSC.hoten] === Name_requester && 
+            item[CONFIG_COLUMNS.DataSC.iduserdv] === unitId
+          );
+          console.log('Found requester:', Sdt_requester);
+
+          if (Sdt_requester) {
+            const phoneList = document.getElementById('phoneList');
+            phoneList.innerHTML = ''; // Clear existing options
+            if (Sdt_requester[CONFIG_COLUMNS.DataSC.sdt]) {
+              const option = document.createElement('option');
+              option.value = Sdt_requester[CONFIG_COLUMNS.DataSC.sdt];
+              phoneList.appendChild(option);
+              console.log('Added phone option:', option.value);
+            }
+          } else {
+            console.log('No requester found, clearing phone field');
+            document.getElementById('requesterPhone').value = '';
+          }
+        },
+
+        // 3.14. Hàm cập nhật số điện thoại người sửa chữa khi người sửa chữa thay đổi
+        updateRepairPersonPhone() {
+          const repairPersonId = document.getElementById('repairPerson').value;
+          if (!repairPersonId) {
+            document.getElementById('repairPersonPhone').value = '';
+            return;
+          }
+          
+          const repairPerson = appData.val_DSUserSua.find(person => 
+            person[CONFIG_COLUMNS.DSUserSua.id] === repairPersonId
+          );
+          if (repairPerson) {
+            document.getElementById('repairPersonPhone').value = repairPerson[CONFIG_COLUMNS.DSUserSua.sdt] || '';
+          }
+        },
+
+        // 3.14. Cập nhật danh sách thiết bị khi nhóm thiết bị thay đổi
+        updateEquipmentList() {
+          const selectedGroup = document.getElementById('equipmentGroup').value;
+          const equipmentSelect = document.getElementById('equipmentId');
+          
+          equipmentSelect.innerHTML = '<option value="">-- Chọn thiết bị --</option>';
+          
+          if (!selectedGroup) return;
+          
+          const departmentEquipment = appData.val_DSThietBi.filter(item => 
+            item[CONFIG_COLUMNS.DSThietBi.nhomtb] === selectedGroup && 
+            item[CONFIG_COLUMNS.DSThietBi.donvi] == userData.id
+          );
+          
+          departmentEquipment.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item[CONFIG_COLUMNS.DSThietBi.id];
+            option.textContent = item[CONFIG_COLUMNS.DSThietBi.mathietbi] + ' - ' + item[CONFIG_COLUMNS.DSThietBi.tentb];
+            equipmentSelect.appendChild(option);
+          });
+          
+          this.clearEquipmentDetails();
+        },
+
+        // 3.15. Xóa giá trị các trường thiết bị
+        clearEquipmentDetails() {
+          try {
+            document.getElementById('equipmentName').value = '';
+            document.getElementById('equipmentModel').value = '';
+            document.getElementById('equipmentSerial').value = '';
+            document.getElementById('equipmentManufacturer').value = '';
+            document.getElementById('equipmentYear').value = '';
+            document.getElementById('equipmentUseYear').value = '';
+            document.getElementById('equipmentWarranty').value = '';
+            document.getElementById('equipmentLocation').value = '';
+          } catch (error) {
+            console.error('Error in clearEquipmentDetails:', error);
+          }
+        },
+
+        // 3.16. Cập nhật giá trị các trường thiết bị khi thiết bị thay đổi
+        updateEquipmentDetails() {
+          try {
+            const equipmentIdElement = document.getElementById('equipmentId');
+            if (!equipmentIdElement) {
+              console.error('Equipment ID element not found');
+              return;
+            }
+
+            const equipmentId = equipmentIdElement.value;
+            this.clearEquipmentDetails();
+            
+            if (!equipmentId) return;
+            
+            const equipment = appData.val_DSThietBi.find(item => 
+              item[CONFIG_COLUMNS.DSThietBi.id] === equipmentId
+            );
+            
+            if (equipment) {
+              document.getElementById('equipmentName').value = equipment[CONFIG_COLUMNS.DSThietBi.tentb] || '';
+              document.getElementById('equipmentModel').value = equipment[CONFIG_COLUMNS.DSThietBi.model] || '';
+              document.getElementById('equipmentSerial').value = equipment[CONFIG_COLUMNS.DSThietBi.serial] || '';
+              document.getElementById('equipmentManufacturer').value = equipment[CONFIG_COLUMNS.DSThietBi.hangsx] || '';
+              document.getElementById('equipmentYear').value = equipment[CONFIG_COLUMNS.DSThietBi.namsx] || '';
+              document.getElementById('equipmentUseYear').value = equipment[CONFIG_COLUMNS.DSThietBi.namsd] || '';
+              document.getElementById('equipmentWarranty').value = equipment[CONFIG_COLUMNS.DSThietBi.hanbaohanh] || '';
+              document.getElementById('equipmentLocation').value = equipment[CONFIG_COLUMNS.DSThietBi.vitridat] || '';
+            }
+          } catch (error) {
+            console.error('Error in updateEquipmentDetails:', error);
+          }
+        },
+
+        // 3.17. Thu thập dữ liệu từ form
+        collectFormData() {
+          return {
+            id_repair: document.getElementById('repairId').value,
+            Name_NguoiYeuCau: document.getElementById('requesterName').value,
+            SDT_NguoiYeuCau: document.getElementById('requesterPhone').value,
+            ID_NguoiSua: document.getElementById('repairPerson').value,
+            ID_ThietBi: document.getElementById('equipmentId').value,
+            TinhTrang_ThietBi: document.getElementById('equipmentStatus').value,
+            ID_MucDo_YeuCau: document.getElementById('priorityLevel').value,
             GhiChu_repair: document.getElementById('notes').value,
             trangThai_repair: CONFIG_ENUM.TRANGTHAI.BAO_HONG,
             timeupdate: new Date().toLocaleString('vi-VN', {
@@ -1892,131 +2267,60 @@
               second: '2-digit',
               hour12: false
             })
-        };
+          };
+        },
 
-        //Kiểm tra dữ liệu
-        if (!repairDataForm.Name_NguoiYeuCau) {
-          showError("Vui lòng nhập người yêu cầu");
-          return;
-        }
-        
-        if (!repairDataForm.SDT_NguoiYeuCau) {
-          showError("Vui lòng nhập số điện thoại yêu cầu");
-          return;
-        }
-        
-        if (!repairDataForm.TinhTrang_ThietBi) {
-          showError("Vui lòng nhập tình trạng thiết bị");
-          return;
-        }
-        
-        if (!repairDataForm.ID_ThietBi) {
-          showError("Vui lòng chọn thiết bị");
-          return;
-        }
-        
-        if (!repairDataForm.ID_MucDo_YeuCau) {
-          showError("Vui lòng chọn mức độ ưu tiên");
-          return;
-        }
-        
-        //Dữ liệu mảng để ghi vào Main_SC
-        console.log('Processing repair form data:', repairDataForm);
+        // 3.18. Chuẩn bị dữ liệu cho mảng Main_SC
+        arr_MainSC_prepare(repairDataForm) {
+          const currentDateTime = repairDataForm.timeupdate;
+          const newRow = Array(appData.val_DataSC[0].length).fill("");
 
-        const arr_repairDataMain = arr_MainSC_prepare(repairDataForm);
-        console.log('Prepared main repair data:', arr_repairDataMain);
+          newRow[CONFIG_COLUMNS.DataSC.id] = repairDataForm.id_repair;
+          newRow[CONFIG_COLUMNS.DataSC.trangthai] = repairDataForm.trangThai_repair;
+          newRow[CONFIG_COLUMNS.DataSC.mucdo] = repairDataForm.ID_MucDo_YeuCau;
+          newRow[CONFIG_COLUMNS.DataSC.iduserdv] = userData.id;
+          newRow[CONFIG_COLUMNS.DataSC.idusersua] = repairDataForm.ID_NguoiSua;
+          newRow[CONFIG_COLUMNS.DataSC.idthietbi] = repairDataForm.ID_ThietBi;
+          newRow[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao] = repairDataForm.TinhTrang_ThietBi;
+          newRow[CONFIG_COLUMNS.DataSC.ngaydonvibao] = currentDateTime;
+          newRow[CONFIG_COLUMNS.DataSC.ghichu] = repairDataForm.GhiChu_repair;
+          newRow[CONFIG_COLUMNS.DataSC.hoten] = repairDataForm.Name_NguoiYeuCau;
+          newRow[CONFIG_COLUMNS.DataSC.sdt] = repairDataForm.SDT_NguoiYeuCau;
 
-        // Text Telegram
-        const textTelegram = textTelegram_prepare(repairDataForm);
-        console.log('Prepared Telegram text:', textTelegram);
-
-        // ID Telegram người sửa chữa
-        const idTelegram_UserRepair = appData.val_DSUserSua.find(item => item[CONFIG_COLUMNS.DSUserSua.id] === repairDataForm.ID_NguoiSua)?.[CONFIG_COLUMNS.DSUserSua.usetele] || '';
-        console.log('Prepared Telegram ID:', idTelegram_UserRepair);
-
-        // Prepare data for saving
-        const repairData = {
-          TrangThai_Form: TrangThai_Form,
-          arr_repairDataMain: arr_repairDataMain,
-          idTelegram_UserRepair: idTelegram_UserRepair,
-          textTelegram: textTelegram
-        };
-        
-        // Log repair data to console for debugging
-        console.log('Repair data being submitted:', repairData);
-        
-        // Show loading message
-        showLoading();
-          console.log('TrangThai_Form:', TrangThai_Form);
-          if (TrangThai_Form === CONFIG_HTML.FORM_STATUS.ADD) {
-            // Add new repair
-            google.script.run
-              .withSuccessHandler(handleAddRepair)
-              .withFailureHandler(handleScriptError)
-              .SC_thembaohong(repairData);
-          }
-      }
-      
-      // 8.7. Hàm chuẩn bị dữ liệu cho mảng Main_SC
-      function arr_MainSC_prepare(repairDataForm) {
-        // Get current date time
-        const currentDateTime = repairDataForm.timeupdate;
-
-        // Initialize empty array with correct length based on CONFIG_COLUMNS
-        const newRow = Array(appData.val_DataSC[0].length).fill(""); // Initialize with empty values matching the width of val_DataSC
-
-        // Set values for required fields
-        newRow[CONFIG_COLUMNS.DataSC.id] = repairDataForm.id_repair;
-        newRow[CONFIG_COLUMNS.DataSC.trangthai] = repairDataForm.trangThai_repair;
-        newRow[CONFIG_COLUMNS.DataSC.mucdo] = repairDataForm.ID_MucDo_YeuCau;
-        newRow[CONFIG_COLUMNS.DataSC.iduserdv] = userData.id; // From global userData
-        newRow[CONFIG_COLUMNS.DataSC.idusersua] = repairDataForm.ID_NguoiSua;
-        newRow[CONFIG_COLUMNS.DataSC.idthietbi] = repairDataForm.ID_ThietBi;
-        newRow[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao] = repairDataForm.TinhTrang_ThietBi;
-        newRow[CONFIG_COLUMNS.DataSC.ngaydonvibao] = currentDateTime;
-        newRow[CONFIG_COLUMNS.DataSC.ghichu] = repairDataForm.GhiChu_repair;
-        newRow[CONFIG_COLUMNS.DataSC.hoten] = repairDataForm.Name_NguoiYeuCau;
-        newRow[CONFIG_COLUMNS.DataSC.sdt] = repairDataForm.SDT_NguoiYeuCau;
-        
-        // Create history entry with optional ghi chú
-        let historyEntry = `* Ngày ${currentDateTime}   - ${repairDataForm.Name_NguoiYeuCau}: Báo hỏng`;
-        if (repairDataForm.GhiChu_repair && repairDataForm.GhiChu_repair.trim() !== '') {
+          let historyEntry = `* Ngày ${currentDateTime}   - ${repairDataForm.Name_NguoiYeuCau}: Báo hỏng`;
+          if (repairDataForm.GhiChu_repair?.trim()) {
             historyEntry += `\n   - Ghi chú: ${repairDataForm.GhiChu_repair}`;
-        }
-        newRow[CONFIG_COLUMNS.DataSC.history] = historyEntry;
-        newRow[CONFIG_COLUMNS.DataSC.timeupdate] = currentDateTime;
-        return newRow;
-      }
-      
-      // 8.8. Hàm chuẩn bị dữ liệu cho text Telegram
-      function textTelegram_prepare(repairDataForm) {
-        // Lấy thông tin thiết bị từ appData
-        const thietbi = appData.val_DSThietBi.find(item => 
-            item[CONFIG_COLUMNS.DSThietBi.id] === repairDataForm.ID_ThietBi
-        );
-        
-        // Lấy thông tin mức độ ưu tiên
-        const mucdo = appData.val_EnumSetting.find(item => 
-            item[0] === repairDataForm.ID_MucDo_YeuCau && item[1] === "Mức độ YC"
-        );
-        
-        // Lấy thông tin người sửa
-        const nguoisua = appData.val_DSUserSua.find(item =>
-            item[CONFIG_COLUMNS.DSUserSua.id] === repairDataForm.ID_NguoiSua
-        );
+          }
+          newRow[CONFIG_COLUMNS.DataSC.history] = historyEntry;
+          newRow[CONFIG_COLUMNS.DataSC.timeupdate] = currentDateTime;
 
-        // Chuẩn bị các giá trị cho message
-        const thietbiInfo = {
+          return newRow;
+        },
+
+        // 3.19. Chuẩn bị tin nhắn Telegram
+        textTelegram_prepare(repairDataForm) {
+          const thietbi = appData.val_DSThietBi.find(item => 
+            item[CONFIG_COLUMNS.DSThietBi.id] === repairDataForm.ID_ThietBi
+          );
+          
+          const mucdo = appData.val_EnumSetting.find(item => 
+            item[0] === repairDataForm.ID_MucDo_YeuCau && item[1] === "Mức độ YC"
+          );
+          
+          const nguoisua = appData.val_DSUserSua.find(item =>
+            item[CONFIG_COLUMNS.DSUserSua.id] === repairDataForm.ID_NguoiSua
+          );
+
+          const thietbiInfo = {
             ten: thietbi ? thietbi[CONFIG_COLUMNS.DSThietBi.tentb] : 'Không xác định',
             model: thietbi ? thietbi[CONFIG_COLUMNS.DSThietBi.model] : 'Không xác định',
             serial: thietbi ? thietbi[CONFIG_COLUMNS.DSThietBi.serial] : 'Không xác định'
-        };
+          };
 
-        const mucdoText = mucdo ? mucdo[2] : 'Không xác định';
-        const nguoisuaText = nguoisua ? nguoisua[CONFIG_COLUMNS.DSUserSua.hoten] : '';
+          const mucdoText = mucdo ? mucdo[2] : 'Không xác định';
+          const nguoisuaText = nguoisua ? nguoisua[CONFIG_COLUMNS.DSUserSua.hoten] : '';
 
-        // Format message with emojis and proper formatting
-        const message = `🔔 *BÁO HỎNG THIẾT BỊ MỚI* 🔔
+          return `🔔 *BÁO HỎNG THIẾT BỊ MỚI* 🔔
 ━━━━━━━━━━━━━━━━━━━━━━━━
 🆔 *ID:* ${repairDataForm.id_repair}
 🏥 *Đơn vị báo hỏng:* ${userData.name}
@@ -2027,108 +2331,10 @@
 ⏱️ *Mức độ ưu tiên:* ${mucdoText}
 👤 *Người yêu cầu:* ${repairDataForm.Name_NguoiYeuCau} (${repairDataForm.SDT_NguoiYeuCau})
 ${nguoisuaText ? `👨‍🔧 *Người phụ trách:* ${nguoisuaText}` : ""}`;
-
-        return message;
-      }
-
-      // 8.7. Hàm xử lý thêm báo hỏng thành công
-      function handleAddRepair(result) {
-        try {
-          Swal.close();
-          
-          if (result) {
-            // Close modal and remove backdrop properly
-            const modalElement = document.getElementById('FormRepairModal');
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-              modal.hide();
-              // Remove modal backdrop
-              const backdrop = document.querySelector('.modal-backdrop');
-              if (backdrop) {
-                backdrop.remove();
-              }
-              // Remove modal-open class from body
-              document.body.classList.remove('modal-open');
-              document.body.style.overflow = '';
-              document.body.style.paddingRight = '';
-            }
-
-            // Update appData with new repair data
-            appData.val_DataSC.push(result);
-            
-            // Cập nhật Max_Count_RepairID
-            Max_Count_RepairID = Max_Count_RepairID + 1;
-            if (Max_Count_RepairID > 999) {
-              Max_Count_RepairID = 0;
-            }
-            // Refresh repair tables to show new data
-            updateRepairTables();
-            
-            // Show success message
-            showSuccess("Thêm báo hỏng thành công");
-          } else {
-            showError("Có lỗi xảy ra khi thêm báo hỏng");
-          }
-        } catch (error) {
-          console.error("Error in handleSaveRepair:", error);
-          showError("Có lỗi xảy ra: " + error.message);
         }
-      }
-      
-      // 8.9. Hàm hiển thị modal thêm báo hỏng
-      function showAddRepairModal() {
-        console.log('showAddRepairModal function called');
-        TrangThai_Form = CONFIG_HTML.FORM_STATUS.ADD;
-        // Reset form
-        document.getElementById('repairId').value = generateRepairID();
-        document.getElementById('equipmentId').innerHTML = '<option value="">-- Chọn thiết bị --</option>';
-        document.getElementById('equipmentName').value = '';
-        document.getElementById('equipmentModel').value = '';
-        document.getElementById('equipmentSerial').value = '';
-        document.getElementById('equipmentManufacturer').value = '';
-        document.getElementById('equipmentCountry').value = '';
-        document.getElementById('equipmentYear').value = '';
-        document.getElementById('equipmentUseYear').value = '';
-        document.getElementById('equipmentWarranty').value = '';
-        document.getElementById('equipmentLocation').value = '';
-        document.getElementById('equipmentStatus').value = '';
-        document.getElementById('priorityLevel').selectedIndex = 0;
-        document.getElementById('notes').value = '';
-        
-        // Show modal using Bootstrap 5 syntax
-        const modalElement = document.getElementById('FormRepairModal');
-        const modal = new bootstrap.Modal(modalElement);
-        modal.show();
-      }
-
-      // 8.10. Hàm hiển thị modal sửa báo hỏng
-      function editRepair(repairId) {
-        TrangThai_Form = CONFIG_HTML.FORM_STATUS.EDIT;
-      }
-      
-      // 8.11. Hàm hiển thị modal xem chi tiết báo hỏng
-      function viewRepair(repairId) {
-        TrangThai_Form = CONFIG_HTML.FORM_STATUS.VIEW;
-      }
-      
-      // 8.12. Hàm xóa báo hỏng
-      function deleteRepair(repairId) {
-        TrangThai_Form = CONFIG_HTML.FORM_STATUS.DELETE;
-        if (confirm('Bạn có chắc chắn muốn xóa báo hỏng này?')) {
-          google.script.run
-            .withSuccessHandler(function(result) {
-              if (result) {
-                loadAllData();
-                alert('Xóa báo hỏng thành công');
-              } else {
-                alert('Có lỗi xảy ra khi xóa báo hỏng');
-              }
-            })
-            .withFailureHandler(handleScriptError)
-            .SC_delete(repairId);
-        }
-      }
+      };
     </script>
   </body>
+</html> 
 </html> 
 </html> 

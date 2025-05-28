@@ -5,6 +5,29 @@
 // ===== 1. REPAIR OPERATIONS =====
 
 /**
+ * Gets all repair data from DataSC sheet
+ * @returns {Array} Array containing all repair records
+ */
+function getDataSC() {
+  const msgData = [];
+  msgData.push([new Date(), "[getDataSC] - Starting to retrieve all repair data"]);
+  
+  try {
+    const sheet = SpreadsheetApp.openById(CONFIG_FILE_IDS.idSH_DataSC)
+      .getSheetByName(CONFIG_SHEET_NAMES.DataSC);
+    const data = sheet.getDataRange().getValues();
+    
+    msgData.push([new Date(), "[getDataSC] - Successfully retrieved " + data.length + " records"]);
+    logDebugData(msgData);
+    
+    return data;
+  } catch (error) {
+    msgData.push([new Date(), "[getDataSC] - ERROR: " + error.toString()]);
+    logDebugData(msgData);
+    throw error;
+  }
+}
+/**
  * Deletes a repair record (marks as deleted)
  * @param {string} id - The repair ID to delete
  * @returns {boolean} - True if successful
@@ -72,7 +95,7 @@ function SC_getDataById(id) {
  * @param {Object} inputdata - Object containing repair data to update
  * @returns {Array} - Updated repair data array
  */
-function SC_update(inputdata) {
+function SC_suabaohong(inputdata) {
   const msgData = [];
   msgData.push([new Date(), "[SC_update] - Starting update for repair ID: " + inputdata.id]);
   
@@ -153,17 +176,7 @@ function SC_thembaohong(repairData) {
     msgData.push([new Date(), "[SC_thembaohong] - Opening DataSC spreadsheet"]);
     const sph_DataSC = SpreadsheetApp.openById(CONFIG_FILE_IDS.idSH_DataSC);
     const sh_DataSC = sph_DataSC.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
-    // Check if ID already exists in sheet
-    const existingData = sh_DataSC.getDataRange().getValues();
-    const idColumnIndex = CONFIG_COLUMNS.DataSC.id;
-    const newId = repairData.arr_repairDataMain[idColumnIndex];
     
-    const idExists = existingData.some(row => row[idColumnIndex] === newId);
-    if (idExists) {
-      msgData.push([new Date(), "[SC_thembaohong] - ERROR: Duplicate repair ID found"]);
-      logDebugData(msgData);
-      throw new Error("Do 2 người cùng thao tác nên dữ liệu đang tải đã cũ.\nĐề nghị cập nhật lại dữ liệu và thực hiện lại");
-    }
     //2. Ghi vào sheet DataSC
     msgData.push([new Date(), "[SC_thembaohong] - Appending new repair data to sheet"]);
     // Append the new row to the end of the sheet
@@ -181,7 +194,6 @@ function SC_thembaohong(repairData) {
     
     msgData.push([new Date(), "[SC_thembaohong] - Successfully created new repair report"]);
     logDebugData(msgData);
-    
     //4. Trả về dữ liệu mới
     return repairData.arr_repairDataMain;
 
