@@ -182,15 +182,15 @@ function SC_thembaohong(repairData) {
     // Append the new row to the end of the sheet
     sh_DataSC.appendRow(repairData.arr_repairDataMain);
     
-    //3. Gửi thông báo Telegram nếu có
-    if (repairData.textTelegram && repairData.idTelegram_UserRepair) {
-      msgData.push([new Date(), "[SC_thembaohong] - Sending Telegram notifications"]);
-      // Gửi tin nhắn cho nhóm
-      tele_sendsms_group(repairData.textTelegram);
+    // //3. Gửi thông báo Telegram nếu có
+    // if (repairData.textTelegram && repairData.idTelegram_UserRepair) {
+    //   msgData.push([new Date(), "[SC_thembaohong] - Sending Telegram notifications"]);
+    //   // Gửi tin nhắn cho nhóm
+    //   tele_sendsms_group(repairData.textTelegram);
 
-      // Gửi tin nhắn cho người dùng
-      tele_sendsms_user(repairData.textTelegram, repairData.idTelegram_UserRepair);
-    }
+    //   // Gửi tin nhắn cho người dùng
+    //   tele_sendsms_user(repairData.textTelegram, repairData.idTelegram_UserRepair);
+    // }
     
     msgData.push([new Date(), "[SC_thembaohong] - Successfully created new repair report"]);
     logDebugData(msgData);

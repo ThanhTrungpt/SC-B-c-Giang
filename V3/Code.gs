@@ -8,4 +8,4 @@ function doGet() {
     .setTitle('Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-} 
+}

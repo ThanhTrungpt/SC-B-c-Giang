@@ -1,0 +1,240 @@
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+  }
+
+  .container {
+    max-width: 100%;
+    margin-top: 20px;
+  }
+  
+  /* Loading screen */
+  .loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4;
+    z-index: 9999;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+  }
+
+  .loading-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ddd;
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-message {
+    margin-top: 20px;
+    font-size: 16px;
+    color: #333;
+    text-align: center;
+  }
+  
+  /* Login form */
+  #loginSection {
+    width: 500px;
+    margin: 100px auto;
+    padding: 20px;
+    display: none;
+  }
+  
+  .card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: none;
+    padding: 10px;
+  }
+
+  .card-header {
+    background-color: #007bff;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+  }
+
+  .password-field {
+    position: relative;
+  }
+
+  .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+  
+  /* Main sections */
+  .section {
+    display: none;
+    padding: 5px;
+  }
+
+  .dashboard {
+    margin-left: 10px;
+    margin-right: 10px;
+    display: none;
+  }
+
+  .nav-pills .nav-link.active {
+    background-color: #007bff;
+    color: #fff;
+  }
+
+  .tab-content .tab-pane {
+    padding: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-top: none;
+    background-color: #ffffff;
+  }
+  
+  /* Tables */
+  .custom-table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #ddd;
+    font-size: 18px;
+  }
+
+  .custom-table th,
+  .custom-table td {
+    text-align: left;
+    padding: 12px;
+  }
+
+  .custom-table tr {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .custom-table tr.tb_header,
+  .custom-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Action buttons */
+  .action-buttons button {
+    padding: 5px 10px;
+    margin: 2px;
+    cursor: pointer;
+  }
+
+  .edit-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+
+  .delete-button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+  }
+  
+  /* Modal */
+  .modal {
+    z-index: 1050;
+  }
+
+  .modal-backdrop {
+    z-index: 1040;
+  }
+
+  .modal-dialog {
+    z-index: 1050;
+    margin: 1.75rem auto;
+  }
+
+  .modal-content {
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1050;
+  }
+  
+  .modal-header {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  
+  /* Password field styling */
+  .input-group .btn-outline-secondary {
+    border-color: #ced4da;
+  }
+  
+  .input-group .btn-outline-secondary:hover {
+    background-color: #f8f9fa;
+  }
+  
+  /* Header styles */
+  .app-header {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    margin-bottom: 20px;
+  }
+
+  .app-logo {
+    height: 50px;
+    margin-right: 15px;
+    flex-shrink: 0;
+  }
+  
+  .app-title {
+    color: #007bff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  
+  @media (max-width: 992px) {
+    .app-title {
+      font-size: 1.25rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .app-title {
+      font-size: 1rem;
+    }
+  }
+  
+  .user-profile {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .dropdown-menu {
+    min-width: 200px;
+  }
