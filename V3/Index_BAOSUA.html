@@ -16,9 +16,14 @@
     
   </head>
   <body class="p-3 m-0 border-0 bd-example m-0 border-0">
-    <div id="mainApp" class="section">  
-      <!-- Head Navbar -->
-      <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <!-- Loading screen -->
+
+    <!-- Login section -->
+
+    <!-- Main Section -->
+    <div class="container" id="mainApp" >  
+      <!-- Head Navbar/Main Section -->
+      <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div class="container-fluid">
           <span class="navbar-brand h1 text-primary " >
             <img src="https://drive.google.com/thumbnail?id=16gCExt-p9JflHcqZQ2nxWLDL65bpD-Tf&sz=s100" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
@@ -49,145 +54,330 @@
                     Đăng xuất</a></li>
                 </ul>
             </span>
-              
           </div>
         </div>
-      </nav>
+      </nav> <!-- Head Navbar/Main Section -->
 
-      <!-- Nút bấm, tìm kiếm -->
-      <div class="container dashboard mx-3">
-        <div class="row mb-3">
-          <div class="col-md-3">
-            <button type="button" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
-              <i class="bi bi-plus-square-fill"></i> Thêm báo hỏng
+      <!-- Nút bấm, tìm kiếm/Main Section -->
+      <div class="row mb-3">
+        <div class="col-md-3">
+          <button type="button" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
+            <i class="bi bi-plus-square-fill"></i> Thêm báo hỏng
+          </button>
+        </div>
+        <div class="col-md-2 d-none d-md-block">
+        </div>
+        <div class="col-md-7">
+          <div class="input-group">
+            <input type="text" class="form-control" id="searchInput" placeholder="Nhập nội dung tìm kiếm...">
+            <button class="btn btn-primary" type="button" onclick="searchRepair()">
+              <i class="bi bi-search"></i> Tìm kiếm
             </button>
-          </div>
-          <div class="col-md-2 d-none d-md-block">
-          </div>
-          <div class="col-md-7">
-            <div class="input-group">
-              <input type="text" class="form-control" id="searchInput" placeholder="Nhập nội dung tìm kiếm...">
-              <button class="btn btn-primary" type="button" onclick="searchRepair()">
-                <i class="bi bi-search"></i> Tìm kiếm
-              </button>
-              <button class="btn btn-secondary" type="button" onclick="cancelSearch()">
-                <i class="bi bi-x-circle"></i> Hủy tìm kiếm
-              </button>
-            </div>
+            <button class="btn btn-secondary" type="button" onclick="cancelSearch()">
+              <i class="bi bi-x-circle"></i> Hủy tìm kiếm
+            </button>
           </div>
         </div>
+      </div> <!-- Nút bấm, tìm kiếm/Main Section -->
 
-        <!-- Tabs -->
-        <ul class="nav nav-pills mb-3 my-3" id="repairTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-baohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
-              Báo hỏng (0)
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-dangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
-              Đang sửa (0)
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-baohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
-              Bảo hành (0)
-            </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-suangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
-              Sửa ngoài (0)
-            </button>
-          </li>
-        </ul>
+      <!-- Tabs/Main Section -->
+      <ul class="nav nav-pills" id="repairTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-baohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
+            Báo hỏng (0)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-dangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
+            Đang sửa (0)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-baohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
+            Bảo hành (0)
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-suangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
+            Sửa ngoài (0)
+          </button>
+        </li>
+      </ul> <!-- Tabs/Main Section -->
         
-        <!-- Tab content -->
-        <div class="tab-content" id="repairTabsContent">
-          <!-- Báo hỏng tab -->
-          <div class="tab-pane fade show active" id="baohong" role="tabpanel">
-            <table class="custom-table">
-              <thead>
-                <tr class="tb_header">
-                  <th style="width: 10%;">STT</th>
-                  <th style="width: 75%;">Nội dung</th>
-                  <th style="width: 20%;">Hành động</th>
-                </tr>
-              </thead>
-              <tbody id="history_baohong">
-                <!-- Data will be populated dynamically -->
-              </tbody>
-            </table>
-          </div>
-          
-          <!-- Đang sửa tab -->
-          <div class="tab-pane fade" id="dangsua" role="tabpanel">
-            <table class="custom-table">
-              <thead>
-                <tr class="tb_header">
-                  <th style="width: 10%;">STT</th>
-                  <th style="width: 75%;">Nội dung</th>
-                  <th style="width: 20%;">Hành động</th>
-                </tr>
-              </thead>
-              <tbody id="history_dangsua">
-                <!-- Data will be populated dynamically -->
-              </tbody>
-            </table>
-          </div>
-          
-          <!-- Bảo hành tab -->
-          <div class="tab-pane fade" id="baohanh" role="tabpanel">
-            <table class="custom-table">
-              <thead>
-                <tr class="tb_header">
-                  <th style="width: 10%;">STT</th>
-                  <th style="width: 75%;">Nội dung</th>
-                  <th style="width: 20%;">Hành động</th>
-                </tr>
-              </thead>
-              <tbody id="history_baohanh">
-                <!-- Data will be populated dynamically -->
-              </tbody>
-            </table>
-          </div>
-          
-          <!-- Sửa ngoài tab -->
-          <div class="tab-pane fade" id="suangoai" role="tabpanel">
-            <table class="custom-table">
-              <thead>
-                <tr class="tb_header">
-                  <th style="width: 10%;">STT</th>
-                  <th style="width: 75%;">Nội dung</th>
-                  <th style="width: 20%;">Hành động</th>
-                </tr>
-              </thead>
-              <tbody id="history_suangoai">
-                <!-- Data will be populated dynamically -->
-              </tbody>
-            </table>
-          </div>
+      <!-- Tab Table/Main Section -->
+      <div class="tab-content" id="repairTabsContent">
+        <!-- Báo hỏng tab -->
+        <div class="tab-pane fade show active" id="baohong" role="tabpanel">
+          <table class="custom-table">
+            <thead>
+              <tr class="tb_header">
+                <th style="width: 10%;">STT</th>
+                <th style="width: 75%;">Nội dung</th>
+                <th style="width: 20%;">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="history_baohong">
+              <!-- Data will be populated dynamically -->
+            </tbody>
+          </table>
         </div>
-      </div>
-    </div> <!-- mainApp -->
+        
+        <!-- Đang sửa tab -->
+        <div class="tab-pane fade" id="dangsua" role="tabpanel">
+          <table class="custom-table">
+            <thead>
+              <tr class="tb_header">
+                <th style="width: 10%;">STT</th>
+                <th style="width: 75%;">Nội dung</th>
+                <th style="width: 20%;">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="history_dangsua">
+              <!-- Data will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Bảo hành tab -->
+        <div class="tab-pane fade" id="baohanh" role="tabpanel">
+          <table class="custom-table">
+            <thead>
+              <tr class="tb_header">
+                <th style="width: 10%;">STT</th>
+                <th style="width: 75%;">Nội dung</th>
+                <th style="width: 20%;">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="history_baohanh">
+              <!-- Data will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Sửa ngoài tab -->
+        <div class="tab-pane fade" id="suangoai" role="tabpanel">
+          <table class="custom-table">
+            <thead>
+              <tr class="tb_header">
+                <th style="width: 10%;">STT</th>
+                <th style="width: 75%;">Nội dung</th>
+                <th style="width: 20%;">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="history_suangoai">
+              <!-- Data will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div><!-- Tab Table/Main Section -->
+    </div> <!-- Main Section -->
    
     <!-- Repair Modal -->
-    <div class="modal fade" id="FormRepairModal" tabindex="-1" aria-labelledby="FormRepairModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+    <div class="modal fade" id="FormRepairModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"  aria-labelledby="FormRepairModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">Xem/Sửa/Thêm báo hỏng</h1>
+            <h1 class="modal-title fs-5" id="HeaderFormRepairModal">Xem/Sửa/Thêm báo hỏng</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body container-fluid">
             <form>
-              <div class="mb-3">
-                <label for="recipient-name" class="col-form-label">Recipient:</label>
-                <input type="text" class="form-control" id="recipient-name">
-              </div>
-              <div class="mb-3">
-                <label for="message-text" class="col-form-label">Message:</label>
-                <textarea class="form-control" id="message-text"></textarea>
-              </div>
+              <!-- Nhóm Đơn vị yêu cầu -->
+                <a class="collapsed h6 border text-primary  border-primary rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#GroupDonViYC">
+                  Thông tin đơn vị yêu cầu
+                </a>
+                <div class="collapse show" id="GroupDonViYC">
+                  <div class="row">
+                    <div class="d-flex align-items-center mb-1">
+                      <label for="departmentName" class="form-label me-2 mb-0" style="min-width: 150px;">Đơn vị yêu cầu:</label>
+                      <div class="input-group" >
+                        <span class="input-group-text"><i class="bi bi-building-check fs-5" ></i></span>
+                        <input type="text" class="form-control" id="departmentName" readonly>
+                      </div>
+                    </div>  
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col">
+                      <label for="requesterName" class="form-label">Người yêu cầu</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-check"></i></span>
+                        <input type="text" class="form-control" id="requesterName" list="requesterList">
+                        <datalist id="requesterList"></datalist>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="requesterPhone" class="form-label">Số điện thoại yêu cầu</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                        <input type="text" class="form-control" id="requesterPhone" list="phoneList">
+                        <datalist id="phoneList"></datalist>
+                      </div>
+                    </div>
+                  </div>
+                </div> <!-- Nhóm Đơn vị yêu cầu --> 
+              <!-- Nhóm Người sửa chữa -->
+              <!-- Nhóm Người sửa chữa -->
+                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#GroupNguoiSuaChua">
+                  Thông tin người sửa chữa
+                </a>
+                <div class="collapse show" id="GroupNguoiSuaChua">
+                  <div class="row">
+                    <div class="col">
+                      <label for="repairerName" class="form-label">Người sửa chữa</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-wrench"></i></span>
+                        <input type="text" class="form-control" id="repairerName" list="repairerList">
+                        <datalist id="repairerList"></datalist>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="repairerPhone" class="form-label">Số điện thoại người sửa chữa</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                        <input type="text" class="form-control" id="repairerPhone" list="repairerPhoneList">
+                        <datalist id="repairerPhoneList"></datalist>
+                      </div>
+                    </div>
+                  </div>
+                </div> <!-- Nhóm Người sửa chữa -->
+
+              <!-- Nhóm Thiết bị -->
+              <!-- Nhóm Thông tin thiết bị -->
+                <a class="collapsed h6 border text-primary border-primary rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#GroupThongTinThietBi">
+                  Thông tin thiết bị
+                </a>
+                <div class="collapse show" id="GroupThongTinThietBi">
+                  <div class="row">
+                    <div class="col">
+                      <label for="deviceGroup" class="form-label">Nhóm thiết bị</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
+                        <input type="text" class="form-control" id="deviceGroup" list="deviceGroupList">
+                        <datalist id="deviceGroupList"></datalist>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="deviceCode" class="form-label">Mã thiết bị</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                        <input type="text" class="form-control" id="deviceCode" list="deviceCodeList">
+                        <datalist id="deviceCodeList"></datalist>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <label for="deviceName" class="form-label">Tên thiết bị</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-box"></i></span>
+                        <input type="text" class="form-control" id="deviceName" list="deviceNameList">
+                        <datalist id="deviceNameList"></datalist>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="manufacturer" class="form-label">Hãng sản xuất</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-building"></i></span>
+                        <input type="text" class="form-control" id="manufacturer" list="manufacturerList">
+                        <datalist id="manufacturerList"></datalist>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <label for="model" class="form-label">Model</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-gear"></i></span>
+                        <input type="text" class="form-control" id="model" list="modelList">
+                        <datalist id="modelList"></datalist>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="serial" class="form-label">Serial</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                        <input type="text" class="form-control" id="serial" list="serialList">
+                        <datalist id="serialList"></datalist>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <label for="yearManufactured" class="form-label">Năm sản xuất</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                        <input type="number" class="form-control" id="yearManufactured" min="1900" max="2100">
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="yearInUse" class="form-label">Năm đưa vào sử dụng</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
+                        <input type="number" class="form-control" id="yearInUse" min="1900" max="2100">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col">
+                      <label for="location" class="form-label">Vị trí đặt</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                        <input type="text" class="form-control" id="location" list="locationList">
+                        <datalist id="locationList"></datalist>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="warrantyExpiry" class="form-label">Hạn bảo hành</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                        <input type="date" class="form-control" id="warrantyExpiry">
+                      </div>
+                    </div>
+                  </div>
+                </div> <!-- Nhóm Thông tin thiết bị -->
+
+              <!--Nhóm Thông tin tình trạng thiết bị -->
+              <a class="collapsed h6 border text-danger border-danger rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#GroupThongTinTinhTrangThietBi">
+                Thông tin tình trạng thiết bị
+              </a>
+              <div class="collapse show" id="GroupThongTinTinhTrangThietBi">
+                <div class="row mb-2">
+                  <div class="col">
+                    <label for="deviceStatus" class="form-label">Tình trạng thiết bị</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-exclamation-circle"></i></span>
+                      <select class="form-select" id="deviceStatus">
+                        <option value="">Chọn tình trạng</option>
+                        <option value="Bình thường">Bình thường</option>
+                        <option value="Hỏng">Hỏng</option>
+                        <option value="Bảo trì">Bảo trì</option>
+                        <option value="Khác">Khác</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="requirementLevel" class="form-label">Mức độ yêu cầu</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-flag"></i></span>
+                      <select class="form-select" id="requirementLevel">
+                        <option value="">Chọn mức độ</option>
+                        <option value="Thấp">Thấp</option>
+                        <option value="Trung bình">Trung bình</option>
+                        <option value="Cao">Cao</option>
+                        <option value="Khẩn cấp">Khẩn cấp</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <label for="deviceNote" class="form-label">Ghi chú</label>
+                    <textarea class="form-control" id="deviceNote" rows="2" placeholder="Nhập ghi chú nếu có"></textarea>
+                  </div>
+                </div>
+              </div> <!--Nhóm Thông tin tình trạng thiết bị -->
+
             </form>
           </div>
           <div class="modal-footer">
@@ -196,7 +386,11 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> <!-- Repair Modal -->
+
+    <!-- Edit User Profile Modal -->
+
+    <!-- Change Password Modal -->
 
     <!-- Embed Script -->
     <script src="./main.gs"></script>
