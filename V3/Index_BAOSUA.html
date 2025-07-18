@@ -55,11 +55,11 @@
       </nav>
 
       <!-- Nút bấm, tìm kiếm -->
-      <div class="container dashboard m-3">
+      <div class="container dashboard mx-3">
         <div class="row mb-3">
           <div class="col-md-3">
-            <button type="button" class="btn btn-success w-100" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
-              <i class="fas fa-plus me-2"></i>Thêm báo hỏng
+            <button type="button" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
+              <i class="bi bi-plus-square-fill"></i> Thêm báo hỏng
             </button>
           </div>
           <div class="col-md-2 d-none d-md-block">
@@ -68,10 +68,10 @@
             <div class="input-group">
               <input type="text" class="form-control" id="searchInput" placeholder="Nhập nội dung tìm kiếm...">
               <button class="btn btn-primary" type="button" onclick="searchRepair()">
-                <i class="fas fa-search me-2"></i>Tìm kiếm
+                <i class="bi bi-search"></i> Tìm kiếm
               </button>
               <button class="btn btn-secondary" type="button" onclick="cancelSearch()">
-                <i class="fas fa-times me-2"></i>Hủy tìm kiếm
+                <i class="bi bi-x-circle"></i> Hủy tìm kiếm
               </button>
             </div>
           </div>
@@ -168,10 +168,7 @@
           </div>
         </div>
       </div>
-    </div>
     </div> <!-- mainApp -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
    
     <!-- Repair Modal -->
     <div class="modal fade" id="FormRepairModal" tabindex="-1" aria-labelledby="FormRepairModalLabel" aria-hidden="true">
