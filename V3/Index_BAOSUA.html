@@ -11,17 +11,17 @@
      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
     <!-- Link to CSS -->
-    <link rel="stylesheet" href="./Styles.css">
+    <link rel="stylesheet" href="./ccs_Styles.html">
     <title>Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</title>
     
   </head>
   <body class="p-3 m-0 border-0 bd-example m-0 border-0">
     <!-- Loading screen -->
 
-    <!-- Login section -->
+    <!-- Login section Local storage -->
 
     <!-- Main Section -->
-    <div class="container" id="mainApp" >  
+    <div class="container" id="frmainApp" >  
       <!-- Head Navbar/Main Section -->
       <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div class="container-fluid">
@@ -33,23 +33,23 @@
           <div class="collapse navbar-collapse justify-content-end" id="navbarScroll" >
             <span class="nav-item dropdown-center">
                 <span class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <span class="text-secondary " id="userName">User Name</span>
-                  <img id="userAvatar" src="https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100" alt="User Avatar" width="40" height="40"  class="user-avatar">
+                  <span class="text-secondary " id="txtuserName">User Name</span>
+                  <img id="imguserAvatar" src="https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100" alt="User Avatar" width="40" height="40"  class="user-avatar">
                 </span>
                 <ul class="dropdown-menu">
                   <li>
-                    <a class="dropdown-item" href="#" onclick="refreshData()">
+                    <a class="dropdown-item" id="btnFreshData" href="#">
                       <i class="bi bi-arrow-clockwise text-primary" style="font-size: 1.5rem"></i>
                       Cập nhật dữ liệu</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                  <li><a class="dropdown-item" id="btnEdituser" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">
                     <i class="bi bi-pencil-square text-primary" style="font-size: 1.5rem"></i>
                     Chỉnh sửa thông tin</a></li>
-                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                  <li><a class="dropdown-item" id="btnChangePw" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
                     <i class="bi bi-file-lock2 text-primary" style="font-size: 1.5rem"></i>
                     Đổi mật khẩu</a></li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="#" onclick="logout()">
+                  <li><a class="dropdown-item" id="btnLogout" href="#" onclick="logout()">
                     <i class="bi bi-box-arrow-right text-primary" style="font-size: 1.5rem"></i>
                     Đăng xuất</a></li>
                 </ul>
@@ -61,7 +61,7 @@
       <!-- Nút bấm, tìm kiếm/Main Section -->
       <div class="row mb-3">
         <div class="col-md-3">
-          <button type="button" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
+          <button type="button" id="btnAddRepair" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
             <i class="bi bi-plus-square-fill"></i> Thêm báo hỏng
           </button>
         </div>
@@ -69,11 +69,11 @@
         </div>
         <div class="col-md-7">
           <div class="input-group">
-            <input type="text" class="form-control" id="searchInput" placeholder="Nhập nội dung tìm kiếm...">
-            <button class="btn btn-primary" type="button" onclick="searchRepair()">
+            <input type="text" class="form-control" id="txtsearchInput" placeholder="Nhập nội dung tìm kiếm...">
+            <button class="btn btn-primary" id="btnSearch" type="button">
               <i class="bi bi-search"></i> Tìm kiếm
             </button>
-            <button class="btn btn-secondary" type="button" onclick="cancelSearch()">
+            <button class="btn btn-secondary" id="btnSearchCancel" type="button">
               <i class="bi bi-x-circle"></i> Hủy tìm kiếm
             </button>
           </div>
@@ -83,22 +83,22 @@
       <!-- Tabs/Main Section -->
       <ul class="nav nav-pills" id="repairTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tab-baohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
+          <button class="nav-link active" id="tabRepairBaohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
             Báo hỏng (0)
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-dangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
+          <button class="nav-link" id="tabRepairDangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
             Đang sửa (0)
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-baohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
+          <button class="nav-link" id="tabRepairBaohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
             Bảo hành (0)
           </button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tab-suangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
+          <button class="nav-link" id="tabRepairSuangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
             Sửa ngoài (0)
           </button>
         </li>
@@ -108,15 +108,15 @@
       <div class="tab-content" id="repairTabsContent">
         <!-- Báo hỏng tab -->
         <div class="tab-pane fade show active" id="baohong" role="tabpanel">
-          <table class="custom-table">
+          <table class="table table-bordered table-hover">
             <thead>
-              <tr class="tb_header">
-                <th style="width: 10%;">STT</th>
-                <th style="width: 75%;">Nội dung</th>
-                <th style="width: 20%;">Hành động</th>
+              <tr class="tb_header align-middle">
+                <th class="text-center" style="width: 5%;">STT</th>
+                <th class="text-center" style="width: 75%;">Nội dung</th>
+                <th class="text-center" style="width: 20%;">Hành động</th>
               </tr>
             </thead>
-            <tbody id="history_baohong">
+            <tbody id="TableBodyBaohong">
               <!-- Data will be populated dynamically -->
             </tbody>
           </table>
@@ -127,12 +127,12 @@
           <table class="custom-table">
             <thead>
               <tr class="tb_header">
-                <th style="width: 10%;">STT</th>
-                <th style="width: 75%;">Nội dung</th>
-                <th style="width: 20%;">Hành động</th>
+                <th class="text-center" style="width: 5%;">STT</th>
+                <th class="text-center" style="width: 75%;">Nội dung</th>
+                <th class="text-center" style="width: 20%;">Hành động</th>
               </tr>
             </thead>
-            <tbody id="history_dangsua">
+            <tbody id="TableBodyDangsua">
               <!-- Data will be populated dynamically -->
             </tbody>
           </table>
@@ -143,12 +143,12 @@
           <table class="custom-table">
             <thead>
               <tr class="tb_header">
-                <th style="width: 10%;">STT</th>
-                <th style="width: 75%;">Nội dung</th>
-                <th style="width: 20%;">Hành động</th>
+                <th class="text-center" style="width: 5%;">STT</th>
+                <th class="text-center" style="width: 75%;">Nội dung</th>
+                <th class="text-center" style="width: 20%;">Hành động</th>
               </tr>
             </thead>
-            <tbody id="history_baohanh">
+            <tbody id="TableBodyBaohanh">
               <!-- Data will be populated dynamically -->
             </tbody>
           </table>
@@ -159,12 +159,12 @@
           <table class="custom-table">
             <thead>
               <tr class="tb_header">
-                <th style="width: 10%;">STT</th>
+                <th style="width: 5%;">STT</th>
                 <th style="width: 75%;">Nội dung</th>
                 <th style="width: 20%;">Hành động</th>
               </tr>
             </thead>
-            <tbody id="history_suangoai">
+            <tbody id="TableBodySuangoai">
               <!-- Data will be populated dynamically -->
             </tbody>
           </table>
@@ -216,7 +216,7 @@
                     </div>
                   </div>
                 </div> <!-- Nhóm Đơn vị yêu cầu --> 
-              <!-- Nhóm Người sửa chữa -->
+
               <!-- Nhóm Người sửa chữa -->
                 <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#GroupNguoiSuaChua">
                   Thông tin người sửa chữa
@@ -393,7 +393,9 @@
     <!-- Change Password Modal -->
 
     <!-- Embed Script -->
-    <script src="./main.gs"></script>
+    <script type="module" src="./js_main.js"></script>
+    <script type="module" src="./config.js"></script>
+
 
     <!-- Script of Bootstrap -->
      <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
