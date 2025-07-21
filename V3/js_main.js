@@ -17,11 +17,11 @@ let currRepair;
 // Frame Login
 
 // Frame Main
-// Head -- Frame Main
 const frmainApp = document.getElementById('frmainApp');
 //frmainApp.style.display = "block";
 //frmainApp.style.display = "none";
 
+// Head -- Frame Main
 const userNametxt = document.getElementById('txtuserName');
 const userAvatarimg = document.getElementById('imguserAvatar');
 
@@ -49,9 +49,12 @@ const TableBodyBaohanh = document.getElementById('TableBodyBaohanh');
 const TableBodySuangoai = document.getElementById('TableBodySuangoai');
 
 // Repair Modal
+const FormRepairModal = document.getElementById('FormRepairModal');
+const FormRepairModalTitle = document.getElementById('FormRepairModalTitle');
 
+// Nhóm Đơn vị yêu cầu -- Repair Modal
 
-// const history_baohong = document.getElementById("history_baohong");
+// const GroupDonViYC = document.getElementById('GroupDonViYC');
 
 
 
@@ -75,7 +78,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     Kyhieu: "DVCTM",
     Anh: "1mPlDPwnPbrYC5Sb5gsjnXkIrAt_GUYxx"
   };
-   UpdatetablesRepair();
+  
+  UpdatetablesRepair();
+  // bsCollapseDonViYC = new bootstrap.Collapse(GroupDonViYC, { toggle: false });
+  //  bsCollapseDonViYC.hide(); // Ẩn nhóm Đơn vị yêu cầu khi khởi tạo
+  // new bootstrap.Collapse(GroupDonViYC, { toggle: false }).hide();
+  // const WGroupDonViYC = document.getElementById('wrapperDonViYC');
+
+    // WGroupDonViYC.style.display = "none";
 });
 
 ///////////////////////////////////
@@ -126,11 +136,12 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
         if (rowsthietbi.length === 0) {
             console.log("Không tìm thấy thiết bị với id: " + idthietbi);
             return; // Hoặc xử lý logic khác nếu cần
-        }
-        const rowthietbi = rowsthietbi[0]
-        const idusersua = item[CONFIG_COLUMNS.DataSC.idusersua];
-        const rowsnguoisua = appData.val_DSUserSua.filter(item => item[CONFIG_COLUMNS.DSUserSua.id] === idusersua);   
-        if (rowsnguoisua.length === 0) {
+          }
+          const rowthietbi = rowsthietbi[0]
+          const idusersua = item[CONFIG_COLUMNS.DataSC.idusersua];
+          
+          const rowsnguoisua = appData.val_DSUserSua.filter(item => item[CONFIG_COLUMNS.DSUserSua.id] === idusersua);   
+          if (rowsnguoisua.length === 0) {
             console.log("Không tìm thấy người sửa với id: " + idusersua);
             return; // Hoặc xử lý logic khác nếu cần
         } 
@@ -140,10 +151,10 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
         <tr class="align-middle">
             <td class="text-center">${valSTT}</td>
             <td>⚠️ ${item[CONFIG_COLUMNS.DataSC.id]} 🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} 🛠️<br>
-              ♟️${rowthietbi[CONFIG_COLUMNS.DSThietBi.id]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.DSThietBi]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.model]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.serial]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.nuocsx]}<br>
-              👨‍🔧${rownguoisua[CONFIG_COLUMNS.DSUserSua.DSUserSua]} 📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
+              ♟️${rowthietbi[CONFIG_COLUMNS.DSThietBi.id]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.tentb]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.model]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.serial]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.nuocsx]}<br>
+              👨‍🔧${rownguoisua[CONFIG_COLUMNS.DSUserSua.hoten]} 📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
             </td>
-            <td class="d-flex align-items-center justify-content-center text-center gap-2"> 
+            <td class="d-flex align-middle align-items-center justify-content-center text-center gap-2" style="height:70%;"> 
                 <button type="button" data-repair-id='${item[CONFIG_COLUMNS.DataSC.id]}' data-repair-row='${index}' data-repair-status='${strTrangThai}' class="btn btn-outline-primary view-btn" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
                     <i class="bi bi-eye-fill" style="font-size: 1.5rem; color:rgba(9, 23, 221, 0.85)"></i>
                 </button>
