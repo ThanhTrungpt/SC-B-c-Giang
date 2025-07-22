@@ -123,15 +123,23 @@
       <!-- Tabs/Main Section -->
       <ul class="nav nav-pills" id="repairTabs" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tabRepairBaohong" data-bs-toggle="pill" data-bs-target="#baohong" type="button" role="tab">
-            Báo hỏng (0)
+          <button class="nav-link active" id="tabRepairDeNghi" data-bs-toggle="pill" data-bs-target="#denghi" type="button" role="tab">
+            Đề nghị sửa chữa (0)
           </button>
         </li>
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tabRepairKhaoSat" data-bs-toggle="pill" data-bs-target="#khaosat" type="button" role="tab">
+            Khảo sát tình trạng thiết bị hỏng (0)
+          </button>
+        </li>
+
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tabRepairDangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
             Đang sửa (0)
           </button>
         </li>
+
         <li class="nav-item" role="presentation">
           <button class="nav-link" id="tabRepairBaohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
             Bảo hành (0)
@@ -146,8 +154,8 @@
         
       <!-- Tab Table/Main Section -->
       <div class="tab-content" id="repairTabsContent">
-        <!-- Báo hỏng tab -->
-        <div class="tab-pane fade show active" id="baohong" role="tabpanel">
+        <!-- Đề nghị sửa chữa tab -->
+        <div class="tab-pane fade show active" id="denghi" role="tabpanel">
           <table class="table table-bordered table-hover">
             <thead>
               <tr class="tb_header align-middle">
@@ -156,12 +164,28 @@
                 <th class="text-center" style="width: 20%;">Hành động</th>
               </tr>
             </thead>
-            <tbody id="TableBodyBaohong">
+            <tbody id="TableBodyDeNghi">
               <!-- Data will be populated dynamically -->
             </tbody>
           </table>
         </div>
         
+        <!-- Khảo sát tình trạng thiết bị hỏng tab -->
+        <div class="tab-pane fade" id="khaosat" role="tabpanel">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr class="tb_header align-middle">
+                <th class="text-center" style="width: 5%;">STT</th>
+                <th class="text-center" style="width: 75%;">Nội dung</th>
+                <th class="text-center" style="width: 20%;">Hành động</th>
+              </tr>
+            </thead>
+            <tbody id="TableBodyKhaosat">
+              <!-- Data will be populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+
         <!-- Đang sửa tab -->
         <div class="tab-pane fade" id="dangsua" role="tabpanel">
           <table class="table table-bordered table-hover">
@@ -230,27 +254,27 @@
                 <div class="collapse show" id="CollGroupDonViYC">
                   <div class="row">
                     <div class="d-flex align-items-center mb-1">
-                      <label for="departmentName" class="form-label me-2 mb-0" style="min-width: 150px;">Đơn vị yêu cầu:</label>
+                      <label for="mrDepartmentName" class="form-label me-2 mb-0" style="min-width: 150px;">Đơn vị yêu cầu:</label>
                       <div class="input-group" >
                         <span class="input-group-text"><i class="bi bi-building-check fs-5 text-success"></i></span>
-                        <input type="text" class="form-control" id="departmentName" readonly>
+                        <input type="text" class="form-control" id="mrDepartmentName" readonly placeholder="Chọn đơn vị yêu cầu">
                       </div>
                     </div>  
                   </div>
                   <div class="row mb-3">
                     <div class="col">
-                      <label for="requesterName" class="form-label">Người yêu cầu</label>
+                      <label for="mrRequesterName" class="form-label">Người yêu cầu</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-check text-success"></i></span>
-                        <input type="text" class="form-control" id="requesterName" list="requesterList">
+                        <input type="text" class="form-control" id="mrRequesterName" list="requesterList" placeholder="Nhập tên người yêu cầu">
                         <datalist id="requesterList"></datalist>
                       </div>
                     </div>
                     <div class="col">
-                      <label for="requesterPhone" class="form-label">Số điện thoại yêu cầu</label>
+                      <label for="mrRequesterPhone" class="form-label">Số điện thoại yêu cầu</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
-                        <input type="text" class="form-control" id="requesterPhone" list="phoneList">
+                        <input type="text" class="form-control" id="mrRequesterPhone" list="phoneList" placeholder="Nhập số điện thoại yêu cầu">
                         <datalist id="phoneList"></datalist>
                       </div>
                     </div>
@@ -266,18 +290,18 @@
                 <div class="collapse show" id="CollCollGroupNguoiSuaChua">
                   <div class="row mb-3">
                     <div class="col">
-                      <label for="repairerName" class="form-label">Người sửa chữa</label>
+                      <label for="mrRepairerName" class="form-label">Người sửa chữa</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-person-gear text-success"></i></span>
-                        <input type="text" class="form-control" id="repairerName" list="repairerList">
+                        <input type="text" class="form-control" id="mrRepairerName" list="repairerList" placeholder="Nhập tên người sửa chữa">
                         <datalist id="repairerList"></datalist>
                       </div>
                     </div>
                     <div class="col">
-                      <label for="repairerPhone" class="form-label">Số điện thoại người sửa chữa</label>
+                      <label for="mrRepairerPhone" class="form-label">Số điện thoại người sửa chữa</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
-                        <input type="text" class="form-control" id="repairerPhone" list="repairerPhoneList">
+                        <input type="text" class="form-control" id="mrRepairerPhone" list="repairerPhoneList" placeholder="Nhập số điện thoại người sửa chữa">
                         <datalist id="repairerPhoneList"></datalist>
                       </div>
                     </div>
@@ -294,88 +318,92 @@
                 <div class="collapse show" id="CollGroupThongTinThietBi">
                   <div class="row">
                     <div class="col">
-                      <label for="deviceGroup" class="form-label">Nhóm thiết bị</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-diagram-3 text-success"></i></span>
-                        <input type="text" class="form-control" id="deviceGroup" list="deviceGroupList">
-                        <datalist id="deviceGroupList"></datalist>
-                      </div>
+                        <label for="mrDeviceGroup" class="form-label">Nhóm thiết bị</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="bi bi-diagram-3 text-success"></i></span>
+                          <select class="form-select" id="mrDeviceGroup">
+                            <option value="" selected>Chọn nhóm thiết bị</option>
+                            <!-- Options will be populated dynamically -->
+                          </select>
+                        </div>
                     </div>
                     <div class="col">
-                      <label for="deviceCode" class="form-label">Mã thiết bị</label>
-                      <div class="input-group">
+                        <label for="mrDeviceID" class="form-label">Mã thiết bị</label>
+                        <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-upc-scan text-success"></i></span>
-                        <input type="text" class="form-control" id="deviceCode" list="deviceCodeList">
-                        <datalist id="deviceCodeList"></datalist>
-                      </div>
+                        <select class="form-select" id="mrDeviceID">
+                          <option value="" selected>Chọn mã thiết bị</option>
+                          <!-- Options will be populated dynamically -->
+                        </select>
+                        </div>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col">
-                      <label for="deviceName" class="form-label">Tên thiết bị</label>
+                      <label for="mrDeviceName" class="form-label">Tên thiết bị</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-box text-success"></i></span>
-                        <input type="text" class="form-control" id="deviceName" list="deviceNameList">
+                        <input type="text" class="form-control" id="mrDeviceName" list="deviceNameList">
                         <datalist id="deviceNameList"></datalist>
                       </div>
                     </div>
                     <div class="col">
-                      <label for="manufacturer" class="form-label">Hãng sản xuất</label>
+                      <label for="mrManufacturer" class="form-label">Hãng sản xuất</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-building text-success"></i></span>
-                        <input type="text" class="form-control" id="manufacturer" list="manufacturerList">
+                        <input type="text" class="form-control" id="mrManufacturer" list="manufacturerList">
                         <datalist id="manufacturerList"></datalist>
                       </div>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col">
-                      <label for="model" class="form-label">Model</label>
+                      <label for="mrModel" class="form-label">Model</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-gear text-success"></i></span>
-                        <input type="text" class="form-control" id="model" list="modelList">
+                        <input type="text" class="form-control" id="mrModel" list="modelList">
                         <datalist id="modelList"></datalist>
                       </div>
                     </div>
                     <div class="col">
-                      <label for="serial" class="form-label">Serial</label>
+                      <label for="mrSerial" class="form-label">Serial</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-hash text-success"></i></span>
-                        <input type="text" class="form-control" id="serial" list="serialList">
+                        <input type="text" class="form-control" id="mrSerial" list="serialList">
                         <datalist id="serialList"></datalist>
                       </div>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col">
-                      <label for="yearManufactured" class="form-label">Năm sản xuất</label>
+                      <label for="mrYearManufactured" class="form-label">Năm sản xuất</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-calendar text-success"></i></span>
-                        <input type="number" class="form-control" id="yearManufactured" min="1900" max="2100">
+                        <input type="number" class="form-control" id="mrYearManufactured" min="1900" max="2100">
                       </div>
                     </div>
                     <div class="col">
-                      <label for="yearInUse" class="form-label">Năm đưa vào sử dụng</label>
+                      <label for="mrYearInUse" class="form-label">Năm đưa vào sử dụng</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-calendar-check text-success"></i></span>
-                        <input type="number" class="form-control" id="yearInUse" min="1900" max="2100">
+                        <input type="number" class="form-control" id="mrYearInUse" min="1900" max="2100">
                       </div>
                     </div>
                   </div>
                   <div class="row mb-3">
                     <div class="col">
-                      <label for="location" class="form-label">Vị trí đặt</label>
+                      <label for="mrLocation" class="form-label">Vị trí đặt</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-geo-alt text-success"></i></span>
-                        <input type="text" class="form-control" id="location" list="locationList">
+                        <input type="text" class="form-control" id="mrLocation" list="locationList">
                         <datalist id="locationList"></datalist>
                       </div>
                     </div>
                     <div class="col">
-                      <label for="warrantyExpiry" class="form-label">Hạn bảo hành</label>
+                      <label for="mrWarrantyExpiry" class="form-label">Hạn bảo hành</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-calendar-event text-success"></i></span>
-                        <input type="date" class="form-control" id="warrantyExpiry">
+                        <input type="date" class="form-control" id="mrWarrantyExpiry">
                       </div>
                     </div>
                   </div>
@@ -390,20 +418,20 @@
                 <div class="collapse show" id="CollGroupThongTinTinhTrangThietBi">
                   <div class="row mb-2">
                     <div class="col">
-                      <label for="deviceStatus" class="form-label">Tình trạng thiết bị</label>
+                      <label for="mrDeviceStatus" class="form-label">Tình trạng thiết bị</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-exclamation-circle text-success"></i></span>
-                        <input type="text" class="form-control" id="deviceStatus" placeholder="Nhập tình trạng thiết bị">
+                        <input type="text" class="form-control" id="mrDeviceStatus" placeholder="Nhập tình trạng thiết bị">
                       </div>
                     </div>
                     <div class="col">
-                      <label for="requirementLevel" class="form-label">Mức độ yêu cầu</label>
+                      <label for="mrRequirementLevel" class="form-label">Mức độ yêu cầu</label>
                       <div class="input-group">
                         <span class="input-group-text"><i class="bi bi-flag text-success"></i></span>
-                        <select class="form-select" id="requirementLevel">
+                        <select class="form-select" id="mrRequirementLevel">
                           <option value="">Chọn mức độ</option>
-                          <option value="Gap">Gấp</option>
-                          <option value="RatGap">Rất Gấp</option>
+                          <option value="Em020">Gấp</option>
+                          <option value="Em021">Rất Gấp</option>
                         </select>
                       </div>
                     </div>
@@ -413,17 +441,60 @@
               
               <div class="row mb-3">
                 <div class="col">
-                  <label for="deviceNote" class="form-label">Ghi chú</label>
+                  <label for="mrNote" class="form-label">Ghi chú</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-card-text text-success"></i></span>
-                    <textarea class="form-control" id="deviceNote" rows="2" placeholder="Nhập ghi chú nếu có"></textarea>
+                    <textarea class="form-control" id="mrNote" rows="2" placeholder="Nhập ghi chú nếu có"></textarea>
                   </div>
                 </div>
               </div>
             </form>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Send message</button>
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col text-start">
+                  <div class="row">
+                    <div class="col">
+                      <button type="button" class="btn btn-success" id="btnModalRepairPdf01">
+                      <i class="bi bi-file-pdf"></i> Đề nghị sửa chữa
+                      </button>
+                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord01">
+                      <i class="bi bi-file-earmark-word"></i> Đề nghị sửa chữa
+                      </button>
+                    </div>
+                    <div class="col">
+                      <button type="button" class="btn btn-success" id="btnModalRepairPdf02">
+                        <i class="bi bi-file-pdf"></i> Biên bản khảo sát
+                      </button>
+                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord02">
+                        <i class="bi bi-file-earmark-word"></i> Biên bản khảo sát
+                      </button>
+                    </div>
+                    <div class="col">
+                      <button type="button" class="btn btn-success" id="btnModalRepairPdf03">
+                        <i class="bi bi-file-pdf"></i> Giấy đề nghị
+                      </button>
+                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord03">
+                        <i class="bi bi-file-earmark-word"></i> Giấy đề nghị
+                      </button>
+                    </div>
+                    <div class="col">
+                      <button type="button" class="btn btn-success" id="btnModalRepairPdf04">
+                        <i class="bi bi-file-pdf"></i> Biên bản bàn giao
+                      </button>
+                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord04">
+                        <i class="bi bi-file-earmark-word"></i> Biên bản bàn giao
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col text-end">
+                  <button type="button" class="btn btn-primary" id="btnModalRepairNew">Tạo mới đề nghị báo hỏng</button>
+                  <button type="button" class="btn btn-primary" id="btnModalRepairSave">Lưu báo hỏng</button>
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

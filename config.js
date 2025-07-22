@@ -51,8 +51,8 @@ export const CONFIG_COLUMNS = {
     ngaybangiao: 15,           // Ngày bàn giao_DataSC
     tinhtrangbangiao: 16,      // Tình trạng thiết bị bàn giao_DataSC
     ghichu: 17,                // Ghi chú_DataSC
-    hoten: 18,                 // Họ và tên_DataSC
-    sdt: 19,                   // Số điện thoại_DataSC
+    hotenYeucau: 18,                 // Họ và tên_DataSC
+    sdtYeucau: 19,                   // Số điện thoại_DataSC
     quyetdinhtokhaosat: 20,    // Quyết định tổ khảo sát_DataSC
     
     // Department representatives and their positions
@@ -114,12 +114,13 @@ export const CONFIG_COLUMNS = {
 export const CONFIG_ENUM = {
   // Status codes
   TRANGTHAI: {
-    BAO_HONG: "Em001",     // 01 Báo hỏng
-    DANG_SUA: "Em002",     // 02 Đang sửa
-    BAO_HANH: "Em003",     // 03 Bảo hành
-    SUA_NGOAI: "Em004",    // 04 Sửa ngoài
-    HOAN_THANH: "Em005",   // 05 Hoàn thành
-    XOA: "Em006"           // 06 Xóa
+    DE_NGHI_SUA: "Em001",   // 01 Đề nghị sửa chữa
+    KHAO_SAT: "Em002",      // 02 Khảo sát tình trạng thiết bị hỏng
+    DANG_SUA: "Em003",      // 03 Đang sửa
+    BAO_HANH: "Em004",      // 04 Bảo hành
+    SUA_NGOAI: "Em005",     // 05 Sửa ngoài
+    HOAN_THANH: "Em006",    // 06 Hoàn thành
+    XOA: "Em007"            // 07 Xóa
   },
   
   // Equipment status
