@@ -65,12 +65,12 @@ function getdata() {
     // --- BƯỚC 4: Chuẩn bị đối tượng dữ liệu để trả về ---
     // bao gồm các giá trị sheet gốc
     const data = {
-      val_DSUserDV: val_DSUserDV,
-      val_DSUserSua: val_DSUserSua,
-      val_DSThietBi: val_DSThietBi,
-      val_DSNhomTB: val_DSNhomTB,
-      val_DataSC: val_DataSC,
-      val_EnumSetting: val_EnumSetting
+      DSUserDV: val_DSUserDV,
+      DSUserSua: val_DSUserSua,
+      DSThietBi: val_DSThietBi,
+      DSNhomTB: val_DSNhomTB,
+      DataSC: val_DataSC,
+      EnumSetting: val_EnumSetting
     };
 
     console.log("[getDataWithoutProcessing] - Hoàn tất chuẩn bị dữ liệu (không xử lý)");
