@@ -1,580 +1,637 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Icon Bootstrap -->
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Link to CSS -->
-    <link rel="stylesheet" href="./ccs_Styles.html">
-    <title>Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</title>
-    
-  </head>
-  <body class="p-3 m-0 border-0 bd-example m-0 border-0">
+  <!-- Icon Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
-    <!-- Loading screen flex-->
-    <div class="loading-screen" id="frmloading" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;">
-      <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-      <div class="loading-message mt-3 text-dark fw-bold">Đang nạp dữ liệu, bạn vui lòng đợi!</div>
+  <!-- Link to CSS -->
+  <link rel="stylesheet" href="./ccs_Styles.html">
+  <title>Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</title>
+
+</head>
+
+<body class="p-3 m-0 border-0 bd-example m-0 border-0">
+
+  <!-- Loading screen flex-->
+  <div class="loading-screen" id="frmloading"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;">
+    <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Loading...</span>
     </div>
+    <div class="loading-message mt-3 text-dark fw-bold">Đang nạp dữ liệu, bạn vui lòng đợi!</div>
+  </div>
 
-    <!-- Login section flex -->
-    <div class="container mt-5" id="frmlogin" style="max-width: 500px; display: flex">
-      <div class="card shadow w-100">
-        <div class="card-header bg-primary text-white">
-          <h4 class="mb-0 text-center">Đăng nhập <br> Phần mềm quản lý sửa chữa</h4>
-        </div>
-        <div class="card-body">
+  <!-- Login section flex -->
+  <div class="container mt-5" id="frmlogin" style="max-width: 500px; display: flex">
+    <div class="card shadow w-100">
+      <div class="card-header bg-primary text-white">
+        <h4 class="mb-0 text-center">Đăng nhập <br> Phần mềm quản lý sửa chữa</h4>
+      </div>
+      <div class="card-body">
+        <form>
           <div class="mb-3">
             <label for="username" class="form-label">Tên đăng nhập</label>
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-              <input type="text" class="form-control" id="txtLoginUsername" placeholder="Nhập tên đăng nhập" required>
+              <input type="text" class="form-control" id="txtLoginUsername" placeholder="Nhập tên đăng nhập" required autocomplete="username">
             </div>
           </div>
           <div class="mb-3 password-field">
             <label for="password" class="form-label">Mật khẩu</label>
             <div class="input-group">
               <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-              <input type="password" class="form-control" id="txtLoginUPassword" placeholder="Nhập mật khẩu" required>
+              <input type="password" class="form-control" id="txtLoginUPassword" placeholder="Nhập mật khẩu" required autocomplete="current-password">
               <span class="input-group-text toggle-password">
                 <i class="bi bi-eye" id="togglePasswordIcon"></i>
               </span>
             </div>
           </div>
-            <div class="mb-3 form-check">
+          <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" id="cbLocalstorage">
             <label class="form-check-label" for="cbLocalstorage">Ghi nhớ đăng nhập</label>
           </div>
           <button id="btnLoginSubmit" class="btn btn-primary w-100 fw-bold">
             <i class="bi bi-box-arrow-in-right"></i> Đăng nhập
           </button>
-        </div>
+        </form>
       </div>
     </div>
+  </div>
 
-    <!-- Main Section block-->
-    <div class="container" id="frmainApp" style="display: none;">
-      <!-- Head Navbar/Main Section -->
-      <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
-        <div class="container-fluid">
-          <span class="navbar-brand h1 text-primary " >
-            <img src="https://drive.google.com/thumbnail?id=16gCExt-p9JflHcqZQ2nxWLDL65bpD-Tf&sz=s100" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
-            Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang
-          </span>
-          
-          <div class="collapse navbar-collapse justify-content-end" id="navbarScroll" >
-            <span class="nav-item dropdown-center">
-                <span class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="text-success " id="txtuserName">User Name</span>
-                  <img id="imguserAvatar" src="https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100" alt="User Avatar" width="40" height="40"  class="user-avatar">
-                </span>
-                <ul class="dropdown-menu">
-                  <li>
-                    <a class="dropdown-item" id="btnFreshData" href="#">
-                      <i class="bi bi-arrow-clockwise text-primary" style="font-size: 1.5rem"></i>
-                      Cập nhật dữ liệu</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" id="btnEdituser" href="#" data-bs-toggle="modal" data-bs-target="#editProfileModal">
-                    <i class="bi bi-pencil-square text-primary" style="font-size: 1.5rem"></i>
-                    Chỉnh sửa thông tin</a></li>
-                  <li><a class="dropdown-item" id="btnChangePw" href="#" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
-                    <i class="bi bi-file-lock2 text-primary" style="font-size: 1.5rem"></i>
-                    Đổi mật khẩu</a></li>
-                  <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" id="btnLogout" href="#">
-                    <i class="bi bi-box-arrow-right text-primary" style="font-size: 1.5rem"></i>
-                    Đăng xuất</a></li>
-                </ul>
-            </span>
-          </div>
+  <!-- Main Section block-->
+  <div class="container" id="frmainApp" style="display: none;">
+    <!-- Head Navbar/Main Section -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+      <div class="container-fluid">
+        <span class="navbar-brand h1 text-primary ">
+          <img src="https://drive.google.com/thumbnail?id=16gCExt-p9JflHcqZQ2nxWLDL65bpD-Tf&sz=s100" alt="Logo"
+            width="40" height="40" class="d-inline-block align-text-top">
+          Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang
+        </span>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarScroll">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="text-success me-2" id="txtuserName">User Name</span>
+                <img id="imguserAvatar"
+                  src="https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100"
+                  alt="User Avatar" width="40" height="40" class="user-avatar rounded-circle">
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item" id="btnFreshData" href="#">
+                    <i class="bi bi-arrow-clockwise text-primary" style="font-size: 1.5rem;"></i>
+                    Cập nhật dữ liệu
+                  </a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item" id="btnEdituser" href="#" data-bs-toggle="modal"
+                    data-bs-target="#editProfileModal">
+                    <i class="bi bi-pencil-square text-primary" style="font-size: 1.5rem;"></i>
+                    Chỉnh sửa thông tin
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item" id="btnChangePw" href="#" data-bs-toggle="modal"
+                    data-bs-target="#changePasswordModal">
+                    <i class="bi bi-file-lock2 text-primary" style="font-size: 1.5rem;"></i>
+                    Đổi mật khẩu
+                  </a>
+                </li>
+                <li>
+                  <hr class="dropdown-divider">
+                </li>
+                <li>
+                  <a class="dropdown-item" id="btnLogout" href="#">
+                    <i class="bi bi-box-arrow-right text-primary" style="font-size: 1.5rem;"></i>
+                    Đăng xuất
+                  </a>
+                </li>
+              </ul>
+            </li>
+          </ul>
         </div>
-      </nav> <!-- Head Navbar/Main Section -->
+      </div>
+    </nav> <!-- Head Navbar/Main Section -->
 
-      <!-- Nút bấm, tìm kiếm/Main Section -->
-      <div class="row mb-3">
-        <div class="col-md-3">
-          <button type="button" id="btnAddRepair" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
-            <i class="bi bi-plus-square-fill"></i> Thêm báo hỏng
+    <!-- Nút bấm, tìm kiếm/Main Section -->
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <button type="button" id="btnAddRepair" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal"
+          data-bs-target="#FormRepairModal">
+          <i class="bi bi-plus-square-fill"></i> Thêm báo hỏng
+        </button>
+      </div>
+      <div class="col-md-2 d-none d-md-block">
+      </div>
+      <div class="col-md-7">
+        <div class="input-group">
+          <input type="text" class="form-control" id="txtsearchInput" placeholder="Nhập nội dung tìm kiếm...">
+          <button class="btn btn-primary" id="btnSearch" type="button">
+            <i class="bi bi-search"></i> Tìm kiếm
+          </button>
+          <button class="btn btn-secondary" id="btnSearchCancel" type="button">
+            <i class="bi bi-x-circle"></i> Hủy tìm kiếm
           </button>
         </div>
-        <div class="col-md-2 d-none d-md-block">
-        </div>
-        <div class="col-md-7">
-          <div class="input-group">
-            <input type="text" class="form-control" id="txtsearchInput" placeholder="Nhập nội dung tìm kiếm...">
-            <button class="btn btn-primary" id="btnSearch" type="button">
-              <i class="bi bi-search"></i> Tìm kiếm
-            </button>
-            <button class="btn btn-secondary" id="btnSearchCancel" type="button">
-              <i class="bi bi-x-circle"></i> Hủy tìm kiếm
-            </button>
-          </div>
-        </div>
-      </div> <!-- Nút bấm, tìm kiếm/Main Section -->
+      </div>
+    </div> <!-- Nút bấm, tìm kiếm/Main Section -->
 
-      <!-- Tabs/Main Section -->
-      <ul class="nav nav-pills" id="repairTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="tabRepairDeNghi" data-bs-toggle="pill" data-bs-target="#denghi" type="button" role="tab">
-            Đề nghị sửa chữa (0)
-          </button>
-        </li>
+    <!-- Tabs/Main Section -->
+    <ul class="nav nav-pills" id="repairTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tabRepairDeNghi" data-bs-toggle="pill" data-bs-target="#denghi"
+          type="button" role="tab">
+          Đề nghị sửa chữa (0)
+        </button>
+      </li>
 
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tabRepairKhaoSat" data-bs-toggle="pill" data-bs-target="#khaosat" type="button" role="tab">
-            Khảo sát tình trạng thiết bị hỏng (0)
-          </button>
-        </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tabRepairKhaoSat" data-bs-toggle="pill" data-bs-target="#khaosat" type="button"
+          role="tab">
+          Khảo sát tình trạng thiết bị hỏng (0)
+        </button>
+      </li>
 
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tabRepairDangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button" role="tab">
-            Đang sửa (0)
-          </button>
-        </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tabRepairDangsua" data-bs-toggle="pill" data-bs-target="#dangsua" type="button"
+          role="tab">
+          Đang sửa (0)
+        </button>
+      </li>
 
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tabRepairBaohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button" role="tab">
-            Bảo hành (0)
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="tabRepairSuangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button" role="tab">
-            Sửa ngoài (0)
-          </button>
-        </li>
-      </ul> <!-- Tabs/Main Section -->
-        
-      <!-- Tab Table/Main Section -->
-      <div class="tab-content" id="repairTabsContent">
-        <!-- Đề nghị sửa chữa tab -->
-        <div class="tab-pane fade show active" id="denghi" role="tabpanel">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr class="tb_header align-middle">
-                <th class="text-center" style="width: 5%;">STT</th>
-                <th class="text-center" style="width: 75%;">Nội dung</th>
-                <th class="text-center" style="width: 20%;">Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="TableBodyDeNghi">
-              <!-- Data will be populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-        
-        <!-- Khảo sát tình trạng thiết bị hỏng tab -->
-        <div class="tab-pane fade" id="khaosat" role="tabpanel">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr class="tb_header align-middle">
-                <th class="text-center" style="width: 5%;">STT</th>
-                <th class="text-center" style="width: 75%;">Nội dung</th>
-                <th class="text-center" style="width: 20%;">Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="TableBodyKhaosat">
-              <!-- Data will be populated dynamically -->
-            </tbody>
-          </table>
-        </div>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tabRepairBaohanh" data-bs-toggle="pill" data-bs-target="#baohanh" type="button"
+          role="tab">
+          Bảo hành (0)
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tabRepairSuangoai" data-bs-toggle="pill" data-bs-target="#suangoai" type="button"
+          role="tab">
+          Sửa ngoài (0)
+        </button>
+      </li>
+    </ul> <!-- Tabs/Main Section -->
 
-        <!-- Đang sửa tab -->
-        <div class="tab-pane fade" id="dangsua" role="tabpanel">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr class="tb_header align-middle">
-                <th class="text-center" style="width: 5%;">STT</th>
-                <th class="text-center" style="width: 75%;">Nội dung</th>
-                <th class="text-center" style="width: 20%;">Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="TableBodyDangsua">
-              <!-- Data will be populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-        
-        <!-- Bảo hành tab -->
-        <div class="tab-pane fade" id="baohanh" role="tabpanel">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr class="tb_header align-middle">
-                <th class="text-center" style="width: 5%;">STT</th>
-                <th class="text-center" style="width: 75%;">Nội dung</th>
-                <th class="text-center" style="width: 20%;">Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="TableBodyBaohanh">
-              <!-- Data will be populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-        
-        <!-- Sửa ngoài tab -->
-        <div class="tab-pane fade" id="suangoai" role="tabpanel">
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr class="tb_header align-middle">
-                <th style="width: 5%;">STT</th>
-                <th style="width: 75%;">Nội dung</th>
-                <th style="width: 20%;">Hành động</th>
-              </tr>
-            </thead>
-            <tbody id="TableBodySuangoai">
-              <!-- Data will be populated dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div><!-- Tab Table/Main Section -->
-    </div> <!-- Main Section -->
-   
-    <!-- Repair Modal -->
-    <div class="modal fade" id="FormRepairModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"  aria-labelledby="FormRepairModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-xl modal-fullscreen-md-down modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="FormRepairModalTitle">Xem/Sửa/Thêm báo hỏng</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body container-fluid">
-            <form>
-              <!-- Nhóm Đơn vị yêu cầu -->
-               <div id="GroupDonViYC">
-                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#CollGroupDonViYC">
-                  Thông tin đơn vị yêu cầu
-                </a>
-                <div class="collapse show" id="CollGroupDonViYC">
-                  <div class="row">
-                    <div class="d-flex align-items-center mb-1">
-                      <label for="mrDepartmentName" class="form-label me-2 mb-0" style="min-width: 150px;">Đơn vị yêu cầu:</label>
-                      <div class="input-group" >
-                        <span class="input-group-text"><i class="bi bi-building-check fs-5 text-success"></i></span>
-                        <input type="text" class="form-control" id="mrDepartmentName" readonly placeholder="Chọn đơn vị yêu cầu">
-                      </div>
-                    </div>  
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col">
-                      <label for="mrRequesterName" class="form-label">Người yêu cầu</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-check text-success"></i></span>
-                        <input type="text" class="form-control" id="mrRequesterName" list="requesterList" placeholder="Nhập tên người yêu cầu">
-                        <datalist id="requesterList"></datalist>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrRequesterPhone" class="form-label">Số điện thoại yêu cầu</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
-                        <input type="text" class="form-control" id="mrRequesterPhone" list="phoneList" placeholder="Nhập số điện thoại yêu cầu">
-                        <datalist id="phoneList"></datalist>
-                      </div>
-                    </div>
-                  </div>
-                </div> 
-              </div><!-- Nhóm Đơn vị yêu cầu --> 
+    <!-- Tab Table/Main Section -->
+    <div class="tab-content" id="repairTabsContent">
+      <!-- Đề nghị sửa chữa tab -->
+      <div class="tab-pane fade show active" id="denghi" role="tabpanel">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr class="tb_header align-middle">
+              <th class="text-center" style="width: 5%;">STT</th>
+              <th class="text-center" style="width: 75%;">Nội dung</th>
+              <th class="text-center" style="width: 20%;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="TableBodyDeNghi">
+            <!-- Data will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
 
-              <!-- Nhóm Người sửa chữa -->
-              <div id="GroupNguoiSuaChua">
-                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#CollGroupNguoiSuaChua">
-                  Thông tin người sửa chữa
-                </a>
-                <div class="collapse show" id="CollCollGroupNguoiSuaChua">
-                  <div class="row mb-3">
-                    <div class="col">
-                      <label for="mrRepairerName" class="form-label">Người sửa chữa</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-person-gear text-success"></i></span>
-                        <input type="text" class="form-control" id="mrRepairerName" list="repairerList" placeholder="Nhập tên người sửa chữa">
-                        <datalist id="repairerList"></datalist>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrRepairerPhone" class="form-label">Số điện thoại người sửa chữa</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
-                        <input type="text" class="form-control" id="mrRepairerPhone" list="repairerPhoneList" placeholder="Nhập số điện thoại người sửa chữa">
-                        <datalist id="repairerPhoneList"></datalist>
-                      </div>
-                    </div>
-                  </div>
-                </div> 
-              </div> <!-- Nhóm Người sửa chữa -->
+      <!-- Khảo sát tình trạng thiết bị hỏng tab -->
+      <div class="tab-pane fade" id="khaosat" role="tabpanel">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr class="tb_header align-middle">
+              <th class="text-center" style="width: 5%;">STT</th>
+              <th class="text-center" style="width: 75%;">Nội dung</th>
+              <th class="text-center" style="width: 20%;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="TableBodyKhaosat">
+            <!-- Data will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
 
-              <!-- Nhóm Thiết bị -->
-              <!-- Nhóm Thông tin thiết bị -->
-              <div id="GroupThongTinThietBi">
-                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#CollGroupThongTinThietBi">
-                  Thông tin thiết bị
-                </a>
-                <div class="collapse show" id="CollGroupThongTinThietBi">
-                  <div class="row">
-                    <div class="col">
-                        <label for="mrDeviceGroup" class="form-label">Nhóm thiết bị</label>
-                        <div class="input-group">
-                          <span class="input-group-text"><i class="bi bi-diagram-3 text-success"></i></span>
-                          <select class="form-select" id="mrDeviceGroup">
-                            <option value="" selected>Chọn nhóm thiết bị</option>
-                            <!-- Options will be populated dynamically -->
-                          </select>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <label for="mrDeviceID" class="form-label">Mã thiết bị</label>
-                        <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-upc-scan text-success"></i></span>
-                        <select class="form-select" id="mrDeviceID">
-                          <option value="" selected>Chọn mã thiết bị</option>
-                          <!-- Options will be populated dynamically -->
-                        </select>
-                        </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <label for="mrDeviceName" class="form-label">Tên thiết bị</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-box text-success"></i></span>
-                        <input type="text" class="form-control" id="mrDeviceName" list="deviceNameList">
-                        <datalist id="deviceNameList"></datalist>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrManufacturer" class="form-label">Hãng sản xuất</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-building text-success"></i></span>
-                        <input type="text" class="form-control" id="mrManufacturer" list="manufacturerList">
-                        <datalist id="manufacturerList"></datalist>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <label for="mrModel" class="form-label">Model</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-gear text-success"></i></span>
-                        <input type="text" class="form-control" id="mrModel" list="modelList">
-                        <datalist id="modelList"></datalist>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrSerial" class="form-label">Serial</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-hash text-success"></i></span>
-                        <input type="text" class="form-control" id="mrSerial" list="serialList">
-                        <datalist id="serialList"></datalist>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col">
-                      <label for="mrYearManufactured" class="form-label">Năm sản xuất</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-calendar text-success"></i></span>
-                        <input type="number" class="form-control" id="mrYearManufactured" min="1900" max="2100">
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrYearInUse" class="form-label">Năm đưa vào sử dụng</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-calendar-check text-success"></i></span>
-                        <input type="number" class="form-control" id="mrYearInUse" min="1900" max="2100">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col">
-                      <label for="mrLocation" class="form-label">Vị trí đặt</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-geo-alt text-success"></i></span>
-                        <input type="text" class="form-control" id="mrLocation" list="locationList">
-                        <datalist id="locationList"></datalist>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrWarrantyExpiry" class="form-label">Hạn bảo hành</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-calendar-event text-success"></i></span>
-                        <input type="date" class="form-control" id="mrWarrantyExpiry">
-                      </div>
+      <!-- Đang sửa tab -->
+      <div class="tab-pane fade" id="dangsua" role="tabpanel">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr class="tb_header align-middle">
+              <th class="text-center" style="width: 5%;">STT</th>
+              <th class="text-center" style="width: 75%;">Nội dung</th>
+              <th class="text-center" style="width: 20%;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="TableBodyDangsua">
+            <!-- Data will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Bảo hành tab -->
+      <div class="tab-pane fade" id="baohanh" role="tabpanel">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr class="tb_header align-middle">
+              <th class="text-center" style="width: 5%;">STT</th>
+              <th class="text-center" style="width: 75%;">Nội dung</th>
+              <th class="text-center" style="width: 20%;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="TableBodyBaohanh">
+            <!-- Data will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Sửa ngoài tab -->
+      <div class="tab-pane fade" id="suangoai" role="tabpanel">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr class="tb_header align-middle">
+              <th style="width: 5%;">STT</th>
+              <th style="width: 75%;">Nội dung</th>
+              <th style="width: 20%;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="TableBodySuangoai">
+            <!-- Data will be populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div><!-- Tab Table/Main Section -->
+  </div> <!-- Main Section -->
+
+  <!-- Repair Modal modal-dialog-scrollable-->
+  <div class="modal fade" id="FormRepairModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="FormRepairModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-fullscreen-md-down ">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="FormRepairModalTitle">Xem/Sửa/Thêm báo hỏng</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div> <!-- modal-header -->
+        <div class="modal-body container-fluid">
+          <form>
+            <!-- Nhóm Đơn vị yêu cầu -->
+            <div id="GroupDonViYC">
+              <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                data-bs-toggle="collapse" href="#CollGroupDonViYC">
+                Thông tin đơn vị yêu cầu
+              </a>
+              <div class="collapse show" id="CollGroupDonViYC">
+                <div class="row">
+                  <div class="d-flex align-items-center mb-1">
+                    <label for="mrDepartmentName" class="form-label me-2 mb-0" style="min-width: 150px;">Đơn vị yêu
+                      cầu:</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-building-check fs-5 text-success"></i></span>
+                        placeholder="Chọn đơn vị yêu cầu">
                     </div>
                   </div>
                 </div>
-              </div> <!-- Nhóm Thông tin thiết bị -->
-
-              <!--Nhóm Thông tin tình trạng thiết bị -->
-              <div id="GroupThongTinTinhTrangThietBi">
-                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none" data-bs-toggle="collapse" href="#CollGroupThongTinTinhTrangThietBi">
-                  Thông tin tình trạng thiết bị
-                </a>
-                <div class="collapse show" id="CollGroupThongTinTinhTrangThietBi">
-                  <div class="row mb-2">
-                    <div class="col">
-                      <label for="mrDeviceStatus" class="form-label">Tình trạng thiết bị</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-exclamation-circle text-success"></i></span>
-                        <input type="text" class="form-control" id="mrDeviceStatus" placeholder="Nhập tình trạng thiết bị">
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrRequirementLevel" class="form-label">Mức độ yêu cầu</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-flag text-success"></i></span>
-                        <select class="form-select" id="mrRequirementLevel">
-                          <option value="">Chọn mức độ</option>
-                          <option value="Em020">Gấp</option>
-                          <option value="Em021">Rất Gấp</option>
-                        </select>
-                      </div>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label for="mrRequesterName" class="form-label">Người yêu cầu</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-person-check text-success"></i></span>
+                      <input type="text" class="form-control" id="mrRequesterName" list="requesterList"
+                        placeholder="Nhập tên người yêu cầu">
+                      <datalist id="requesterList"></datalist>
                     </div>
                   </div>
-                </div>
-              </div> <!--Nhóm Thông tin tình trạng thiết bị -->
-              
-              <div class="row mb-3">
-                <div class="col">
-                  <label for="mrNote" class="form-label">Ghi chú</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-card-text text-success"></i></span>
-                    <textarea class="form-control" id="mrNote" rows="2" placeholder="Nhập ghi chú nếu có"></textarea>
+                  <div class="col">
+                    <label for="mrRequesterPhone" class="form-label">Số điện thoại yêu cầu</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
+                      <input type="text" class="form-control" id="mrRequesterPhone" list="phoneList"
+                        placeholder="Nhập số điện thoại yêu cầu">
+                      <datalist id="phoneList"></datalist>
+                    </div>
                   </div>
                 </div>
               </div>
-            </form>
-          <div class="modal-footer">
-            <div class="container-fluid">
-              <div class="row">
-                <div class="col text-start">
-                  <div class="row">
-                    <div class="col">
-                      <button type="button" class="btn btn-success" id="btnModalRepairPdf01">
-                      <i class="bi bi-file-pdf"></i> Đề nghị sửa chữa
-                      </button>
-                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord01">
-                      <i class="bi bi-file-earmark-word"></i> Đề nghị sửa chữa
-                      </button>
+            </div><!-- Nhóm Đơn vị yêu cầu -->
+
+            <!-- Nhóm Người sửa chữa -->
+            <div id="GroupNguoiSuaChua">
+              <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                data-bs-toggle="collapse" href="#CollGroupNguoiSuaChua">
+                Thông tin người sửa chữa
+              </a>
+              <div class="collapse show" id="CollGroupNguoiSuaChua">
+                <div class="row mb-3">
+                  <div class="col">
+                    <label for="mrRepairerName" class="form-label">Người sửa chữa</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-person-gear text-success"></i></span>
+                      <input type="text" class="form-control" id="mrRepairerName" list="repairerList"
+                        placeholder="Nhập tên người sửa chữa">
+                      <datalist id="repairerList"></datalist>
                     </div>
-                    <div class="col">
-                      <button type="button" class="btn btn-success" id="btnModalRepairPdf02">
-                        <i class="bi bi-file-pdf"></i> Biên bản khảo sát
-                      </button>
-                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord02">
-                        <i class="bi bi-file-earmark-word"></i> Biên bản khảo sát
-                      </button>
-                    </div>
-                    <div class="col">
-                      <button type="button" class="btn btn-success" id="btnModalRepairPdf03">
-                        <i class="bi bi-file-pdf"></i> Giấy đề nghị
-                      </button>
-                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord03">
-                        <i class="bi bi-file-earmark-word"></i> Giấy đề nghị
-                      </button>
-                    </div>
-                    <div class="col">
-                      <button type="button" class="btn btn-success" id="btnModalRepairPdf04">
-                        <i class="bi bi-file-pdf"></i> Biên bản bàn giao
-                      </button>
-                      <button type="button" class="btn btn-secondary" id="btnModalRepairWord04">
-                        <i class="bi bi-file-earmark-word"></i> Biên bản bàn giao
-                      </button>
+                  </div>
+                  <div class="col">
+                    <label for="mrRepairerPhone" class="form-label">Số điện thoại người sửa chữa</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
+                      <input type="text" class="form-control" id="mrRepairerPhone" list="repairerPhoneList"
+                        placeholder="Nhập số điện thoại người sửa chữa">
+                      <datalist id="repairerPhoneList"></datalist>
                     </div>
                   </div>
                 </div>
-                <div class="col text-end">
-                  <button type="button" class="btn btn-primary" id="btnModalRepairNew">Tạo mới đề nghị báo hỏng</button>
-                  <button type="button" class="btn btn-primary" id="btnModalRepairSave">Lưu báo hỏng</button>
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+              </div>
+            </div> <!-- Nhóm Người sửa chữa -->
+
+            <!-- Nhóm Thông tin thiết bị -->
+            <div id="GroupThongTinThietBi">
+              <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                data-bs-toggle="collapse" href="#CollGroupThongTinThietBi">
+                Thông tin thiết bị
+              </a>
+              <div class="collapse show" id="CollGroupThongTinThietBi">
+                <div class="row">
+                  <div class="col">
+                    <label for="mrDeviceGroup" class="form-label">Nhóm thiết bị</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-diagram-3 text-success"></i></span>
+                      <select class="form-select" id="mrDeviceGroup">
+                        <option value="" selected>Chọn nhóm thiết bị</option>
+                        <!-- Options will be populated dynamically -->
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="mrDeviceID" class="form-label">Mã thiết bị</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-upc-scan text-success"></i></span>
+                      <select class="form-select" id="mrDeviceID">
+                        <option value="" selected>Chọn mã thiết bị</option>
+                        <!-- Options will be populated dynamically -->
+                      </select>
+                    </div>
+                  </div>
                 </div>
+                <div class="row">
+                  <div class="col">
+                    <label for="mrDeviceName" class="form-label">Tên thiết bị</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-box text-success"></i></span>
+                      <input type="text" class="form-control" id="mrDeviceName" list="deviceNameList">
+                      <datalist id="deviceNameList"></datalist>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="mrManufacturer" class="form-label">Hãng sản xuất</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-building text-success"></i></span>
+                      <input type="text" class="form-control" id="mrManufacturer" list="manufacturerList">
+                      <datalist id="manufacturerList"></datalist>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <label for="mrModel" class="form-label">Model</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-gear text-success"></i></span>
+                      <input type="text" class="form-control" id="mrModel" list="modelList">
+                      <datalist id="modelList"></datalist>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="mrSerial" class="form-label">Serial</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-hash text-success"></i></span>
+                      <input type="text" class="form-control" id="mrSerial" list="serialList">
+                      <datalist id="serialList"></datalist>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <label for="mrYearManufactured" class="form-label">Năm sản xuất</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-calendar text-success"></i></span>
+                      <input type="number" class="form-control" id="mrYearManufactured" min="1900" max="2100">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="mrYearInUse" class="form-label">Năm đưa vào sử dụng</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-calendar-check text-success"></i></span>
+                      <input type="number" class="form-control" id="mrYearInUse" min="1900" max="2100">
+                    </div>
+                  </div>
+                </div>
+                <div class="row mb-3">
+                  <div class="col">
+                    <label for="mrLocation" class="form-label">Vị trí đặt</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-geo-alt text-success"></i></span>
+                      <input type="text" class="form-control" id="mrLocation" list="locationList">
+                      <datalist id="locationList"></datalist>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="mrWarrantyExpiry" class="form-label">Hạn bảo hành</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-calendar-event text-success"></i></span>
+                      <input type="date" class="form-control" id="mrWarrantyExpiry">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> <!-- Nhóm Thông tin thiết bị -->
+
+            <!--Nhóm Thông tin tình trạng thiết bị -->
+            <div id="GroupThongTinTinhTrangThietBi">
+              <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                data-bs-toggle="collapse" href="#CollGroupThongTinTinhTrangThietBi">
+                Thông tin tình trạng thiết bị
+              </a>
+              <div class="collapse show" id="CollGroupThongTinTinhTrangThietBi">
+                <div class="row mb-2">
+                  <div class="col">
+                    <label for="mrDeviceStatus" class="form-label">Tình trạng thiết bị</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-exclamation-circle text-success"></i></span>
+                      <input type="text" class="form-control" id="mrDeviceStatus"
+                        placeholder="Nhập tình trạng thiết bị">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="mrRequirementLevel" class="form-label">Mức độ yêu cầu</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-flag text-success"></i></span>
+                      <select class="form-select" id="mrRequirementLevel">
+                        <option value="">Chọn mức độ</option>
+                        <option value="Em020">Gấp</option>
+                        <option value="Em021">Rất Gấp</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div> <!--Nhóm Thông tin tình trạng thiết bị -->
+
+            <!-- Nhóm Note -->
+            <div class="row mb-3">
+              <div class="col">
+                <label for="mrNote" class="form-label">Ghi chú</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-card-text text-success"></i></span>
+                  <textarea class="form-control" id="mrNote" rows="2" placeholder="Nhập ghi chú nếu có"></textarea>
+                </div>
+              </div>
+            </div> <!-- Nhóm Note -->
+          </form> <!-- form -->
+        </div> <!-- modal-body -->
+
+        <!-- modal-footer -->
+        <div class="modal-footer">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col text-start">
+                <div class="row">
+                  <div class="col">
+                    <button type="button" class="btn btn-success" id="btnModalRepairPdf01">
+                      <i class="bi bi-file-pdf"></i> Đề nghị sửa chữa
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord01">
+                      <i class="bi bi-file-earmark-word"></i> Đề nghị sửa chữa
+                    </button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-success" id="btnModalRepairPdf02">
+                      <i class="bi bi-file-pdf"></i> Biên bản khảo sát
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord02">
+                      <i class="bi bi-file-earmark-word"></i> Biên bản khảo sát
+                    </button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-success" id="btnModalRepairPdf03">
+                      <i class="bi bi-file-pdf"></i> Giấy đề nghị
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord03">
+                      <i class="bi bi-file-earmark-word"></i> Giấy đề nghị
+                    </button>
+                  </div>
+                  <div class="col">
+                    <button type="button" class="btn btn-success" id="btnModalRepairPdf04">
+                      <i class="bi bi-file-pdf"></i> Biên bản bàn giao
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord04">
+                      <i class="bi bi-file-earmark-word"></i> Biên bản bàn giao
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="col text-end">
+                <button type="button" class="btn btn-primary" id="btnModalRepairNew">Tạo mới đề nghị báo hỏng</button>
+                <button type="button" class="btn btn-primary" id="btnModalRepairSave">Lưu báo hỏng</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+              </div>
+            </div> <!-- row -->
+          </div> <!-- container-fluid -->
+        </div> <!-- modal-footer -->
+      </div> <!-- modal-content -->
+    </div> <!-- modal-dialog -->
+  </div> <!-- FormRepairModal -->
+
+  <!-- Edit User Profile Modal -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProfileModalLabel">Chỉnh sửa thông tin cá nhân</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div> <!-- modal-header -->
+        <div class="modal-body">
+          "Hello"
+        </div> <!-- modal-body -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" id="btnSaveProfile">Lưu thay đổi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false"
+    aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="changePasswordForm">
+            <!-- Hidden username field for accessibility -->
+            <input type="hidden" id="changePasswordUsername" name="username" autocomplete="username">
+            
+            <div class="mb-3">
+              <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill text-primary"></i></span>
+                <input type="password" class="form-control" id="currentPassword" placeholder="Nhập mật khẩu hiện tại"
+                  required autocomplete="current-password">
+                <span class="input-group-text toggle-password">
+                  <i class="bi bi-eye" id="toggleCurrentPasswordIcon"></i>
+                </span>
               </div>
             </div>
-          </div>
+            <div class="mb-3">
+              <label for="newPassword" class="form-label">Mật khẩu mới</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill text-success"></i></span>
+                <input type="password" class="form-control" id="newPassword" placeholder="Nhập mật khẩu mới" required autocomplete="new-password">
+                <span class="input-group-text toggle-password">
+                  <i class="bi bi-eye" id="toggleNewPasswordIcon"></i>
+                </span>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-lock-fill text-success"></i></span>
+                <input type="password" class="form-control" id="confirmPassword" placeholder="Xác nhận mật khẩu mới"
+                  required autocomplete="new-password">
+                <span class="input-group-text toggle-password">
+                  <i class="bi bi-eye" id="toggleConfirmPasswordIcon"></i>
+                </span>
+              </div>
+            </div>
+          </form>
         </div>
-      </div>
-    </div> <!-- Repair Modal -->
-
-    <!-- Edit User Profile Modal -->
-    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="editProfileModalLabel">Chỉnh sửa thông tin cá nhân</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            "Hello"
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-            <button type="button" class="btn btn-primary" id="btnSaveProfile">Lưu thay đổi</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Change Password Modal -->
-    <div class="modal fade" id="changePasswordModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="changePasswordModalLabel">Đổi mật khẩu</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="changePasswordForm">
-              <div class="mb-3">
-                <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-lock-fill text-primary"></i></span>
-                  <input type="password" class="form-control" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required>
-                  <span class="input-group-text toggle-password">
-                    <i class="bi bi-eye" id="toggleCurrentPasswordIcon"></i>
-                  </span>
-                </div>
-              </div>
-              <div class="mb-3">
-                <label for="newPassword" class="form-label">Mật khẩu mới</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-lock-fill text-success"></i></span>
-                  <input type="password" class="form-control" id="newPassword" placeholder="Nhập mật khẩu mới" required>
-                  <span class="input-group-text toggle-password">
-                    <i class="bi bi-eye" id="toggleNewPasswordIcon"></i>
-                  </span>
-                </div>
-              </div>
-              <div class="mb-3">
-                <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
-                <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-lock-fill text-success"></i></span>
-                  <input type="password" class="form-control" id="confirmPassword" placeholder="Xác nhận mật khẩu mới" required>
-                  <span class="input-group-text toggle-password">
-                    <i class="bi bi-eye" id="toggleConfirmPasswordIcon"></i>
-                  </span>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-            <button type="button" class="btn btn-primary" id="btnSavePassword">Lưu thay đổi</button>
-          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+          <button type="button" class="btn btn-primary" id="btnSavePassword">Lưu thay đổi</button>
         </div>
       </div>
     </div>
-    <!-- Embed Script -->
-    <script type="module" src="./js_main.js"></script>
-    <script type="module" src="./config.js"></script>
+  </div>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Embed Script -->
+  <script type="module" src="./js_main.js"></script>
+  <script type="module" src="./config.js"></script>
 
-    <!-- Script of Bootstrap -->
-     <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Script of Bootstrap -->
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>
