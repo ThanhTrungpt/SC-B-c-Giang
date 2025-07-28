@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // WGroupDonViYC.style.display = "none";
 
 // Add Event button Login Submit
-btnLoginSubmit.addEventListener('click', async () => {
+  btnLoginSubmit.addEventListener('click', async () => {
   // Get Elements
   const txtUsername = document.getElementById('txtLoginUsername').value;
   const txtPassword = document.getElementById('txtLoginUPassword').value;
@@ -177,14 +177,21 @@ btnLoginSubmit.addEventListener('click', async () => {
 });
 
 // Add Event  btnLogout
-btnLogout.addEventListener('click', () => {
+  btnLogout.addEventListener('click', () => {
   // Xóa dữ liệu người dùng khỏi localStorage
-  localStorage.removeItem("storeUserData");
-  // Hiển thị lại phần đăng nhập
-  frmlogin.style.display = "block";
-  frmainApp.style.display = "none";
-  // Reset userData
-  userData = {};
+  // Ask for confirmation before logging out
+  showConfirm("Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất")
+    .then((result) => {
+      if (result.isConfirmed) {
+        // User confirmed, proceed with logout
+        localStorage.removeItem("storeUserData");
+        // Hiển thị lại phần đăng nhập
+        frmlogin.style.display = "block";
+        frmainApp.style.display = "none";
+        // Reset userData
+        userData = {};
+      }
+    });
 });
 
 // Add Event btnFreshData
@@ -352,6 +359,13 @@ function updateUserInfo() {
   userAvatarimg.src = `https://drive.google.com/thumbnail?id=${userData.logo}&sz=s100` || "https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100"; // Placeholder if logo is not set
   //https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100
   console.log(userData.logo);
+
+  mrDepartmentName.value = userData.donvi;
+}
+
+// UpdateModalRepairInfo
+function UpdateModalRepairInfo() {
+  // Đơn vị yêu cầu
   mrDepartmentName.value = userData.donvi;
 }
 
@@ -507,6 +521,9 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
 // Ghi các đề xuất trong modal Repair
 function updateSuggestionInRepairModal() {
   console.log("Cập nhật các đề xuất trong modal Repair.");
+
+  // Lọc danh sách DataSC theo đơn vị
+  const filteredDataSC = appData.DataSC.filter(item => item[CONFIG_COLUMNS.DataSC.iduserdv] === userData.id);
   //Người yêu cầu
 
 }
