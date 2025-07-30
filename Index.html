@@ -289,8 +289,8 @@
               </a>
               <div class="collapse show" id="CollGroupDonViYC">
                 <div class="row mb-3">
-                  <div class="col">
-                  <label for="mrDepartmentName" class="form-label">Đơn vị yêu cầu</label>
+                  <div class="col d-flex">
+                  <label for="mrDepartmentName" class="form-label" style="min-width: 150px;">Đơn vị yêu cầu</label>
                   <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-building-check text-success"></i></span>
                     <input type="text" class="form-control" id="mrDepartmentName" list="departmentList"
@@ -302,18 +302,18 @@
                     <label for="mrRequesterName" class="form-label">Người yêu cầu</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-person-check text-success"></i></span>
-                      <input type="text" class="form-control" id="mrRequesterName" list="requesterList"
+                      <input type="text" class="form-control" id="mrRequesterName" list="mrRequesterNameList"
                         placeholder="Nhập tên người yêu cầu">
-                      <datalist id="requesterList"></datalist>
+                      <datalist id="mrRequesterNameList"></datalist>
                     </div>
                   </div>
                   <div class="col">
                     <label for="mrRequesterPhone" class="form-label">Số điện thoại yêu cầu</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
-                      <input type="text" class="form-control" id="mrRequesterPhone" list="phoneList"
+                      <input type="text" class="form-control" id="mrRequesterPhone" list="mrRequesterPhoneList"
                         placeholder="Nhập số điện thoại yêu cầu">
-                      <datalist id="phoneList"></datalist>
+                      <datalist id="mrRequesterPhoneList"></datalist>
                     </div>
                   </div>
                 </div>
@@ -332,18 +332,17 @@
                     <label for="mrRepairerName" class="form-label">Người sửa chữa</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-person-gear text-success"></i></span>
-                      <input type="text" class="form-control" id="mrRepairerName" list="repairerList"
-                        placeholder="Nhập tên người sửa chữa">
-                      <datalist id="repairerList"></datalist>
+                      <select class="form-select" id="mrRepairerName">
+                        <option value="" selected>Chọn người sửa chữa</option>
+                        <!-- Options will be populated dynamically -->
+                      </select>
                     </div>
                   </div>
                   <div class="col">
                     <label for="mrRepairerPhone" class="form-label">Số điện thoại người sửa chữa</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-telephone text-success"></i></span>
-                      <input type="text" class="form-control" id="mrRepairerPhone" list="repairerPhoneList"
-                        placeholder="Nhập số điện thoại người sửa chữa">
-                      <datalist id="repairerPhoneList"></datalist>
+                      <input type="text" class="form-control" id="mrRepairerPhone" placeholder="Nhập số điện thoại người sửa chữa" readonly>
                     </div>
                   </div>
                 </div>
@@ -384,16 +383,14 @@
                     <label for="mrDeviceName" class="form-label">Tên thiết bị</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-box text-success"></i></span>
-                      <input type="text" class="form-control" id="mrDeviceName" list="deviceNameList">
-                      <datalist id="deviceNameList"></datalist>
+                      <input type="text" class="form-control" id="mrDeviceName" placeholder="Nhập tên thiết bị" readonly>
                     </div>
                   </div>
                   <div class="col">
                     <label for="mrManufacturer" class="form-label">Hãng sản xuất</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-building text-success"></i></span>
-                      <input type="text" class="form-control" id="mrManufacturer" list="manufacturerList">
-                      <datalist id="manufacturerList"></datalist>
+                      <input type="text" class="form-control" id="mrManufacturer" placeholder="Nhập hãng sản xuất" readonly>
                     </div>
                   </div>
                 </div>
@@ -402,16 +399,14 @@
                     <label for="mrModel" class="form-label">Model</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-gear text-success"></i></span>
-                      <input type="text" class="form-control" id="mrModel" list="modelList">
-                      <datalist id="modelList"></datalist>
+                      <input type="text" class="form-control" id="mrModel" placeholder="Nhập model" readonly>
                     </div>
                   </div>
                   <div class="col">
                     <label for="mrSerial" class="form-label">Serial</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-hash text-success"></i></span>
-                      <input type="text" class="form-control" id="mrSerial" list="serialList">
-                      <datalist id="serialList"></datalist>
+                      <input type="text" class="form-control" id="mrSerial" placeholder="Nhập serial" readonly>
                     </div>
                   </div>
                 </div>
@@ -420,14 +415,14 @@
                     <label for="mrYearManufactured" class="form-label">Năm sản xuất</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-calendar text-success"></i></span>
-                      <input type="number" class="form-control" id="mrYearManufactured" min="1900" max="2100">
+                      <input type="text" class="form-control" id="mrYearManufactured" placeholder="Nhập năm sản xuất" readonly>
                     </div>
                   </div>
                   <div class="col">
                     <label for="mrYearInUse" class="form-label">Năm đưa vào sử dụng</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-calendar-check text-success"></i></span>
-                      <input type="number" class="form-control" id="mrYearInUse" min="1900" max="2100">
+                      <input type="text" class="form-control" id="mrYearInUse" placeholder="Nhập năm đưa vào sử dụng" readonly>
                     </div>
                   </div>
                 </div>
@@ -436,15 +431,14 @@
                     <label for="mrLocation" class="form-label">Vị trí đặt</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-geo-alt text-success"></i></span>
-                      <input type="text" class="form-control" id="mrLocation" list="locationList">
-                      <datalist id="locationList"></datalist>
+                      <input type="text" class="form-control" id="mrLocation" placeholder="Nhập vị trí đặt" readonly>
                     </div>
                   </div>
                   <div class="col">
                     <label for="mrWarrantyExpiry" class="form-label">Hạn bảo hành</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-calendar-event text-success"></i></span>
-                      <input type="date" class="form-control" id="mrWarrantyExpiry">
+                      <input type="text" class="form-control" id="mrWarrantyExpiry" placeholder="Nhập hạn bảo hành" readonly>
                     </div>
                   </div>
                 </div>
@@ -464,7 +458,8 @@
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-exclamation-circle text-success"></i></span>
                       <input type="text" class="form-control" id="mrDeviceStatus"
-                        placeholder="Nhập tình trạng thiết bị">
+                        placeholder="Nhập tình trạng thiết bị" list="mrDeviceStatusList">
+                      <datalist id="mrDeviceStatusList">
                     </div>
                   </div>
                   <div class="col">

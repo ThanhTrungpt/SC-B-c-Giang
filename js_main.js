@@ -358,15 +358,15 @@ function updateUserInfo() {
   userNametxt.textContent = userData.donvi;
   userAvatarimg.src = `https://drive.google.com/thumbnail?id=${userData.logo}&sz=s100` || "https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100"; // Placeholder if logo is not set
   //https://drive.google.com/thumbnail?id=1Y2obUC2vpgQLsD1JokCX8QY4olp3LjXe&sz=s100
-  console.log(userData.logo);
-
-  mrDepartmentName.value = userData.donvi;
 }
 
 // UpdateModalRepairInfo
 function UpdateModalRepairInfo() {
   // Đơn vị yêu cầu
   mrDepartmentName.value = userData.donvi;
+
+  //Mức độ yêu cầu
+  mrRequirementLevel.value = CONFIG_ENUM.TINHTRANG_THIETBI.HONG; // Mặc định là Hỏng
 }
 
 // Cập nhật thông tin Repair
@@ -524,10 +524,51 @@ function updateSuggestionInRepairModal() {
 
   // Lọc danh sách DataSC theo đơn vị
   const filteredDataSC = appData.DataSC.filter(item => item[CONFIG_COLUMNS.DataSC.iduserdv] === userData.id);
-  //Người yêu cầu
+  //Người yêu cầu mrRequesterName
+  const uniqueNames = [...new Set(filteredDataSC.map(item => item[CONFIG_COLUMNS.DataSC.hotenYeucau]))];
+  const mrRequesterNameList = document.getElementById('mrRequesterNameList');
+  uniqueNames.forEach(name => {
+    const newOption = document.createElement('option');
+    newOption.value = name;
+    mrRequesterNameList.appendChild(newOption);
+  });
+
+  // Số điện thoại người yêu cầu mrRequesterPhone
+  const uniquePhones = [...new Set(filteredDataSC.map(item => item[CONFIG_COLUMNS.DataSC.sdtYeucau]))];
+  const mrRequesterPhoneList = document.getElementById('mrRequesterPhoneList');
+  uniquePhones.forEach(phone => {
+    const newOption = document.createElement('option');
+    newOption.value = phone;
+    mrRequesterPhoneList.appendChild(newOption);
+  });
+
+  
+  // Người sửa chữa mrRepairerName trong appData.DSUserSua
+  appData.DSUserSua.slice(1).forEach(user => {
+    const newOption = document.createElement('option');
+    newOption.value = user[CONFIG_COLUMNS.DSUserSua.id];
+    newOption.textContent = user[CONFIG_COLUMNS.DSUserSua.hoten];
+    mrRepairerName.appendChild(newOption);
+  });
+
+  // Lọc danh sách thiết bị theo đơn vị và trạng thái Em011 Bình thường
+  const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id && item[CONFIG_COLUMNS.DSThietBi.tinhtrang] === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
+  // CONFIG_COLUMNS.DSThietBi.donvi CONFIG_COLUMNS.DSThietBi.tinhtrang
+  console.log(CONFIG_COLUMNS.DSThietBi.donvi, CONFIG_COLUMNS.DSThietBi.tinhtrang);
+  console.log(`Lọc thiết bị theo đơn vị: ${userData.id} và trạng thái: ${CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG}`);
+  console.log(filteredDevices);
+  // Lọc nhóm thiết bị set theo filteredDevices
+  const uniqueDeviceGroups = [...new Set(filteredDevices.map(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb]))];
+  // Thêm các nhóm thiết bị vào danh sách nhóm thiết bị 
+  uniqueDeviceGroups.forEach(group => {
+    const newOption = document.createElement('option');
+    newOption.value = group;
+    newOption.textContent = appData.DSNhomTB.find(item => item[CONFIG_COLUMNS.DSNhomTB.nhomtb] === group)[CONFIG_COLUMNS.DSNhomTB.ten];
+    mrDeviceGroup.appendChild(newOption);
+    console.log(`Thêm nhóm thiết bị: ${newOption.value} - ${newOption.textContent}`);
+  });
 
 }
-
 
 // Trạng thái Đề nghi sửa chữa
 function eBtnViewDeNghi(idRepair, rowDataRepair) {
