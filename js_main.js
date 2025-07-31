@@ -375,14 +375,19 @@ btnModalRepairNew.addEventListener('click', () => {
     qrcode: "",
     history: txtHistory,
     timeupdate: formattedDate,
-    nameuserdv: userData.username,
+    nameuserdv: userData.donvi,
     nameThietbi: mrDeviceName.value,
     nameModel: mrModel.value,
     nameSerial: mrSerial.value,
     nameHangSX: mrManufacturer.value,
     nameNuocSX: mrYearManufactured.value,
     nameNamSX: mrYearManufactured.value,
-    nameNamSD: mrYearInUse.value
+    nameNamSD: mrYearInUse.value,
+    nameTinhTrang: mrDeviceStatus.value,
+    nameMucDo: mrRequirementLevel.options[mrRequirementLevel.selectedIndex].text,
+    nameNguoiYeuCau: mrRequesterName.value,
+    nameSDTYeuCau: mrRequesterPhone.value,
+    nameNguoiSua: mrRepairerName.options[mrRepairerName.selectedIndex].text,
   }
   console.log("addnewrepair:", objaddnewrepair);
 

@@ -7,8 +7,8 @@ function getdata() {
 
   try {
     // --- BƯỚC 1: Mở các bảng tính ---
-    const ssRefData = SpreadsheetApp.openById(CONFIG_FILE_IDS.idSH_DanhSach);
-    const ssMainData = SpreadsheetApp.openById(CONFIG_FILE_IDS.idSH_DataSC);
+    const ssRefData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DanhSach);
+    const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
 
     // --- BƯỚC 2: Lấy tất cả dữ liệu từ các sheet cần thiết ---
     const val_DSUserDV = ssRefData.getSheetByName(CONFIG_SHEET_NAMES.DSUserDV).getDataRange().getValues();

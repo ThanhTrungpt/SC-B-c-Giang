@@ -1,20 +1,33 @@
 // Test API_AddNewRepair
 function testAddNewRepair() {
 const params = {
-    repairID: "SC.DVCTM.250731.038.073",
+    repairID: "SC.DVCTM.250731.038.839",
     trangthai: "Em001",
     mucdo: "Em020",
     iduserdv: "UDV001",
     idusersua: "USC001",
     idthietbi: "TB001",
     tinhtrangtbdvbao: "Thiết bị không chạy",
-    ngaydonvibao: "17:36:43 31/7/2025",
-    ghichu: "sd",
+    ngaydonvibao: "23:55:39 31/7/2025",
+    ghichu: "abc",
     hotenYeucau: "Phạm Thành Trung",
     sdtYeucau: "123456790",
     qrcode: "",
-    history: "* 17:36:43 31/7/2025 - Phạm Thành Trung: Thêm đề nghị báo hỏng mới\n\n   - Ghi chú: sd",
-    timeupdate: "17:36:43 31/7/2025"
+    history: "* 23:55:39 31/7/2025 - Phạm Thành Trung: Thêm đề nghị báo hỏng mới\n\n   - Ghi chú: abc",
+    timeupdate: "23:55:39 31/7/2025",
+    nameHangSX: "Terumo",
+    nameModel: "TE-SS700",
+    nameMucDo: "Gấp",
+    nameNamSD: "28/12/2018",
+    nameNamSX: "2018",
+    nameNguoiSua: "Phạm Thành Test",
+    nameNguoiYeuCau: "Phạm Thành Trung",
+    nameNuocSX: "2018",
+    nameSDTYeuCau: "123456790",
+    nameSerial: "1810010532",
+    nameThietbi: "Bơm tiêm điện",
+    nameTinhTrang: "Thiết bị không chạy",
+    nameuserdv: "Đơn Vị Can Thiệp Mạch"
 };
 
   const result = addnewrepair(params);
@@ -25,26 +38,29 @@ const params = {
 function addnewrepair(params) {
     // Kiểm tra trạng thái thiết bị
     const isTrangThaiTB = CheckTrangThaiThietBi(params.idthietbi);
-    if (isTrangThaiTB !== CONFIG_ENUM.TRANGTHAI.BINH_THUONG) {
+    if (isTrangThaiTB !== CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG) {
         return { status: "error", message: "Thiết bị không trong tình trạng bình thường" };
     }
     // Tạo biên bản đề nghị sửa chữa
-    createfile_bm0901(params);
+    objFileUrl = createfile_bm0901(params);
 
     // Thêm mới đề nghị sửa chữa vào sheet
-    AddNewRepairtoSheet(params);
+    objNewRow = AddNewRepairtoSheet(params, objFileUrl);
 
     // Nhắn tin trên Telegram
     SendtoTelegram(params);
 
-    return { status: "success", message: "New repair added successfully" };
+    return { 
+        status: "success",
+        message: "New repair added successfully",
+        dataNewRow: objNewRow.dataNewRow 
+    };
 }
 
 //CheckTrangThaiThietBi
 function CheckTrangThaiThietBi(idthietbi) {
-    console.log("[CheckTrangThaiThietBi] - Kiểm tra trạng thái thiết bị:", idthietbi);
     try {
-        const ssMainData = SpreadsheetApp.openById(CONFIG_FILE_IDS.idSH_DataSC);
+        const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
         const val_DSThietBi = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DSThietBi).getDataRange().getValues();
 
         const thietbiIndex = val_DSThietBi.findIndex(row => row[CONFIG_COLUMNS.DSThietBi.id] === idthietbi);
@@ -63,19 +79,23 @@ function CheckTrangThaiThietBi(idthietbi) {
 function createfile_bm0901(params) {
     try{
     // Get template document
-    const templateId = CONFIG_TEMPLATES.BM_VTTB_09_01;
-    const templateDoc = DocumentApp.openById(templateId);
-    if (!templateDoc) {
-      throw new Error("Template document not found: " + templateId);
-    }
+    
+    const templateFile = DriveApp.getFileById(CONFIG_TEMPLATES.IDFile_09_01);
+    const FolderWord = DriveApp.getFolderById(CONFIG_TEMPLATES.IDFolder_Word_01);
+    const newWordFile = templateFile.makeCopy(`BB01_${params.repairID}_${params.ngaydonvibao}`, FolderWord);
+    const DocNewWordFile = DocumentApp.openById(newWordFile.getId());
+    const bodyNewWordFile = DocNewWordFile.getBody();
 
-    const timeDVBao = new Date(params.ngaydonvibao);
+    // Replace placeholders in the document
+
+    const [time, date] = params.ngaydonvibao.split(' ');
+    const [day, month, year] = date.split('/');
     // Prepare replacement data
     const replacements = {
       "{{Đơn vị yêu cầu}}": params.nameuserdv,
-      "{{today}}": timeDVBao.getDate(),
-      "{{month}}": timeDVBao.getMonth() + 1,
-      "{{year}}": timeDVBao.getFullYear(),
+      "{{today}}": day,
+      "{{month}}": month,
+      "{{year}}": year,
       "{{Tên thiết bị}}": params.nameThietbi,
       "{{Model}}": params.nameModel,
       "{{Serial}}": params.nameSerial,
@@ -86,11 +106,29 @@ function createfile_bm0901(params) {
     //   "{{QR_CODE}}": generateQRCodeUrl(params.repairID),
       "{{id}}": params.repairID
     };
-    // Create copy of template with new name
-    const fileName = "BM.VTTB.09.01 Giấy đề nghị sửa chữa - " + params.repairID;
-    const documentFolder = getFolderOrCreate("Word_BM0901");
+    console.log("[createfile_bm0901] - Replacements data:", replacements);
+    // Replace placeholders in the document body
+    for (const [placeholder, value] of Object.entries(replacements)) {
+        bodyNewWordFile.replaceText(placeholder, value.toString());
+    }
+    DocNewWordFile.saveAndClose();
 
+    // Convert to PDF
+    const pdfFile = DriveApp.getFileById(DocNewWordFile.getId()).getBlob().getAs('application/pdf');
+    const FolderPdf = DriveApp.getFolderById(CONFIG_TEMPLATES.IDFolder_Pdf_01);
+    const pdfFileName = `BB01_${params.repairID}_${params.ngaydonvibao}.pdf`;
+    const newPdfFile = FolderPdf.createFile(pdfFile.setName(pdfFileName));
 
+    // Gán quyên truy cập cho người dùng, ai có link đều có thể xem
+    newPdfFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    const pdfFileUrl = newPdfFile.getUrl();
+    const wordFileUrl = newWordFile.getUrl();
+    console.log("[createfile_bm0901] - Đã tạo biên bản đề nghị sửa chữa:", pdfFileUrl, wordFileUrl);
+    return {
+        status: "success",
+        pdfFileUrl: pdfFileUrl,
+        wordFileUrl: wordFileUrl,
+    }
 
     } catch (error) {
         console.error("[createfile_bm0901] - Lỗi khi tạo biên bản đề nghị sửa chữa:", error);
@@ -99,10 +137,10 @@ function createfile_bm0901(params) {
 }
 
 // AddNewRepairtoSheet
-function AddNewRepairtoSheet(params) {
+function AddNewRepairtoSheet(params, objFileUrl) {
     try {
             // Get Data Spreadsheet
-    const ssMainData = SpreadsheetApp.openById(CONFIG_FILE_IDS.idSH_DataSC);
+    const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
     const shDataSC = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
     const val_DataSC = shDataSC.getDataRange().getValues();
 
@@ -143,14 +181,27 @@ function AddNewRepairtoSheet(params) {
       "",                                // Chức vụ DD ĐV1 Báo sửa_DataSC
       "",                                // Đại diện ĐV2 Báo sửa _DataSC
       "",                                // Chức vụ DD ĐV2 Báo sửa_DataSC
-      params.qrcode || "",               // QR Code_DataSC
+      params.qrcode,               // QR Code_DataSC
       params.history,                    // History_DataSC
-      params.timeupdate                  // TimeUpdate_DataSC
+      params.timeupdate,                  // TimeUpdate_DataSC
+
+      objFileUrl.wordFileUrl,    // Word_BB01_DataSC (col 38)
+      objFileUrl.pdfFileUrl,     // Pdf_BB01_DataSC (col 39)
+      "",                              // Word_BB02_DataSC (col 40)
+      "",                              // Pdf_BB02_DataSC (col 41)
+      "",                              // Word_BB03_DataSC (col 42)
+      "",                              // Pdf_BB03_DataSC (col 43)
+      "",                              // Word_BB04_DataSC (col 44)
+      ""                               // Pdf_BB04_DataSC (col 45)
     ];
 
     shDataSC.appendRow(newRow);
-    console.log("[AddNewRepairtoSheet] - Dòng mới đã được thêm vào DataSC:", newRow);
-    return { status: "success", message: "Dòng mới đã được thêm vào DataSC" };
+    return { 
+        status: "success", 
+        message: "Dòng mới đã được thêm vào DataSC",
+        dataNewRow: newRow
+    };
+
     } catch (error) {
         console.error("[AddNewRepairtoSheet] - Lỗi khi lấy dữ liệu từ DataSC:", error);
         return { status: "error", message: "Lỗi khi lấy dữ liệu từ DataSC: " + error.message };
@@ -159,4 +210,6 @@ function AddNewRepairtoSheet(params) {
 }
 
 // SendtoTelegram
-function SendtoTelegram(params) {}
+function SendtoTelegram(params) {
+    
+}

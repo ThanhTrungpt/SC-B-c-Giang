@@ -73,7 +73,16 @@ export const CONFIG_COLUMNS = {
     
     qrcode: 35,                // QR Code_DataSC
     history: 36,               // History_DataSC
-    timeupdate: 37             // TimeUpdate_DataSC
+    timeupdate: 37,             // TimeUpdate_DataSC
+
+    Word_BB01: 38,              // Word_BB01_DataSC
+    Pdf_BB01: 39,               // Pdf_BB01_DataSC
+    Word_BB02: 40,              // Word_BB02_DataSC
+    Pdf_BB02: 41,               // Pdf_BB02_DataSC
+    Word_BB03: 42,              // Word_BB03_DataSC
+    Pdf_BB03: 43,               // Pdf_BB03_DataSC
+    Word_BB04: 44,              // Word_BB04_DataSC
+    Pdf_BB04: 45                // Pdf_BB04_DataSC
   },
   
   // Repair personnel columns

@@ -1,3 +1,18 @@
+const CONFIG_SpreadSheet_ID = {
+    idSH_DanhSach: "1AcF4se3EMZftlAoZ-YCl4GOPww9yzsIuM8CgRoleoZ0", // Main data file ID
+    idSH_DataSC: "1LYBsUlDo42-DVIhbjsJ9aRTc-quVzSF1h_2BukeMikk"  // Repair data file ID
+  };
+  
+  // ===== 2. SHEET NAMES =====
+  const CONFIG_SHEET_NAMES = {
+    DSUserDV: "DSUserDV",   // Department users sheet
+    DSUserSua: "DSUserSua", // Repair users sheet
+    DataSC: "Main_SC",      // Main repair data sheet
+    DSThietBi: "DSThietBi", // Equipment sheet
+    DSNhomTB: "DSNhomTB",   // Equipment groups sheet
+    EnumSetting: "Enum Setting" // Enum settings sheet
+  };
+
 // ===== 3. COLUMN DEFINITIONS =====
 const CONFIG_COLUMNS = {
   // Equipment group columns
@@ -73,7 +88,16 @@ const CONFIG_COLUMNS = {
     
     qrcode: 35,                // QR Code_DataSC
     history: 36,               // History_DataSC
-    timeupdate: 37             // TimeUpdate_DataSC
+    timeupdate: 37,             // TimeUpdate_DataSC
+
+    Word_BB01: 38,              // Word_BB01_DataSC
+    Pdf_BB01: 39,               // Pdf_BB01_DataSC
+    Word_BB02: 40,              // Word_BB02_DataSC
+    Pdf_BB02: 41,               // Pdf_BB02_DataSC
+    Word_BB03: 42,              // Word_BB03_DataSC
+    Pdf_BB03: 43,               // Pdf_BB03_DataSC
+    Word_BB04: 44,              // Word_BB04_DataSC
+    Pdf_BB04: 45                // Pdf_BB04_DataSC
   },
   
   // Repair personnel columns
@@ -138,8 +162,22 @@ const CONFIG_ENUM = {
 
 // ===== 4. TEMPLATE FILE IDs =====
 const CONFIG_TEMPLATES = {
-  BM_VTTB_09_01: "1jDqUToV79fyv3jNr_3j4HL64g_coxW3joVheIHdDWxg", // Repair request form
-  BM_VTTB_09_02: "1fGUPZNrEi2OeBsmzWqj0FWx9oZYO79z4c5c45o20pl0", // Equipment survey report
-  BM_VTTB_09_03: "1WCtJY6wA0-fBnurYf8beZyv4PAmWtGqAPZUwoJtUntM", // Repair proposal
-  BM_VTTB_09_04: "1mWJutc5TZ7EIf1Mq8Gj1ludhoRahOrHodZa5SU6Qi6k"  // Handover document
+  IDFile_09_01: "1jDqUToV79fyv3jNr_3j4HL64g_coxW3joVheIHdDWxg", // Repair request form
+  IDFile_09_02: "1fGUPZNrEi2OeBsmzWqj0FWx9oZYO79z4c5c45o20pl0", // Equipment survey report
+  IDFile_09_03: "1WCtJY6wA0-fBnurYf8beZyv4PAmWtGqAPZUwoJtUntM", // Repair proposal
+  IDFile_09_04: "1mWJutc5TZ7EIf1Mq8Gj1ludhoRahOrHodZa5SU6Qi6k",  // Handover document
+  IDFolder_Word_01: "1-HX7hWWsNZvmrPzg4bruja7FDmw98tuI", // Word template folder 01
+  IDFolder_Pdf_01: "1R4hS9XPSqDuBj2y946IqZM1cMCJcuw5r", // Pdf template folder 01
+  IDFolder_Word_02: "1xBhG1l2QudIN_ZAKLis-FpFyH_AljUdn", // Word template folder 02
+  IDFolder_Pdf_02: "1F5LOJADDyjZmbgx7FZfDpBNqWxHValBi", // Pdf template folder 02
+  IDFolder_Word_03: "1VhmrZUnzCfl5M5CcPqZP_HQ-VnrI9nIe", // Word template folder 02
+  IDFolder_Pdf_03: "1IqcMFbiAxNvKs2iyP3zbSKy3Xwzkr8Ny", // Pdf template folder 02
+  IDFolder_Word_04: "13AXupK_8eJ3QdDBQxcpSyrngjxqCGGZC", // Word template folder 02
+  IDFolder_Pdf_04: "1S5qOcdL19tJ8NjWRHsNuiOc1b8csCuSu" // Pdf template folder 02
+};
+
+// ===== 1. TELEGRAM API CONSTANTS =====
+const TELEGRAM_CONFIG = {
+  api_token_Tele: "8150634839:AAFFG7s-7zYcBsYlDWqFYybdejOAOvket1Y", // Replace with actual bot token
+  group_chat_id_Tele: "-4705814679"   // Replace with actual group chat ID
 };
