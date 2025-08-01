@@ -1,6 +1,4 @@
-
-
-
+// API/API_Main.js
 function doPost(e) {
   const params = e.parameter;
   const action = params.action;
@@ -8,6 +6,9 @@ function doPost(e) {
   let result;
 
   switch (action) {
+    case "checkAPI":
+      result = checkAPI(params);
+      break;
     case "getdata":
       result = getdata();
       break;
@@ -21,4 +22,12 @@ function doPost(e) {
 
   return ContentService.createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function checkAPI(params) {
+  try {
+    return { status: "success", message: "API is working" , data: params };
+  } catch (error) {
+    return { status: "error", message: error.message };
+  } 
 }

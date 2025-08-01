@@ -27,18 +27,21 @@ const params = {
     nameSerial: "1810010532",
     nameThietbi: "Bơm tiêm điện",
     nameTinhTrang: "Thiết bị không chạy",
-    nameuserdv: "Đơn Vị Can Thiệp Mạch"
+    nameuserdv: "Đơn Vị Can Thiệp Mạch",
+    nameSDTNguoiSua: "0987654321",
+    idTeleNguoiSua: "5468165152"
 };
 
   const result = addnewrepair(params);
+//   SendtoTelegram(params);
   console.log("Test Add New Repair:", result);
 }
 
 // API/API_AddNewRepair
-function addnewrepair(params) {
+function addNewRepair(params) {
     // Kiểm tra trạng thái thiết bị
-    const isTrangThaiTB = CheckTrangThaiThietBi(params.idthietbi);
-    if (isTrangThaiTB !== CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG) {
+    const objCheckTrangThaiThietBi = CheckTrangThaiThietBi(params.idthietbi);
+    if (!objCheckTrangThaiThietBi.status) {
         return { status: "error", message: "Thiết bị không trong tình trạng bình thường" };
     }
     // Tạo biên bản đề nghị sửa chữa
@@ -53,7 +56,9 @@ function addnewrepair(params) {
     return { 
         status: "success",
         message: "New repair added successfully",
-        dataNewRow: objNewRow.dataNewRow 
+        dataNewRow: objNewRow.dataNewRow,
+        IndexThietBi: objCheckTrangThaiThietBi.IndexThietBi,
+        idThietBi: params.idthietbi
     };
 }
 
@@ -61,17 +66,31 @@ function addnewrepair(params) {
 function CheckTrangThaiThietBi(idthietbi) {
     try {
         const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
-        const val_DSThietBi = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DSThietBi).getDataRange().getValues();
+        const shDSThietBi = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DSThietBi);
+        const val_DSThietBi = shDSThietBi.getDataRange().getValues();
 
         const thietbiIndex = val_DSThietBi.findIndex(row => row[CONFIG_COLUMNS.DSThietBi.id] === idthietbi);
         if (thietbiIndex === -1) {
             console.log("[CheckTrangThaiThietBi] - Thiết bị không tồn tại");
         return { status: "error", message: "Thiết bị không tồn tại" };
         }
-        return val_DSThietBi[thietbiIndex][CONFIG_COLUMNS.DSThietBi.tinhtrang];
+        const TinhtrangThietBi = val_DSThietBi[thietbiIndex][CONFIG_COLUMNS.DSThietBi.tinhtrang];
+        if (TinhtrangThietBi === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG) {
+            shDSThietBi.getRange(thietbiIndex + 1, CONFIG_COLUMNS.DSThietBi.tinhtrang + 1).setValue(CONFIG_ENUM.TINHTRANG_THIETBI.HONG);
+            return { 
+                status: true, 
+                message: "Thiết bị đã được đánh dấu là hỏng",
+                IndexThietBi: thietbiIndex
+            };
+        } else {
+            return { 
+                status: false, 
+                message: "Thiết bị không trong tình trạng bình thường" 
+            };
+        }
     } catch (error) {
         console.log("[CheckTrangThaiThietBi] - Lỗi khi kiểm tra trạng thái thiết bị:", error);
-        return { status: "error", message: "Lỗi khi kiểm tra trạng thái thiết bị: " + error.message };
+        return { status: false, message: "Lỗi khi kiểm tra trạng thái thiết bị: " + error.message };
     }
 }
 
@@ -211,5 +230,52 @@ function AddNewRepairtoSheet(params, objFileUrl) {
 
 // SendtoTelegram
 function SendtoTelegram(params) {
-    
+    const message = 
+    `🔔 - BÁO HỎNG THIẾT BỊ MỚI - 🔔
+    ━━━━━━━━━━━━━━━━━━━━━━━━
+    🆔 - ID: ${params.repairID}
+    🏥 - Đơn vị báo hỏng: ${params.nameuserdv}
+    🔧 - Thiết bị: ${params.nameThietbi}
+    📋 - Model thiết bị: ${params.nameModel}
+    🔢 - Serial thiết bị: ${params.nameSerial}
+    ⚠️ - Tình trạng thiết bị: ${params.nameTinhTrang}
+    ⏱️ - Mức độ ưu tiên: ${params.nameMucDo}
+    👤 - Người yêu cầu: ${params.nameNguoiYeuCau} (sđt:${formatPhoneNumber(params.nameSDTYeuCau)})
+    👨‍🔧 - Người phụ trách sửa: ${params.nameNguoiSua} (sđt:${formatPhoneNumber(params.nameSDTNguoiSua)})`;
+
+    sendTelegramMessage(TELEGRAM_CONFIG.group_chat_id_Tele, message);
+    if (params.idTeleNguoiSua) {
+        sendTelegramMessage(params.idTeleNguoiSua, message);
+    }
 }
+
+// sendTelegramMessage
+function sendTelegramMessage(chatId, message) {
+  if (!chatId || !message) return null;
+
+  const apiUrl = `https://api.telegram.org/bot${TELEGRAM_CONFIG.api_token_Tele}/sendMessage`;
+
+  const options = {
+    method: 'POST',
+    contentType: 'application/json',
+    payload: JSON.stringify({
+      chat_id: chatId,
+      text: message,
+    })
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(apiUrl, options);
+    return JSON.parse(response.getContentText());
+  } catch (error) {
+    console.log('[sendTelegramMessage] Error:', error.message);
+    return null;
+  }
+}
+
+// Định dạng số điện thoại kiểu 038.994.3573
+    function formatPhoneNumber(phone) {
+        // Chỉ lấy số, loại bỏ ký tự không phải số
+        const digits = phone.replace(/\D/g, "");
+        return `${digits.slice(0,3)}.${digits.slice(3,6)}.${digits.slice(6,digits.length)}`;
+    }

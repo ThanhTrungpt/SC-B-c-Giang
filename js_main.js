@@ -76,11 +76,12 @@ const mrWarrantyExpiry = document.getElementById('mrWarrantyExpiry');
 const mrRequirementLevel = document.getElementById('mrRequirementLevel');
 const mrDeviceStatus = document.getElementById('mrDeviceStatus');
 
-
-// Button
-const btnModalRepairNew = document.getElementById('btnModalRepairNew');
 // Nhóm Ghi chú -- Repair Modal
 const mrNote = document.getElementById('mrNote');
+
+// Button -- Repair Modal
+const btnModalRepairNew = document.getElementById('btnModalRepairNew');
+const btnModalRepairSave = document.getElementById('btnModalRepairSave');
 // #endregion
 
 
@@ -97,8 +98,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   if (!appData) {
     console.log("Vao API");
-    appData = await sendFormAPI("getdata");
-    localStorage.setItem("storeAppData", JSON.stringify(appData));
+    const objgetdata = await sendFormAPI("getdata");
+    if (objgetdata.status !== "success") {
+    frmloading.style.display = "none";
+    showerror("Lỗi khi làm mới dữ liệu: " + objgetdata.message);
+    return;
+    }
+    appData = objgetdata.data;
   }
 
   // Ẩn loading screen
@@ -196,12 +202,20 @@ btnFreshData.addEventListener('click', async () => {
   // Refresh data
   // Hiển thị loading
   frmloading.style.display = "flex";
-  appData = await sendFormAPI("getdata");
-  
+  const objgetdata = await sendFormAPI("getdata");
+  if (objgetdata.status !== "success") {
+    showerror("Lỗi khi làm mới dữ liệu: " + objgetdata.message);
+    return;
+  }
+  appData = objgetdata.data;
+
   //Note!!
   localStorage.setItem("storeAppData", JSON.stringify(appData));
 
   UpdateTablesRepair();
+  updateUserInfo();
+  updateSuggestionInRepairModal();
+
   // Ẩn loading
   frmloading.style.display = "none";
 });
@@ -284,9 +298,10 @@ btnSearchCancel.addEventListener('click', () => {
 });
 
 // Add Event btnAddRepair
-btnAddRepair.addEventListener('click', () => {
+btnAddRepair.addEventListener('click', async () => {
   console.log("Chức năng thêm báo hỏng.");
   FormRepairModalTitle.textContent = "Thêm báo hỏng vào tạo Biên bản đề nghị sửa chữa";
+  
 });
  // #endregion
 
@@ -304,7 +319,8 @@ mrRepairerName.addEventListener('change', () => {
 mrDeviceGroup.addEventListener('change', () => {
   const valSelectedGroup = mrDeviceGroup.value;
   // Lọc danh sách thiết bị theo nhóm đã chọn và đơn vị
-  const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb] === valSelectedGroup && item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id);
+  console.log("Lọc danh sách thiết bị theo nhóm:", appData.DSThietBi);
+  const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb] === valSelectedGroup && item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id && item[CONFIG_COLUMNS.DSThietBi.tinhtrang] === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
   // thêm vào list thiết bị select mrDeviceID
   // Clear existing options in the device ID dropdown
   mrDeviceID.innerHTML = '<option value="">-- Chọn mã thiết bị --</option>';
@@ -345,8 +361,7 @@ mrDeviceID.addEventListener('change', () => {
 });
 
 // btnModalRepairNew - Tạo mới đề nghị báo hỏng </br>và Biên bản
-btnModalRepairNew.addEventListener('click', () => {
-  console.log("Chức năng tạo mới đề nghị báo hỏng.");
+btnModalRepairNew.addEventListener('click', async () => {
   const isValid = validateRepairModal(CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA);
   if (!isValid) {
     return;
@@ -360,6 +375,11 @@ btnModalRepairNew.addEventListener('click', () => {
     txtHistory += `\n   - Ghi chú: ${mrNote.value}`;
   }
 
+  const IndexRepairer = appData.DSUserSua.find(
+  item => item[CONFIG_COLUMNS.DSUserSua.id] === mrRepairerName.value
+  );
+
+  // Tạo đối tượng đề nghị báo hỏng mới
   const objaddnewrepair = {
     repairID: GenerateRepairID(),
     trangthai: CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA,
@@ -388,15 +408,50 @@ btnModalRepairNew.addEventListener('click', () => {
     nameNguoiYeuCau: mrRequesterName.value,
     nameSDTYeuCau: mrRequesterPhone.value,
     nameNguoiSua: mrRepairerName.options[mrRepairerName.selectedIndex].text,
-  }
+    nameSDTNguoiSua: mrRepairerPhone.value,
+    idTeleNguoiSua: IndexRepairer ? IndexRepairer[CONFIG_COLUMNS.DSUserSua.usetele] || "" : ""
+  };
   console.log("addnewrepair:", objaddnewrepair);
 
-  // Gửi dữ liệu đến API
-  const resultAPI = sendFormAPI ("addnewrepair", objaddnewrepair);
-  console.log("Đề nghị báo hỏng mới:", resultAPI);
   showloading();
+  // Gửi dữ liệu đến API
+  const ObjresultAPI = await sendFormAPI ("addnewrepair", objaddnewrepair);
+  console.log("Đề nghị báo hỏng mới:", ObjresultAPI);
+  if (ObjresultAPI.status === "success") {
+    // Cập nhật dữ liệu cục bộ appData
+    appData.DataSC.push([ObjresultAPI.dataNewRow]);
+    // Cập nhật trạng thái thiết bị theo IndexThietBi
+    const valIDThietBi = appData.DSThietBi[Number(ObjresultAPI.IndexThietBi)][CONFIG_COLUMNS.DSThietBi.id];
+    const valIDThietBiFromAPI = ObjresultAPI.dataNewRow[CONFIG_COLUMNS.DataSC.idthietbi];
+    if (valIDThietBi === valIDThietBiFromAPI) {
+      appData.DSThietBi[ObjresultAPI.IndexThietBi][CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.HONG;
+    } else {
+      // Tìm thiết bị bằng ID
+      const deviceIndex = appData.DSThietBi.findIndex(item => item[CONFIG_COLUMNS.DSThietBi.id] === valIDThietBiFromAPI);
+      if (deviceIndex !== -1) {
+        appData.DSThietBi[deviceIndex][CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.HONG;
+      }
+    }
+    UpdateTablesRepair();
+    updateSuggestionInRepairModal();
+    // Đóng loading
+    Swal.close();
+    // Dong modal
+    const ModalRepairShowHide = bootstrap.Modal.getInstance(FormRepairModal);
+    ModalRepairShowHide.hide();
+  } else {
+    console.log("Cập nhật trạng thái thiết bị không thành công");
+    showerror("Lỗi khi tạo đề nghị báo hỏng: " + ObjresultAPI.message);
+    return;
+  }// End if ObjresultAPI.status === "success"
 });
 
+// btnModalRepairSave - Cập nhật đề nghị báo hỏng
+btnModalRepairSave.addEventListener('click', async () => {
+  console.log("Cập nhật đề nghị báo hỏng.");
+  const ModalRepairShowHide = bootstrap.Modal.getInstance(FormRepairModal);
+  ModalRepairShowHide.hide();
+  });
 // #endregion  *** Add Event Form Repair Modal ***
 
 
@@ -470,14 +525,7 @@ async function sendFormAPI(action, fields) {
       body: formData
     });
     const data = await res.json();
-    if (data.status === "success") {
-      // If successful, return the data
-      return data.data;
-    } else {
-      // If there's an error, log it and return the error response
-      console.error("API error message:", data.message);
-      return data;
-    }
+    return data;
 
   } catch (err) {
     console.log({ status: "error API", message: err.message });
@@ -515,7 +563,7 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
         const idthietbi = item[CONFIG_COLUMNS.DataSC.idthietbi];
         const rowsthietbi = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.id] === idthietbi);
         if (rowsthietbi.length === 0) {
-          console.log("Không tìm thấy thiết bị với id: " + idthietbi);
+          console.log(`Không tìm thấy thiết bị với id: ${idthietbi} item: ${JSON.stringify(item)}`);
           return; // Hoặc xử lý logic khác nếu cần
         }
         const rowthietbi = rowsthietbi[0]
