@@ -541,7 +541,7 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
         <tr class="align-middle">
             <td class="text-center">${valSTT}</td>
             <td>⚠️ ${item[CONFIG_COLUMNS.DataSC.id]} 🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} 🛠️<br>
-              ♟️${rowthietbi[CONFIG_COLUMNS.DSThietBi.id]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.tentb]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.model]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.serial]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.nuocsx]}<br>
+              ♟️${rowthietbi[CONFIG_COLUMNS.DSThietBi.mathietbi]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.tentb]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.model]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.serial]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.nuocsx]}<br>
               👨‍🔧${rownguoisua[CONFIG_COLUMNS.DSUserSua.hoten]} 📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
             </td>
             <td class="d-flex align-middle align-items-center justify-content-center text-center gap-2" style="height:70%;"> 
