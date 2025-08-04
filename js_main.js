@@ -316,49 +316,10 @@ mrRepairerName.addEventListener('change', () => {
 });
 
 // Add Event mrDeviceGroup
-mrDeviceGroup.addEventListener('change', () => {
-  const valSelectedGroup = mrDeviceGroup.value;
-  // Lọc danh sách thiết bị theo nhóm đã chọn và đơn vị
-  console.log("Lọc danh sách thiết bị theo nhóm:", appData.DSThietBi);
-  const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb] === valSelectedGroup && item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id && item[CONFIG_COLUMNS.DSThietBi.tinhtrang] === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
-  // thêm vào list thiết bị select mrDeviceID
-  // Clear existing options in the device ID dropdown
-  mrDeviceID.innerHTML = '<option value="">-- Chọn mã thiết bị --</option>';
-
-  // Add filtered devices to the dropdown
-  filteredDevices.forEach(device => {
-    const newOption = document.createElement('option');
-    newOption.value = device[CONFIG_COLUMNS.DSThietBi.id];
-    newOption.textContent = `${device[CONFIG_COLUMNS.DSThietBi.mathietbi]} - ${device[CONFIG_COLUMNS.DSThietBi.tentb]}`;
-    mrDeviceID.appendChild(newOption);
-  });
-  // Reset device details
-  // Reset device details when changing device group
-  mrDeviceName.value = '';
-  mrManufacturer.value = '';
-  mrModel.value = '';
-  mrSerial.value = '';
-  mrYearManufactured.value = '';
-  mrYearInUse.value = '';
-  mrLocation.value = '';
-  mrWarrantyExpiry.value = '';
-});
+mrDeviceGroup.addEventListener('change', () => updateSuggestionDevice());
 
 // Add Event mrDeviceID
-mrDeviceID.addEventListener('change', () => {
-  const selectedDeviceId = mrDeviceID.value;
-  const selectedDevice = appData.DSThietBi.find(item => item[CONFIG_COLUMNS.DSThietBi.id] === selectedDeviceId);
-  if (selectedDevice) {
-    mrDeviceName.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.tentb];
-    mrManufacturer.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.hangsx];
-    mrModel.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.model];
-    mrSerial.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.serial];
-    mrYearManufactured.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.namsx];
-    mrYearInUse.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.namsd];
-    mrLocation.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.vitri];
-    mrWarrantyExpiry.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.hanbh];
-  }
-});
+mrDeviceID.addEventListener('change', () => updateInformationDevice());
 
 // btnModalRepairNew - Tạo mới đề nghị báo hỏng </br>và Biên bản
 btnModalRepairNew.addEventListener('click', async () => {
@@ -624,10 +585,10 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
       switch (strTrangThai) {
         case CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA:
           if (btnView) {
-            eBtnViewDeNghi(btnView.dataset.repairId, Number(btnView.dataset.repairRow) + 1);
+            UpdateValViewModalRepair(rowDataRepair, CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA, "View");
           }
           else if (btnEdit) {
-            eBtnEditDeNghi(btnEdit.dataset.repairId, Number(btnEdit.dataset.repairRow) + 1);
+            UpdateValViewModalRepair(indexRepair, CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA, "Edit");
           }
           else if (btnDel) {
             eBtnDelDeNghi(btnDel.dataset.repairId, Number(btnDel.dataset.repairRow) + 1);
@@ -805,6 +766,58 @@ function validateRepairModal(TrangThai = CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA) {
   return true;
 }
 
+// Repair Modal - Update suggestion device based on selected group
+function updateSuggestionDevice(rowDevice = null) {
+  const valSelectedGroup = mrDeviceGroup.value;
+  // Lọc danh sách thiết bị theo nhóm đã chọn và đơn vị
+  const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb] === valSelectedGroup && item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id && item[CONFIG_COLUMNS.DSThietBi.tinhtrang] === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
+
+  if (rowDevice !== null) {
+    // Nếu có rowDevice, thêm nó vào danh sách thiết bị đã lọc
+    filteredDevices.push(rowDevice);
+    console.log("Row device added to filtered devices:", rowDevice);
+  }
+  // thêm vào list thiết bị select mrDeviceID
+  // Clear existing options in the device ID dropdown
+  mrDeviceID.innerHTML = '<option value="">-- Chọn mã thiết bị --</option>';
+
+  // Add filtered devices to the dropdown
+  filteredDevices.forEach(device => {
+    const newOption = document.createElement('option');
+    newOption.value = device[CONFIG_COLUMNS.DSThietBi.id];
+    newOption.textContent = `${device[CONFIG_COLUMNS.DSThietBi.mathietbi]} - ${device[CONFIG_COLUMNS.DSThietBi.tentb]}`;
+    mrDeviceID.appendChild(newOption);
+  });
+  // Reset device details
+  updateInformationDevice();
+}
+
+// Repair Modal - Update device information based on selected device ID
+function updateInformationDevice() {
+  const selectedDeviceId = mrDeviceID.value;
+  const selectedDevice = appData.DSThietBi.find(item => item[CONFIG_COLUMNS.DSThietBi.id] === selectedDeviceId);
+  if (selectedDevice) {
+    mrDeviceName.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.tentb];
+    mrManufacturer.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.hangsx];
+    mrModel.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.model];
+    mrSerial.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.serial];
+    mrYearManufactured.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.namsx];
+    mrYearInUse.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.namsd];
+    mrLocation.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.vitri];
+    mrWarrantyExpiry.value = selectedDevice[CONFIG_COLUMNS.DSThietBi.hanbh];
+  }
+  else {
+    mrDeviceName.value = "";
+    mrManufacturer.value = "";
+    mrModel.value = "";
+    mrSerial.value = "";
+    mrYearManufactured.value = "";
+    mrYearInUse.value = "";
+    mrLocation.value = "";
+    mrWarrantyExpiry.value = "";
+  }
+}
+
 // Repair ID - Tao ID sửa chữa mới
 function GenerateRepairID() {
   const now = new Date();
@@ -847,53 +860,122 @@ function GenerateRepairID() {
   return repairID;
 }
 
+// Get val value to Modal Repair
+function UpdateValViewModalRepair(rowRepair, TrangThai, View_Edit = "View") {
+  
+  // Lấy row
+  const valIDUserSua = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.idusersua];
+  const rowUserSua = appData.DSUserSua.find(item => item[CONFIG_COLUMNS.DSUserSua.id] === valIDUserSua);
+  console.log("rowUserSua:", rowUserSua);
+
+  const valIDThietBi = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.idthietbi];
+  const rowDevice = appData.DSThietBi.find(item => item[CONFIG_COLUMNS.DSThietBi.id] === valIDThietBi);
+  console.log("rowThietBi:", rowDevice);
+
+  // dataset
+  FormRepairModal.dataset.rowRepair = rowRepair;
+  console.log("FormRepairModal.dataset.rowRepair:", FormRepairModal.dataset.rowRepair);
+  FormRepairModal.dataset.rowDevice = rowDevice[CONFIG_COLUMNS.DSThietBi.id];
+  console.log("FormRepairModal.dataset.rowDevice:", FormRepairModal.dataset.rowDevice);
+
+  // Cập nhật giá trị Modal Repair
+  switch (TrangThai) {
+    case CONFIG_ENUM.TRANGTHAI.HOAN_THANH:
+
+    case CONFIG_ENUM.TRANGTHAI.SUA_NGOAI:
+
+    case CONFIG_ENUM.TRANGTHAI.BAO_HANH:
+
+    case CONFIG_ENUM.TRANGTHAI.DANG_SUA:
+
+    case CONFIG_ENUM.TRANGTHAI.KHAO_SAT:
+
+    case CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA:
+      // Thông tin đơn vị
+      mrRequesterName.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.hotenYeucau];
+      mrRequesterPhone.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.sdtYeucau];
+
+      //Thông tin người sửa
+      mrRepairerName.value = rowUserSua[CONFIG_COLUMNS.DSUserSua.id];
+      mrRepairerPhone.value = rowUserSua[CONFIG_COLUMNS.DSUserSua.sdt];
+
+        //Thông tin thiết bị
+        mrDeviceGroup.value = rowDevice[CONFIG_COLUMNS.DSThietBi.nhomtb];
+        updateSuggestionDevice(rowDevice);
+        mrDeviceID.value = rowDevice[CONFIG_COLUMNS.DSThietBi.id];
+        updateInformationDevice();
+        //Thông tin tình trạng thiết bị
+        mrDeviceStatus.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao];
+        mrRequirementLevel.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.mucdo];
+
+        //Thông tin ghi chú
+        mrNote.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.ghichu];
+      break;
+    default:
+      console.log("Value Default Modal Repair: " + TrangThai);
+  }
+
+  // Cập nhật View
+  switch (TrangThai) {
+    case CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA:
+      // Cập nhật các trường trong Modal Repair
+      break;
+    case CONFIG_ENUM.TRANGTHAI.KHAO_SAT:
+      // Cập nhật các trường trong Modal Repair
+      break;
+    case CONFIG_ENUM.TRANGTHAI.DANG_SUA:
+      // Cập nhật các trường trong Modal Repair
+      break;
+    case CONFIG_ENUM.TRANGTHAI.BAO_HANH:
+      // Cập nhật các trường trong Modal Repair
+      break;
+    case CONFIG_ENUM.TRANGTHAI.SUA_NGOAI:
+      // Cập nhật các trường trong Modal Repair
+      break;
+    default:
+      console.log("Value Default Modal Repair: " + TrangThai);
+  }
+
+  // Cập nhật Readonly
+  switch (View_Edit) {
+    case "View":
+      // Đặt các trường readonly
+      console.log("View");
+      mrRequesterName.disabled = true;
+      mrRequesterPhone.disabled = true;
+      mrRepairerName.disabled = true;
+      mrDeviceGroup.disabled = true;
+      mrDeviceID.disabled = true;
+      mrDeviceStatus.disabled = true;
+      mrRequirementLevel.disabled = true;
+      mrNote.disabled = true;
+      break;
+    case "Edit":
+      // Đặt các trường editable
+      console.log("Edit");
+      mrRequesterName.disabled = false;
+      mrRequesterPhone.disabled = false;
+      mrRepairerName.disabled = false;
+      mrDeviceGroup.disabled = false;
+      mrDeviceID.disabled = false;
+      mrDeviceStatus.disabled = false;
+      mrRequirementLevel.disabled = false;
+      mrNote.disabled = false;
+      break;
+    default:
+      console.log("Value Default View_Edit: " + View_Edit);
+      break;
+  }
+}
+
 // #region *** Trạng thái Đề nghi sửa chữa ***
 // View
 function eBtnViewDeNghi(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút View Đề nghị sửa chữa. ID: ${idRepair}. Row: ${rowDataRepair}`);
-  mrRequesterName.value = appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.hotenYeucau];
-  mrRequesterPhone.value = appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.sdtYeucau];
-
-  //Thông tin người sửa
-  const valIDUserSua = appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.idusersua];
-  const rowUserSua = appData.DSUserSua.find(item => item[CONFIG_COLUMNS.DSUserSua.id] === valIDUserSua);
-  if (rowUserSua) {
-    mrRepairerName.value = rowUserSua[CONFIG_COLUMNS.DSUserSua.hoten];
-    mrRepairerPhone.value = rowUserSua[CONFIG_COLUMNS.DSUserSua.sdt];
-  }
-
-  //Thông tin thiết bị
-  const valIDThietBi = appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.idthietbi];
-  console.log(`Thông tin thiết bị: ${appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.idthietbi]}`);
-
-  const rowThietBi = appData.DSThietBi.find(item => item[CONFIG_COLUMNS.DSThietBi.id] === valIDThietBi);
-  if (rowThietBi) {
-    const valNhomtb = rowThietBi[CONFIG_COLUMNS.DSThietBi.nhomtb];
-    const rowNhomtb = appData.DSNhomTB.find(item => item[CONFIG_COLUMNS.DSNhomTB.nhomtb] === valNhomtb);
-    if (rowNhomtb) {
-      mrDeviceGroup.value = rowNhomtb[CONFIG_COLUMNS.DSNhomTB.ten];
-    }
-
-    mrDeviceID.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.id];
-    mrDeviceName.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.ten];
-    mrManufacturer.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.nuocsx];
-    mrModel.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.model];
-    mrSerial.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.serial];
-    mrYearManufactured.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.namsx];
-    mrYearInUse.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.namsd];
-    mrLocation.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.vitridat];
-    mrWarrantyExpiry.value = rowThietBi[CONFIG_COLUMNS.DSThietBi.hanbaohanh];
-  }
-
-  //Thông tin tình trạng thiết bị
-  mrDeviceStatus.value = appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao];
-  mrRequirementLevel.value = appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.mucdoquyennang];
-  //Thông tin ghi chú
-  mrNote.value = appData.DataSC[rowDataRepair][CONFIG_COLUMNS.DataSC.ghichu];
-
+  UpdateValViewModalRepair(rowDataRepair, CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA, "View");
 }
-function eBtnEditDeNghi(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Edit Đề nghị sửa chữa. ID: ${idRepair}. Row: ${rowDataRepair}`);
+
+function eBtnEditDeNghi(idRepair, indexRepair) {
+  UpdateValViewModalRepair(indexRepair, CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA, "Edit");
 }
 function eBtnDelDeNghi(idRepair, rowDataRepair) {
   console.log(`Nhấn nút Del Đề nghị sửa chữa. ID: ${idRepair}. Row: ${rowDataRepair}`);
