@@ -32,43 +32,114 @@ const params = {
     idTeleNguoiSua: "5468165152"
 };
 
-  const result = addnewrepair(params);
+  const result = addNewRepair(params);
 //   SendtoTelegram(params);
   console.log("Test Add New Repair:", result);
 }
 
 // API/API_AddNewRepair
 function addNewRepair(params) {
-    // Kiểm tra trạng thái thiết bị
-    const objCheckTrangThaiThietBi = CheckTrangThaiThietBi(params.idthietbi);
-    if (!objCheckTrangThaiThietBi.status) {
-        return { status: "error", message: "Thiết bị không trong tình trạng bình thường" };
-    }
-    // Tạo biên bản đề nghị sửa chữa
-    objFileUrl = createfile_bm0901(params);
-
-    // Thêm mới đề nghị sửa chữa vào sheet
-    objNewRow = AddNewRepairtoSheet(params, objFileUrl);
-
-    // Nhắn tin trên Telegram
-    SendtoTelegram(params);
-
-    return { 
-        status: "success",
-        message: "New repair added successfully",
-        dataNewRow: objNewRow.dataNewRow,
-        IndexThietBi: objCheckTrangThaiThietBi.IndexThietBi,
-        idThietBi: params.idthietbi
-    };
-}
-
-//CheckTrangThaiThietBi
-function CheckTrangThaiThietBi(idthietbi) {
     try {
         const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
         const shDSThietBi = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DSThietBi);
         const val_DSThietBi = shDSThietBi.getDataRange().getValues();
+        const shDataSC = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
+        const val_DataSC = shDataSC.getDataRange().getValues();
+        // Kiểm tra trạng thái thiết bị 
+        const objCheckTrangThaiThietBi = CheckTrangThaiThietBi(params.idthietbi, shDSThietBi, val_DSThietBi);
+        if (!objCheckTrangThaiThietBi.status) {
+            return { status: "error", message: "Thiết bị không trong tình trạng bình thường" };
+        }
+        // Tạo biên bản đề nghị sửa chữa
+        objFileUrl = createfile_bm0901(params);
 
+        // Thêm mới đề nghị sửa chữa vào sheet
+        objNewRow = AddNewRepairtoSheet(params, objFileUrl, shDataSC, val_DataSC);
+
+        // Nhắn tin trên Telegram
+        SendtoTelegram(params);
+    return {
+        status: "success",
+        message: "New repair added successfully",
+        dataNewRow: objNewRow.dataNewRow,
+        indexDevice: objCheckTrangThaiThietBi.indexDevice,
+        idThietBi: params.idthietbi
+    };
+    } catch (error) {
+        console.error("[addNewRepair] - Lỗi khi thêm mới đề nghị sửa chữa:", error);
+        return { status: "error", message: "Lỗi khi thêm mới đề nghị sửa chữa: " + error.message };
+        }
+}
+
+// API/objUpdateRepairDn01
+function objUpdateRepairDn01(params) {
+    try {
+        const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
+        const shDSThietBi = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DSThietBi);
+        const val_DSThietBi = shDSThietBi.getDataRange().getValues();
+        const shDataSC = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
+        const val_DataSC = shDataSC.getDataRange().getValues();
+        // Kiểm tra trạng thái thiết bị 
+        const objUpdateTrangThaiThietBi = UpdateTrangThaiThietBi(params.rowDeviceOld, params.idthietbiNew, shDSThietBi, val_DSThietBi);
+        if (!objUpdateTrangThaiThietBi.status) {
+            return { status: "error", message: "Thiết bị không trong tình trạng bình thường" };
+        }
+
+        // Xóa file cu
+
+        // Tạo biên bản đề nghị sửa chữa
+        objFileUrl = createfile_bm0901(params);
+
+        // Thêm mới đề nghị sửa chữa vào sheet
+        objNewRow = UpdateRepairtoSheet(params, objFileUrl, shDataSC, val_DataSC);
+
+    return {
+        status: "success",
+        message: "Update repair successfully",
+        dataNewRow: objNewRow.dataNewRow,
+        indexDevice: objCheckTrangThaiThietBi.indexDevice,
+        idThietBi: params.idthietbi
+    };
+    } catch (error) {
+        console.error("[addNewRepair] - Lỗi khi thêm mới đề nghị sửa chữa:", error);
+        return { status: "error", message: "Lỗi khi thêm mới đề nghị sửa chữa: " + error.message };
+        }
+}
+
+//UpdateTrangThaiThietBi
+function UpdateTrangThaiThietBi(rowDeviceOld, idthietbiNew, shDSThietBi, val_DSThietBi) {
+    try {
+        let rowDevice = Number(rowDeviceOld);
+        const idthietbiOld = val_DSThietBi[rowDevice][CONFIG_COLUMNS.DSThietBi.id];
+        console.log("[UpdateTrangThaiThietBi] - idthietbiOld:", idthietbiOld, "idthietbiNew:", idthietbiNew);
+        if (idthietbiOld !== idthietbiNew) {
+            console.log("[UpdateTrangThaiThietBi] - Cập nhật thiết bị từ", idthietbiOld, "sang", idthietbiNew);
+            // Cập nhật thiết bị cũ bình thường
+            shDSThietBi.getRange(rowDevice + 1, CONFIG_COLUMNS.DSThietBi.tinhtrang + 1).setValue(CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
+            // Tìm dòng của thiết bị mới idthietbiNew
+            rowDevice = val_DSThietBi.findIndex(row => row[CONFIG_COLUMNS.DSThietBi.id] === idthietbiNew);
+            if (rowDevice === -1) {
+                console.log("[UpdateTrangThaiThietBi] - Thiết bị mới không tồn tại");
+                return { status: "error", message: "Thiết bị mới không tồn tại" };
+            } else {
+                // Cập nhật thiết bị mới
+                shDSThietBi.getRange(rowDevice + 1, CONFIG_COLUMNS.DSThietBi.tinhtrang + 1).setValue(CONFIG_ENUM.TINHTRANG_THIETBI.HONG);
+            }
+        } 
+            return { 
+                status: true, 
+                message: "Thiết bị đã được đánh dấu là hỏng",
+                indexDevice: rowDevice
+            };
+    } catch (error) {
+        console.log("[CheckTrangThaiThietBi] - Lỗi khi kiểm tra trạng thái thiết bị:", error);
+        return { status: false, message: "Lỗi khi kiểm tra trạng thái thiết bị: " + error.message };
+    }
+}
+
+//CheckTrangThaiThietBi
+function CheckTrangThaiThietBi(idthietbi, shDSThietBi, val_DSThietBi) {
+    try {
         const thietbiIndex = val_DSThietBi.findIndex(row => row[CONFIG_COLUMNS.DSThietBi.id] === idthietbi);
         if (thietbiIndex === -1) {
             console.log("[CheckTrangThaiThietBi] - Thiết bị không tồn tại");
@@ -80,7 +151,7 @@ function CheckTrangThaiThietBi(idthietbi) {
             return { 
                 status: true, 
                 message: "Thiết bị đã được đánh dấu là hỏng",
-                IndexThietBi: thietbiIndex
+                indexDevice: thietbiIndex
             };
         } else {
             return { 
@@ -156,13 +227,8 @@ function createfile_bm0901(params) {
 }
 
 // AddNewRepairtoSheet
-function AddNewRepairtoSheet(params, objFileUrl) {
+function AddNewRepairtoSheet(params, objFileUrl, shDataSC, val_DataSC) {
     try {
-            // Get Data Spreadsheet
-    const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
-    const shDataSC = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
-    const val_DataSC = shDataSC.getDataRange().getValues();
-
     // Tạo mảng mới là dòng sheet để add vào shDataSC
     const newRow = [
       params.repairID,                   // ID_DataSC
