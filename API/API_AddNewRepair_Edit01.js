@@ -46,9 +46,9 @@ function addNewRepair(params) {
         const shDataSC = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
         const val_DataSC = shDataSC.getDataRange().getValues();
         // Kiểm tra trạng thái thiết bị 
-        const objCheckTrangThaiThietBi = CheckTrangThaiThietBi(params.idthietbi, shDSThietBi, val_DSThietBi);
-        if (!objCheckTrangThaiThietBi.status) {
-            return { status: "error", message: "Thiết bị không trong tình trạng bình thường" };
+        const objCheckStatusDevice = CheckStatusDevice(params.idthietbi, shDSThietBi, val_DSThietBi);
+        if (!objCheckStatusDevice.status) {
+            return { status: "error", message: "Lỗi dữ liệu trong danh sách thiết bị" };
         }
         // Tạo biên bản đề nghị sửa chữa
         objFileUrl = createfile_bm0901(params);
@@ -62,7 +62,7 @@ function addNewRepair(params) {
         status: "success",
         message: "New repair added successfully",
         dataNewRow: objNewRow.dataNewRow,
-        indexDevice: objCheckTrangThaiThietBi.indexDevice,
+        indexDevice: objCheckStatusDevice.indexDevice,
         idThietBi: params.idthietbi
     };
     } catch (error) {
@@ -82,7 +82,7 @@ function objUpdateRepairDn01(params) {
         // Kiểm tra trạng thái thiết bị 
         const objUpdateTrangThaiThietBi = UpdateTrangThaiThietBi(params.rowDeviceOld, params.idthietbiNew, shDSThietBi, val_DSThietBi);
         if (!objUpdateTrangThaiThietBi.status) {
-            return { status: "error", message: "Thiết bị không trong tình trạng bình thường" };
+            return { status: "error", message: "Thiết bị cần sửa không trong tình trạng bình thường" };
         }
 
         // Xóa file cu
@@ -96,9 +96,12 @@ function objUpdateRepairDn01(params) {
     return {
         status: "success",
         message: "Update repair successfully",
-        dataNewRow: objNewRow.dataNewRow,
-        indexDevice: objCheckTrangThaiThietBi.indexDevice,
-        idThietBi: params.idthietbi
+        //dataUpdateRepair: objNewRow.dataNewRow,
+        //rowUpdateRepair: objNewRow.dataNewRow,
+        //dataOldDevice: objCheckTrangThaiThietBi.indexDevice,
+        //rowOldDevice: params.idthietbi
+        //dataNewDevice: objCheckTrangThaiThietBi.indexDevice,
+        //rowNewDevice: params.idthietbi
     };
     } catch (error) {
         console.error("[addNewRepair] - Lỗi khi thêm mới đề nghị sửa chữa:", error);
@@ -138,7 +141,7 @@ function UpdateTrangThaiThietBi(rowDeviceOld, idthietbiNew, shDSThietBi, val_DST
 }
 
 //CheckTrangThaiThietBi
-function CheckTrangThaiThietBi(idthietbi, shDSThietBi, val_DSThietBi) {
+function CheckStatusDevice(idthietbi, shDSThietBi, val_DSThietBi) {
     try {
         const thietbiIndex = val_DSThietBi.findIndex(row => row[CONFIG_COLUMNS.DSThietBi.id] === idthietbi);
         if (thietbiIndex === -1) {

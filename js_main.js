@@ -394,6 +394,7 @@ btnNew_ModalRepair.addEventListener('click', async () => {
       console.log("Cập nhật trạng thái thiết bị:", appData.DSThietBi[ObjresultAPI.indexDevice][CONFIG_COLUMNS.DSThietBi.tinhtrang]);
     } else {
       // reload dữ liệu
+      console.log("Cập nhật trạng thái thiết bị không thành công, reload dữ liệu");
       await LoadData();
     }
     UpdateTablesRepair();
@@ -431,7 +432,7 @@ const currentTime = new Date();
   );
 
   // Tạo đối tượng đề nghị báo hỏng mới
-  const objUpdateRepair = {
+  const objUpdateRepair_01 = {
     // Lấy id theo FormRepairModal.dataset.rowRepair
     repairID: appData.DataSC[Number(FormRepairModal.dataset.rowRepair)][CONFIG_COLUMNS.DataSC.id],
     rowRepair: FormRepairModal.dataset.rowRepair,
@@ -464,11 +465,11 @@ const currentTime = new Date();
     nameSDTNguoiSua: mrRepairerPhone.value,
     idTeleNguoiSua: IndexRepairer ? IndexRepairer[CONFIG_COLUMNS.DSUserSua.usetele] || "" : ""
   };
-  console.log("objUpdateRepair:", objUpdateRepair);
+  console.log("objUpdateRepair_01:", objUpdateRepair_01);
 
   showloading();
   // Gửi dữ liệu đến API
-  const ObjresultAPI = await sendFormAPI ("objUpdateRepairDn01", objUpdateRepair);
+  const ObjresultAPI = await sendFormAPI ("objUpdateRepairDn01", objUpdateRepair_01);
   console.log("Update bao hong:", ObjresultAPI);
   if (ObjresultAPI.status === "success") {
     // Cập nhật dữ liệu cục bộ appData
@@ -480,6 +481,7 @@ const currentTime = new Date();
       appData.DSThietBi[ObjresultAPI.indexDevice][CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.HONG;
     } else {
       // reload dữ liệu
+      console.log("Cập nhật trạng thái thiết bị không thành công, reload dữ liệu");
       await LoadData();
     }
     UpdateTablesRepair();
