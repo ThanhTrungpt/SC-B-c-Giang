@@ -12,10 +12,24 @@ function doPost(e) {
     case "getdata":
       result = getdata();
       break;
-    case "addnewrepair":
+    case "addNewRepair":
       result = addNewRepair(params);
       break;
-
+    case "deleteRepair":
+      result = deleteRepair(params);
+      break;
+    case "updateRepairDn01":
+      result = updateRepairDn01(params);
+      break;
+    case "updateRepairDn02":
+      result = updateRepairDn02(params);
+      break;    
+    case "updateRepairDn03":
+      result = updateRepairDn03(params);
+      break;
+    case "updateRepairDn04":
+      result = updateRepairDn04(params);
+      break;
     default:
       result = { status: "lỗi action error", message: "Unknown action" };
   }

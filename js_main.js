@@ -76,6 +76,39 @@ const mrWarrantyExpiry = document.getElementById('mrWarrantyExpiry');
 const mrRequirementLevel = document.getElementById('mrRequirementLevel');
 const mrDeviceStatus = document.getElementById('mrDeviceStatus');
 
+// Nhóm Quyết định -- Repair Modal
+const mrDecisionNumber = document.getElementById('mrDecisionNumber');
+const mrDecisionDate = document.getElementById('mrDecisionDate');
+
+// Nhóm Đại diện bệnh viện -- Repair Modal
+const mrDaiDienName1 = document.getElementById('mrDaiDienName1');
+const mrDaiDienChucVu1 = document.getElementById('mrDaiDienChucVu1');
+const mrDaiDienName2 = document.getElementById('mrDaiDienName2');
+const mrDaiDienChucVu2 = document.getElementById('mrDaiDienChucVu2');
+const mrDaiDienName3 = document.getElementById('mrDaiDienName3');
+const mrDaiDienChucVu3 = document.getElementById('mrDaiDienChucVu3');
+const mrDaiDienName4 = document.getElementById('mrDaiDienName4');
+const mrDaiDienChucVu4 = document.getElementById('mrDaiDienChucVu4');
+const mrDaiDienName5 = document.getElementById('mrDaiDienName5');
+const mrDaiDienChucVu5 = document.getElementById('mrDaiDienChucVu5');
+
+// Nhóm Đại diện đơn vị -- Repair Modal
+const dvDaiDienName1 = document.getElementById('dvDaiDienName1');
+const dvDaiDienChucVu1 = document.getElementById('dvDaiDienChucVu1');
+const dvDaiDienName2 = document.getElementById('dvDaiDienName2');
+const dvDaiDienChucVu2 = document.getElementById('dvDaiDienChucVu2');
+
+// Thông tin khảo sát -- Repair Modal
+const mrSurveyStatus = document.getElementById('mrSurveyStatus');
+const mrSurveyConclusion = document.getElementById('mrSurveyConclusion');
+const mrRepairProposal = document.getElementById('mrRepairProposal');
+
+// Nhóm Nội dung đề nghị -- Repair Modal
+const mrProposalContent = document.getElementById('mrProposalContent');
+
+// Nhóm Tình trạng thiết bị bàn giao -- Repair Modal
+const mrDeviceStatusBG = document.getElementById('mrDeviceStatusBG');
+
 // Nhóm Ghi chú -- Repair Modal
 const mrNote = document.getElementById('mrNote');
 
@@ -86,6 +119,20 @@ const btn02_ModalRepairSave = document.getElementById('btn02_ModalRepairSave');
 const btn03_ModalRepairSave = document.getElementById('btn03_ModalRepairSave');
 const btn04_ModalRepairSave = document.getElementById('btn04_ModalRepairSave');
 const btn05_ModalRepairSave = document.getElementById('btn05_ModalRepairSave');
+
+// Group Repair Modal
+const GroupDonViYC = document.getElementById('GroupDonViYC');
+const GroupNguoiSuaChua = document.getElementById('GroupNguoiSuaChua');
+const GroupThongTinThietBi = document.getElementById('GroupThongTinThietBi');
+const GroupThongTinTinhTrangThietBi = document.getElementById('GroupThongTinTinhTrangThietBi');
+
+const GroupQuyetDinh = document.getElementById('GroupQuyetDinh');
+const GroupDaiDienBenhVien = document.getElementById('GroupDaiDienBenhVien');
+const GroupDaiDienDonVi = document.getElementById('GroupDaiDienDonVi');
+const GroupThongTinKhaoSat = document.getElementById('GroupThongTinKhaoSat');
+
+const GroupNoiDungDeNghi = document.getElementById('GroupNoiDungDeNghi');
+const GroupDeviceStatusBG = document.getElementById('GroupDeviceStatusBG');
 // #endregion
 
 
@@ -304,12 +351,13 @@ btnSearchCancel.addEventListener('click', () => {
 // Add Event btnAddRepair
 btnAddRepair.addEventListener('click', async () => {
   console.log("Chức năng thêm báo hỏng.");
+  updateSuggestionGroupDevice();
   FormRepairModalTitle.textContent = "Thêm báo hỏng vào tạo Biên bản đề nghị sửa chữa";
-  
-});
+  showGroupRepairModal();
+  });
  // #endregion
 
-// #region *** Add Event Form Repair Modal ***
+// #region *** Trạng thái Đề nghị sửa chữa - Add Event Form Repair Modal ***
 // Add Event mrRepairerName
 mrRepairerName.addEventListener('change', () => {
   const valSelectedRepairer = mrRepairerName.value;
@@ -320,10 +368,11 @@ mrRepairerName.addEventListener('change', () => {
 });
 
 // Add Event mrDeviceGroup
-mrDeviceGroup.addEventListener('change', () => updateSuggestionDevice());
+mrDeviceGroup.addEventListener('change', () => updateSuggestionDevice(mrDeviceGroup.value));
 
 // Add Event mrDeviceID
 mrDeviceID.addEventListener('change', () => updateInformationDevice());
+// #endregion *** Trạng thái Đề nghị sửa chữa - Add Event Form Repair Modal ***
 
 // btnNew_ModalRepair - Tạo mới đề nghị báo hỏng </br>và Biên bản
 btnNew_ModalRepair.addEventListener('click', async () => {
@@ -337,7 +386,7 @@ btnNew_ModalRepair.addEventListener('click', async () => {
   const formattedDate = currentTime.toLocaleTimeString('vi-VN') + ' ' + currentTime.toLocaleDateString('vi-VN');
   let txtHistory = `* ${formattedDate} - ${mrRequesterName.value}: Thêm đề nghị báo hỏng mới\n`;
   if (mrNote.value?.trim()) {
-    txtHistory += `\n   - Ghi chú: ${mrNote.value}`;
+    txtHistory += `   - Ghi chú: ${mrNote.value}`;
   }
 
   const IndexRepairer = appData.DSUserSua.find(
@@ -376,41 +425,36 @@ btnNew_ModalRepair.addEventListener('click', async () => {
     nameSDTNguoiSua: mrRepairerPhone.value,
     idTeleNguoiSua: IndexRepairer ? IndexRepairer[CONFIG_COLUMNS.DSUserSua.usetele] || "" : ""
   };
-  console.log("addnewrepair:", objaddnewrepair);
+  console.log("addNewRepair:", objaddnewrepair);
 
   showloading();
   // Gửi dữ liệu đến API
-  const ObjresultAPI = await sendFormAPI ("addnewrepair", objaddnewrepair);
-  console.log("Đề nghị báo hỏng mới:", ObjresultAPI);
-  if (ObjresultAPI.status === "success") {
-    // Cập nhật dữ liệu cục bộ appData
-    appData.DataSC.push([ObjresultAPI.dataNewRow]);
+  const objAddNewRepair = await sendFormAPI ("addNewRepair", objaddnewrepair);
+  console.log("Đề nghị báo hỏng mới:", objAddNewRepair);
+  if (objAddNewRepair.status === "success") {
+    // Cập nhật dữ liệu appData
+    appData.DataSC.push(objAddNewRepair.dataRowNewRepair);
+
     // Cập nhật trạng thái thiết bị theo IndexThietBi
-    const valIDThietBi = appData.DSThietBi[Number(ObjresultAPI.indexDevice)][CONFIG_COLUMNS.DSThietBi.id];
-    const valIDThietBiFromAPI = ObjresultAPI.dataNewRow[CONFIG_COLUMNS.DataSC.idthietbi];
-    if (valIDThietBi === valIDThietBiFromAPI) {
-      appData.DSThietBi[ObjresultAPI.indexDevice][CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.HONG;
-      console.log("Cập nhật trạng thái thiết bị thành công");
-      console.log("Cập nhật trạng thái thiết bị:", appData.DSThietBi[ObjresultAPI.indexDevice][CONFIG_COLUMNS.DSThietBi.tinhtrang]);
-    } else {
-      // reload dữ liệu
-      console.log("Cập nhật trạng thái thiết bị không thành công, reload dữ liệu");
-      await LoadData();
-    }
-    UpdateTablesRepair();
-    updateSuggestionInRepairModal();
-    // Đóng loading
+    appData.DSThietBi[Number(objAddNewRepair.indexDevice)] = objAddNewRepair.dataRowDevice;
+    
     Swal.close();
     // Dong modal
     const ModalRepairShowHide = bootstrap.Modal.getInstance(FormRepairModal);
     ModalRepairShowHide.hide();
+
+    UpdateTablesRepair();
+    updateSuggestionInRepairModal();
+    frmainApp.style.display = "block";
+    // Đóng loading
   } else {
     console.log("Cập nhật trạng thái thiết bị không thành công");
-    showerror("Lỗi khi tạo đề nghị báo hỏng: " + ObjresultAPI.message);
+    showerror("Lỗi khi tạo đề nghị báo hỏng: " + objAddNewRepair.message);
     return;
-  }// End if ObjresultAPI.status === "success"
+  }// End if objAddNewRepair.status === "success"
 });
 
+// #region *** Update  - Add Event Form Repair Modal ***
 // btn01_ModalRepairSave - Cập nhật đề nghị báo hỏng
 btn01_ModalRepairSave.addEventListener('click', async () => {
   console.log("Cập nhật đề nghị báo hỏng.");
@@ -418,26 +462,25 @@ btn01_ModalRepairSave.addEventListener('click', async () => {
   if (!isValid) {
     return;
   }
-
+  
   // Lấy thông tin từ các trường trong modal
 const currentTime = new Date();
   const formattedDate = currentTime.toLocaleTimeString('vi-VN') + ' ' + currentTime.toLocaleDateString('vi-VN');
   let txtHistory = `* ${formattedDate} - ${mrRequesterName.value}: Cập nhật thông tin đề nghị báo hỏng\n`;
   if (mrNote.value?.trim()) {
-    txtHistory += `\n   - Ghi chú: ${mrNote.value}`;
+    txtHistory += `   - Ghi chú: ${mrNote.value}`;
   }
 
-  const IndexRepairer = appData.DSUserSua.find(
-  item => item[CONFIG_COLUMNS.DSUserSua.id] === mrRepairerName.value
-  );
-
+  const rowUserSua = appData.DSUserSua.find(  item => item[CONFIG_COLUMNS.DSUserSua.id] === mrRepairerName.value  );
+  
   // Tạo đối tượng đề nghị báo hỏng mới
   const objUpdateRepair_01 = {
     // Lấy id theo FormRepairModal.dataset.rowRepair
-    repairID: appData.DataSC[Number(FormRepairModal.dataset.rowRepair)][CONFIG_COLUMNS.DataSC.id],
-    rowRepair: FormRepairModal.dataset.rowRepair,
-    idthietbiNew: mrDeviceID.value,
-    rowDeviceOld: FormRepairModal.dataset.rowDevice,
+    repairID: FormRepairModal.dataset.idRepair,
+    indexRepair: FormRepairModal.dataset.indexRepair,
+    idDeviceOld: FormRepairModal.dataset.idDevice,
+    indexDeviceOld: FormRepairModal.dataset.indexDevice,
+    idDeviceNew: mrDeviceID.value,
     trangthai: CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA,
     mucdo: mrRequirementLevel.value,
     iduserdv: userData.id,
@@ -463,27 +506,34 @@ const currentTime = new Date();
     nameSDTYeuCau: mrRequesterPhone.value,
     nameNguoiSua: mrRepairerName.options[mrRepairerName.selectedIndex].text,
     nameSDTNguoiSua: mrRepairerPhone.value,
-    idTeleNguoiSua: IndexRepairer ? IndexRepairer[CONFIG_COLUMNS.DSUserSua.usetele] || "" : ""
+    idTeleNguoiSua: rowUserSua ? rowUserSua[CONFIG_COLUMNS.DSUserSua.usetele] || "" : ""
   };
   console.log("objUpdateRepair_01:", objUpdateRepair_01);
 
   showloading();
   // Gửi dữ liệu đến API
-  const ObjresultAPI = await sendFormAPI ("objUpdateRepairDn01", objUpdateRepair_01);
-  console.log("Update bao hong:", ObjresultAPI);
-  if (ObjresultAPI.status === "success") {
+  const objUpdateRepairDn01 = await sendFormAPI ("updateRepairDn01", objUpdateRepair_01);
+  console.log("Update bao hong:", objUpdateRepairDn01);
+  if (objUpdateRepairDn01.status === "success") {
     // Cập nhật dữ liệu cục bộ appData
-    appData.DataSC.push([ObjresultAPI.dataNewRow]);
+    console.log("Cập nhật dữ liệu cục bộ appData");
+    console.log(appData.DataSC);
+    console.log(objUpdateRepairDn01.rowRepair);
+    console.log("Index sửa chữa:", objUpdateRepairDn01.indexRepair);
+    appData.DataSC[Number(objUpdateRepairDn01.indexRepair)] = objUpdateRepairDn01.rowRepair;
     // Cập nhật trạng thái thiết bị theo IndexThietBi
-    const valIDThietBi = appData.DSThietBi[Number(ObjresultAPI.indexDevice)][CONFIG_COLUMNS.DSThietBi.id];
-    const valIDThietBiFromAPI = ObjresultAPI.dataNewRow[CONFIG_COLUMNS.DataSC.idthietbi];
-    if (valIDThietBi === valIDThietBiFromAPI) {
-      appData.DSThietBi[ObjresultAPI.indexDevice][CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.HONG;
-    } else {
-      // reload dữ liệu
-      console.log("Cập nhật trạng thái thiết bị không thành công, reload dữ liệu");
-      await LoadData();
+    console.log(appData.DataSC);
+
+    console.log("Cập nhật trạng thái thiết bị mới");
+    console.log("Cập nhật trạng thái thiết bị theo IndexThietBi cũ:", objUpdateRepairDn01.indexDeviceOld);
+    console.log("Cập nhật trạng thái thiết bị theo IndexThietBi mới:", objUpdateRepairDn01.indexDeviceNew);
+    console.log("Cập nhật trạng thái thiết bị cũ:", objUpdateRepairDn01.rowDeviceOld);
+    console.log("Cập nhật trạng thái thiết bị mới:", objUpdateRepairDn01.rowDeviceNew);
+    if (objUpdateRepairDn01.indexDeviceOld !== "0" && objUpdateRepairDn01.indexDeviceOld !== 0) {
+      appData.DSThietBi[Number(objUpdateRepairDn01.indexDeviceOld)] = objUpdateRepairDn01.rowDeviceOld;
+      appData.DSThietBi[Number(objUpdateRepairDn01.indexDeviceNew)] = objUpdateRepairDn01.rowDeviceNew;
     }
+    console.log("Cập nhật trạng thái thiết bị mới thành công");
     UpdateTablesRepair();
     updateSuggestionInRepairModal();
     // Đóng loading
@@ -493,9 +543,9 @@ const currentTime = new Date();
     ModalRepairShowHide.hide();
   } else {
     console.log("Cập nhật trạng thái thiết bị không thành công");
-    showerror("Lỗi khi tạo đề nghị báo hỏng: " + ObjresultAPI.message);
+    showerror("Lỗi khi tạo đề nghị báo hỏng: " + objUpdateRepairDn01.message);
     return;
-  }// End if ObjresultAPI.status === "success"
+  }// End if objUpdateRepairDn01.status === "success"
 
   // Ẩn Modal
   const ModalRepairShowHide = bootstrap.Modal.getInstance(FormRepairModal);
@@ -632,42 +682,42 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
   let valSTT = 0;
   try {
     // Duyệt qua các dòng dữ liệu
-    appData.DataSC.slice(1).forEach((item, index) => {
+    appData.DataSC.forEach((item, index) => {
       if (item[CONFIG_COLUMNS.DataSC.trangthai] === strTrangThai && item[CONFIG_COLUMNS.DataSC.iduserdv] === userData.id) {
         // Tăng STT cho bảng báo hỏng
         valSTT++;
         //Lấy thông tin thiết bị 
         const idthietbi = item[CONFIG_COLUMNS.DataSC.idthietbi];
-        const rowsDevice = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.id] === idthietbi);
-        if (rowsDevice.length === 0) {
+        const indexDevice = appData.DSThietBi.findIndex(item => item[CONFIG_COLUMNS.DSThietBi.id] === idthietbi);
+        if (indexDevice === -1) {
           console.log(`Không tìm thấy thiết bị với id: ${idthietbi} item: ${JSON.stringify(item)}`);
           return; // Hoặc xử lý logic khác nếu cần
         }
-        const rowthietbi = rowsDevice[0]
+        const rowDevice = appData.DSThietBi[indexDevice];
         const idusersua = item[CONFIG_COLUMNS.DataSC.idusersua];
 
-        const rowsnguoisua = appData.DSUserSua.filter(item => item[CONFIG_COLUMNS.DSUserSua.id] === idusersua);
-        if (rowsnguoisua.length === 0) {
+        const indexUserSua = appData.DSUserSua.findIndex(item => item[CONFIG_COLUMNS.DSUserSua.id] === idusersua);
+        if (indexUserSua === -1) {
           console.log("Không tìm thấy người sửa với id: " + idusersua);
           return; // Hoặc xử lý logic khác nếu cần
         }
-        const rownguoisua = rowsnguoisua[0]
+        const rowUserSua = appData.DSUserSua[indexUserSua];
 
         valTableEach.innerHTML += `
         <tr class="align-middle">
             <td class="text-center">${valSTT}</td>
             <td>⚠️ ${item[CONFIG_COLUMNS.DataSC.id]} 🛠️ ${item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]} 🛠️<br>
-              ♟️${rowthietbi[CONFIG_COLUMNS.DSThietBi.mathietbi]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.tentb]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.model]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.serial]}⚙️${rowthietbi[CONFIG_COLUMNS.DSThietBi.nuocsx]}<br>
-              👨‍🔧${rownguoisua[CONFIG_COLUMNS.DSUserSua.hoten]} 📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
+              ♟️${rowDevice[CONFIG_COLUMNS.DSThietBi.mathietbi]}⚙️${rowDevice[CONFIG_COLUMNS.DSThietBi.tentb]}⚙️${rowDevice[CONFIG_COLUMNS.DSThietBi.model]}⚙️${rowDevice[CONFIG_COLUMNS.DSThietBi.serial]}⚙️${rowDevice[CONFIG_COLUMNS.DSThietBi.nuocsx]}<br>
+              👨‍🔧${rowUserSua[CONFIG_COLUMNS.DSUserSua.hoten]} 📅${item[CONFIG_COLUMNS.DataSC.ngaydonvibao]}
             </td>
             <td class="d-flex align-middle align-items-center justify-content-center text-center gap-2" style="height:70%;"> 
-                <button type="button" data-repair-id='${item[CONFIG_COLUMNS.DataSC.id]}' data-repair-row='${index}' data-repair-status='${strTrangThai}' class="btn btn-outline-primary view-btn" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
+                <button type="button" data-id-repair='${item[CONFIG_COLUMNS.DataSC.id]}' data-index-repair='${index}' data-id-device='${rowDevice[CONFIG_COLUMNS.DSThietBi.id]}' data-index-device='${indexDevice}' data-index-user-sua='${indexUserSua}' data-repair-status='${strTrangThai}' class="btn btn-outline-primary view-btn" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
                     <i class="bi bi-eye-fill" style="font-size: 1.5rem; color:rgba(9, 23, 221, 0.85)"></i>
                 </button>
-                <button type="button" data-repair-id='${item[CONFIG_COLUMNS.DataSC.id]}' data-repair-row='${index}' data-repair-status='${strTrangThai}' class="btn btn-outline-secondary edit-btn" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
+                <button type="button" data-id-repair='${item[CONFIG_COLUMNS.DataSC.id]}' data-index-repair='${index}' data-id-device='${rowDevice[CONFIG_COLUMNS.DSThietBi.id]}' data-index-device='${indexDevice}' data-index-user-sua='${indexUserSua}' data-repair-status='${strTrangThai}' class="btn btn-outline-secondary edit-btn" data-bs-toggle="modal" data-bs-target="#FormRepairModal">
                     <i class="bi bi-pencil-square" style="font-size: 1.5rem; color:rgba(6, 248, 66, 0.85)"></i>
                 </button>
-                <button type="button" data-repair-id='${item[CONFIG_COLUMNS.DataSC.id]}' data-repair-row='${index}' data-repair-status='${strTrangThai}' class="btn btn-outline-danger del-btn">
+                <button type="button" data-id-repair='${item[CONFIG_COLUMNS.DataSC.id]}' data-index-repair='${index}' data-id-device='${rowDevice[CONFIG_COLUMNS.DSThietBi.id]}' data-index-device='${indexDevice}'  data-index-user-sua='${indexUserSua}' class="btn btn-outline-danger del-btn">
                     <i class="bi bi-trash" style="font-size: 1.5rem; color:rgba(248, 6, 6, 0.85)"></i>
                 </button>
             </td>
@@ -687,13 +737,20 @@ function UpdatetableRepair_each(strTable, strTrangThai, valTableEach, valTabEach
       switch (strTrangThai) {
         case CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA:
           if (btnView) {
-            UpdateValViewModalRepair(Number(btnView.dataset.repairRow) + 1, btnView.dataset.repairStatus, "View");
+            UpdateValViewModalRepair(btnView.dataset.idRepair, btnView.dataset.indexRepair, btnView.dataset.idDevice, btnView.dataset.indexDevice, btnView.dataset.indexUserSua, btnView.dataset.repairStatus, "View");
           }
           else if (btnEdit) {
-            UpdateValViewModalRepair(Number(btnEdit.dataset.repairRow) + 1, btnEdit.dataset.repairStatus, "Edit");
+            UpdateValViewModalRepair(btnEdit.dataset.idRepair, btnEdit.dataset.indexRepair, btnEdit.dataset.idDevice, btnEdit.dataset.indexDevice, btnEdit.dataset.indexUserSua, btnEdit.dataset.repairStatus, "Edit");
           }
           else if (btnDel) {
-            eBtnDelDeNghi(btnDel.dataset.repairId, Number(btnDel.dataset.repairRow) + 1);
+              console.log(`Nhấn nút Del Đề nghị sửa chữa. ID: ${btnDel.dataset.idRepair}. Row: ${btnDel.dataset.indexRepair} Device: ${btnDel.dataset.idDevice} IndexDevice: ${btnDel.dataset.indexDevice}`);
+              showConfirm("Bạn có chắc chắn muốn xóa đề nghị sửa chữa này không?", "Xác nhận xóa", "Có", "Không").then((result) => {
+                if (result.isConfirmed) {
+                  // Xóa đề nghị sửa chữa
+                  console.log("Xác nhận xóa đề nghị sửa chữa: " + btnDel.dataset.idRepair);
+                  deleteRepair(btnDel.dataset.idRepair, btnDel.dataset.indexRepair, btnDel.dataset.idDevice, btnDel.dataset.indexDevice, btnDel.dataset.indexUserSua);
+                }
+              });
           }
           break;
         case CONFIG_ENUM.TRANGTHAI.KHAO_SAT:
@@ -778,7 +835,6 @@ function updateSuggestionInRepairModal() {
     mrRequesterPhoneList.appendChild(newOption);
   });
 
-  
   // Người sửa chữa mrRepairerName trong appData.DSUserSua
   mrRepairerName.innerHTML = '<option value="">-- Chọn người sửa chữa --</option>';
   appData.DSUserSua.slice(1).forEach(user => {
@@ -787,21 +843,8 @@ function updateSuggestionInRepairModal() {
     newOption.textContent = user[CONFIG_COLUMNS.DSUserSua.hoten];
     mrRepairerName.appendChild(newOption);
   });
-
-  // Lọc danh sách thiết bị theo đơn vị và trạng thái Em011 Bình thường
-  const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id && item[CONFIG_COLUMNS.DSThietBi.tinhtrang] === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
-  // CONFIG_COLUMNS.DSThietBi.donvi CONFIG_COLUMNS.DSThietBi.tinhtrang
-  // Lọc nhóm thiết bị set theo filteredDevices
-  const uniqueDeviceGroups = [...new Set(filteredDevices.map(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb]))];
-  // Thêm các nhóm thiết bị vào danh sách nhóm thiết bị 
-  mrDeviceGroup.innerHTML = '<option value="">-- Chọn nhóm thiết bị --</option>';
-  uniqueDeviceGroups.forEach(group => {
-    const newOption = document.createElement('option');
-    newOption.value = group;
-    newOption.textContent = appData.DSNhomTB.find(item => item[CONFIG_COLUMNS.DSNhomTB.id] === group)[CONFIG_COLUMNS.DSNhomTB.nhomtb];
-    mrDeviceGroup.appendChild(newOption);
-  });
-
+  // Nhom thiết bị mrDeviceGroup
+  updateSuggestionGroupDevice();
   // Tình trạng thiết bị mrDeviceStatus
   const uniqueDeviceStatuses = [...new Set(filteredDataSC.map(item => item[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao]))];
   const mrDeviceStatusList = document.getElementById('mrDeviceStatusList');
@@ -812,6 +855,7 @@ function updateSuggestionInRepairModal() {
     newOption.textContent = status;
     mrDeviceStatusList.appendChild(newOption);
   });
+  
 }
 
 // Repair Modal - Check Validation
@@ -868,20 +912,41 @@ function validateRepairModal(TrangThai = CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA) {
   return true;
 }
 
+// Repair Modal - Update suggestion group device
+function updateSuggestionGroupDevice(idGroupDevice = null, View_Edit = "Edit") {
+  // Lọc danh sách thiết bị theo đơn vị và trạng thái Em011 Bình thường
+  const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id && item[CONFIG_COLUMNS.DSThietBi.tinhtrang] === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
+  // CONFIG_COLUMNS.DSThietBi.donvi CONFIG_COLUMNS.DSThietBi.tinhtrang
+  // Lọc nhóm thiết bị set theo filteredDevices
+  const listDeviceGroups = [...new Set(filteredDevices.map(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb]))];
+
+  if (idGroupDevice !== null) {
+       listDeviceGroups.push(idGroupDevice);
+  }
+  
+  // Thêm các nhóm thiết bị vào danh sách nhóm thiết bị
+  mrDeviceGroup.innerHTML = '<option value="">-- Chọn nhóm thiết bị --</option>';
+  listDeviceGroups.forEach(group => {
+    const newOption = document.createElement('option');
+    newOption.value = group;
+    newOption.textContent = appData.DSNhomTB.find(item => item[CONFIG_COLUMNS.DSNhomTB.id] === group)[CONFIG_COLUMNS.DSNhomTB.nhomtb];
+    mrDeviceGroup.appendChild(newOption);
+  });
+}
 // Repair Modal - Update suggestion device based on selected group
-function updateSuggestionDevice(rowDevice = null) {
-  const valSelectedGroup = mrDeviceGroup.value;
+function updateSuggestionDevice(valSelectedGroup, rowDevice = null, View_Edit = "Edit") {
   // Lọc danh sách thiết bị theo nhóm đã chọn và đơn vị
   const filteredDevices = appData.DSThietBi.filter(item => item[CONFIG_COLUMNS.DSThietBi.nhomtb] === valSelectedGroup && item[CONFIG_COLUMNS.DSThietBi.donvi] === userData.id && item[CONFIG_COLUMNS.DSThietBi.tinhtrang] === CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG);
 
   if (rowDevice !== null) {
     // Nếu có rowDevice, thêm nó vào danh sách thiết bị đã lọc
     filteredDevices.push(rowDevice);
-    console.log("Row device added to filtered devices:", rowDevice);
   }
-  // thêm vào list thiết bị select mrDeviceID
-  // Clear existing options in the device ID dropdown
-  mrDeviceID.innerHTML = '<option value="">-- Chọn mã thiết bị --</option>';
+
+  if(View_Edit === "Edit")
+  {
+    mrDeviceID.innerHTML = '<option value="">-- Chọn mã thiết bị --</option>';
+  }
 
   // Add filtered devices to the dropdown
   filteredDevices.forEach(device => {
@@ -963,18 +1028,33 @@ function GenerateRepairID() {
 }
 
 // Get val value to Modal Repair
-function UpdateValViewModalRepair(rowRepair, TrangThai, View_Edit = "View") {
-  
-  // Lấy row
-  const valIDUserSua = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.idusersua];
-  const rowUserSua = appData.DSUserSua.find(item => item[CONFIG_COLUMNS.DSUserSua.id] === valIDUserSua);
-
-  const valIDThietBi = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.idthietbi];
-  const rowDevice = appData.DSThietBi.find(item => item[CONFIG_COLUMNS.DSThietBi.id] === valIDThietBi);
+function UpdateValViewModalRepair(idRepair, indexRepair, idDevice, indexDevice, indexUserSua, TrangThai, View_Edit = "View") {
+  //idRepair, indexRepair, idDevice, indexDevice, TrangThai, // Du lieu kieu string
+  console.log("UpdateValViewModalRepair:", idRepair, indexRepair, idDevice, indexDevice, indexUserSua, TrangThai, View_Edit);
 
   // dataset
-  FormRepairModal.dataset.rowRepair = rowRepair;
-  FormRepairModal.dataset.rowDevice = rowDevice[CONFIG_COLUMNS.DSThietBi.id];
+  FormRepairModal.dataset.idRepair = idRepair;
+  FormRepairModal.dataset.indexRepair = indexRepair;
+  FormRepairModal.dataset.idDevice = idDevice;
+  FormRepairModal.dataset.indexDevice = indexDevice;
+  FormRepairModal.dataset.indexUserSua = indexUserSua;
+
+  // Lấy data row 
+  const rowRepair = appData.DataSC[Number(indexRepair)]; 
+  if  (rowRepair[CONFIG_COLUMNS.DataSC.id] !== idRepair) {
+    console.log("Lỗi: ID sửa chữa không khớp với dữ liệu");
+    console.log("rowRepair:", rowRepair); 
+    return;
+  }
+
+  const rowDevice = appData.DSThietBi[Number(indexDevice)];
+  if (rowDevice[CONFIG_COLUMNS.DSThietBi.id] !== idDevice) {
+    console.log("Lỗi: ID thiết bị không khớp với dữ liệu");
+    console.log("rowDevice:", rowDevice);
+    return;
+  }
+
+  const rowUserSua = appData.DSUserSua[Number(indexUserSua)];
 
   let stHeadModalRepair = "";
   // Cập nhật giá trị Modal Repair
@@ -991,24 +1071,28 @@ function UpdateValViewModalRepair(rowRepair, TrangThai, View_Edit = "View") {
 
     case CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA:
       // Thông tin đơn vị
-      mrRequesterName.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.hotenYeucau];
-      mrRequesterPhone.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.sdtYeucau];
+      mrRequesterName.value = rowRepair[CONFIG_COLUMNS.DataSC.hotenYeucau];
+      mrRequesterPhone.value = rowRepair[CONFIG_COLUMNS.DataSC.sdtYeucau];
 
       //Thông tin người sửa
       mrRepairerName.value = rowUserSua[CONFIG_COLUMNS.DSUserSua.id];
       mrRepairerPhone.value = rowUserSua[CONFIG_COLUMNS.DSUserSua.sdt];
 
-        //Thông tin thiết bị
-        mrDeviceGroup.value = rowDevice[CONFIG_COLUMNS.DSThietBi.nhomtb];
-        updateSuggestionDevice(rowDevice);
-        mrDeviceID.value = rowDevice[CONFIG_COLUMNS.DSThietBi.id];
-        updateInformationDevice();
-        //Thông tin tình trạng thiết bị
-        mrDeviceStatus.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao];
-        mrRequirementLevel.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.mucdo];
+      // Nhóm thiết bị
+      updateSuggestionGroupDevice(rowDevice[CONFIG_COLUMNS.DSThietBi.nhomtb], View_Edit);
 
-        //Thông tin ghi chú
-        mrNote.value = appData.DataSC[rowRepair][CONFIG_COLUMNS.DataSC.ghichu];
+      //Thông tin thiết bị
+      mrDeviceGroup.value = rowDevice[CONFIG_COLUMNS.DSThietBi.nhomtb];
+
+      updateSuggestionDevice(mrDeviceGroup.value, rowDevice, View_Edit);
+      mrDeviceID.value = rowDevice[CONFIG_COLUMNS.DSThietBi.id];
+      updateInformationDevice();
+      //Thông tin tình trạng thiết bị
+      mrDeviceStatus.value = rowRepair[CONFIG_COLUMNS.DataSC.tinhtrangtbdvbao];
+      mrRequirementLevel.value = rowRepair[CONFIG_COLUMNS.DataSC.mucdo];
+
+      //Thông tin ghi chú
+      mrNote.value = rowRepair[CONFIG_COLUMNS.DataSC.ghichu];
       break;
     default:
       console.log("Value Default Modal Repair: " + TrangThai);
@@ -1089,66 +1173,98 @@ function UpdateValViewModalRepair(rowRepair, TrangThai, View_Edit = "View") {
   FormRepairModalTitle.textContent = stHeadModalRepair;
 }
 
-// #region *** Trạng thái Đề nghi sửa chữa ***
-// View
-  function eBtnViewDeNghi(idRepair, rowDataRepair) {
-  UpdateValViewModalRepair(rowDataRepair, CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA, "View");
-}
+// #region *** Add Event Form Repair Modal ***
+//deleteRepair
+async function deleteRepair(idRepair, indexRepair, idDevice, indexDevice, indexUserSua) {
+  console.log(`Nhấn nút Del Đề nghị sửa chữa. ID: ${idRepair}. Row: ${indexRepair} Device: ${idDevice} IndexDevice: ${indexDevice} IndexUserSua: ${indexUserSua}`);
 
-function eBtnEditDeNghi(idRepair, indexRepair) {
-  UpdateValViewModalRepair(indexRepair, CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA, "Edit");
-}
-function eBtnDelDeNghi(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Del Đề nghị sửa chữa. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-// #endregion
+  // Lấy thông tin từ các trường trong modal
+  const currentTime = new Date();
+  const formattedDate = currentTime.toLocaleTimeString('vi-VN') + ' ' + currentTime.toLocaleDateString('vi-VN');
+  let txtHistory = `* ${formattedDate} - ${userData.donvi}: Xóa báo hỏng\n`;
 
 
-// Trạng thái Kháo sát
-function eBtnViewKhaoSat(idRepair, rowDataRepair) {
-  // bsCollapseDonViYC = new bootstrap.Collapse(GroupDonViYC, { toggle: false });
-//  bsCollapseDonViYC.hide(); // Ẩn nhóm Đơn vị yêu cầu khi khởi tạo
-// new bootstrap.Collapse(GroupDonViYC, { toggle: false }).hide();
-// const WGroupDonViYC = document.getElementById('wrapperDonViYC');
-// WGroupDonViYC.style.display = "none";
-  console.log(`Nhấn nút View Khảo sát. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnEditKhaoSat(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Edit Khảo sát. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnDelKhaoSat(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Del Khảo sát. ID: ${idRepair}. Row: ${rowDataRepair}`);
+  // data Repair
+  const rowRepair = appData.DataSC[Number(indexRepair)];
+  console.log("rowRepair:", rowRepair);
+  // data Device
+  const rowDevice = appData.DSThietBi[Number(indexDevice)];
+  console.log("rowDevice:", rowDevice);
+  // data User Sua
+  const rowUserSua = appData.DSUserSua[Number(indexUserSua)];
+  console.log("rowUserSua:", rowUserSua);
+
+  // Mức độ
+  const rowMucDo = appData.EnumSetting.find(item => item[CONFIG_COLUMNS.EnumSetting.id] === rowRepair[CONFIG_COLUMNS.DataSC.mucdo]);
+  console.log("rowMucDo:", rowMucDo);
+  // Nếu không tìm thấy mức độ, sử dụng giá trị mặc định
+  let nameMucDo = "";
+
+  if (rowMucDo) {
+    nameMucDo = rowMucDo[CONFIG_COLUMNS.EnumSetting.ten];
+  }
+
+  const objDeleteAPI = {
+    repairID: idRepair,
+    indexRepair: indexRepair,
+    idDevice: idDevice,
+    indexDevice: indexDevice,
+    nameuserdv: userData.donvi,
+    nameThietbi: rowDevice[CONFIG_COLUMNS.DSThietBi.tentb],
+    nameModel: rowDevice[CONFIG_COLUMNS.DSThietBi.model],
+    nameSerial: rowDevice[CONFIG_COLUMNS.DSThietBi.serial],
+    nameTinhTrang: rowDevice[CONFIG_COLUMNS.DSThietBi.tinhtrang],
+    nameMucDo: nameMucDo,
+    nameNguoiYeuCau: rowRepair[CONFIG_COLUMNS.DataSC.hotenYeucau],
+    nameSDTYeuCau: rowRepair[CONFIG_COLUMNS.DataSC.sdtYeucau],
+    nameNguoiSua: rowUserSua[CONFIG_COLUMNS.DSUserSua.hoten],
+    nameSDTNguoiSua: rowUserSua[CONFIG_COLUMNS.DSUserSua.sdt],
+    history: txtHistory,
+    timeupdate: formattedDate,
+    idTeleNguoiSua: rowUserSua ? rowUserSua[CONFIG_COLUMNS.DSUserSua.usetele] || "" : ""
+  };
+  console.log("objDeleteAPI:", objDeleteAPI);
+  // Hiển thị loading
+  showloading("Đang xóa đề nghị sửa chữa...");
+  const objDeleteRepair = await sendFormAPI("deleteRepair", objDeleteAPI);
+  console.log("Kết quả xóa đề nghị sửa chữa:", objDeleteRepair);
+  if (objDeleteRepair.status === "success") {
+    showsucces("Đã xóa đề nghị sửa chữa thành công.");
+    // Cập nhật DataSC
+    appData.DataSC[Number(indexRepair)] = objDeleteRepair.rowRepair;
+    // Cập nhật DataTB
+    appData.DSThietBi[Number(indexDevice)] = objDeleteRepair.rowDevice;
+    UpdateTablesRepair();
+    updateSuggestionInRepairModal();
+    // Đóng loading
+    Swal.close();
+  } else {
+    showerror("Xóa đề nghị sửa chữa thất bại: " + objDeleteRepair.message);
+    console.error("Lỗi xóa đề nghị sửa chữa:", objDeleteRepair.message);
+  }
 }
 
-// Trạng thái Đang sửa
-function eBtnViewDangSua(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút View Đang sửa. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnEditDangSua(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Edit Đang sửa. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnDelDangSua(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Del Đang sửa. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
+// Show Gropup Repair Modal
+ function showGroupRepairModal(...groups) {
+   // Logic to show the modal and populate it with data from the specified groups
+   const groupIds = [
+  "GroupQuyetDinh",
+  "GroupDaiDienBenhVien",
+  "GroupDaiDienDonVi",
+  "GroupThongTinKhaoSat",
+  "GroupNoiDungDeNghi",
+  "GroupDeviceStatusBG"
+];
 
-// Trạng thái Bảo hành
-function eBtnViewBaoHanh(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút View Bảo hành. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnEditBaoHanh(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Edit Bảo hành. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnDelBaoHanh(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Del Bảo hành. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
+groupIds.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.style.display = "none";
+});
 
-// Trạng thái Sửa ngoài
-function eBtnViewSuaNgoai(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút View Sửa ngoài. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnEditSuaNgoai(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Edit Sửa ngoài. ID: ${idRepair}. Row: ${rowDataRepair}`);
-}
-function eBtnDelSuaNgoai(idRepair, rowDataRepair) {
-  console.log(`Nhấn nút Del Sửa ngoài. ID: ${idRepair}. Row: ${rowDataRepair}`);
+  // Show only the groups passed as arguments
+  if (groups && groups.length > 0) {
+    groups.forEach(group => {
+      group.style.display = "block";
+    });
+  }
 }

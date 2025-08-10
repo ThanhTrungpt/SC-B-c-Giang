@@ -271,7 +271,7 @@
   </div> <!-- Main Section -->
 
   <!-- Repair Modal modal-dialog-scrollable-->
-  <div class="modal fade" id="FormRepairModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" data-row-repair="" data-row-device=""
+  <div class="modal fade" id="FormRepairModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" data-index-repair="" data-id-repair="" data-index-device="" data-id-device="" data-index-user-sua=""
     aria-labelledby="FormRepairModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-fullscreen-md-down ">
       <div class="modal-content">
@@ -290,11 +290,12 @@
               <div class="collapse show" id="CollGroupDonViYC">
                 <div class="row mb-3">
                   <div class="col d-flex">
-                  <label for="mrDepartmentName" class="form-label" style="min-width: 150px;">Đơn vị yêu cầu</label>
-                  <div class="input-group">
-                    <span class="input-group-text"><i class="bi bi-building-check text-success"></i></span>
-                    <input type="text" class="form-control" id="mrDepartmentName" list="departmentList"
-                    placeholder="Chọn đơn vị yêu cầu" readonly>
+                    <label for="mrDepartmentName" class="form-label" style="min-width: 150px;">Đơn vị yêu cầu</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-building-check text-success"></i></span>
+                      <input type="text" class="form-control" id="mrDepartmentName" list="departmentList"
+                      placeholder="Chọn đơn vị yêu cầu" readonly>
+                    </div>
                   </div>
                 </div>
                 <div class="row mb-3">
@@ -454,12 +455,12 @@
               <div class="collapse show" id="CollGroupThongTinTinhTrangThietBi">
                 <div class="row mb-2">
                   <div class="col">
-                    <label for="mrDeviceStatus" class="form-label">Tình trạng thiết bị</label>
+                    <label for="mrDeviceStatus" class="form-label">Tình trạng thiết bị đề nghị sửa</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-exclamation-circle text-success"></i></span>
                       <input type="text" class="form-control" id="mrDeviceStatus"
                         placeholder="Nhập tình trạng thiết bị" list="mrDeviceStatusList">
-                      <datalist id="mrDeviceStatusList">
+                      <datalist id="mrDeviceStatusList"></datalist>
                     </div>
                   </div>
                   <div class="col">
@@ -476,6 +477,277 @@
                 </div>
               </div>
             </div> <!--Nhóm Thông tin tình trạng thiết bị -->
+
+            <!--Nhóm Quyết định -->
+            <div id="GroupQuyetDinh">
+              <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                data-bs-toggle="collapse" href="#CollGroupQuyetDinh">
+                Thông tin quyết định
+              </a>
+              <div class="collapse show" id="CollGroupQuyetDinh">
+                <div class="row mb-3">
+                  <div class="col">
+                    <label for="mrDecisionNumber" class="form-label">Số quyết định</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-file-earmark-text text-success"></i></span>
+                      <input type="text" class="form-control" id="mrDecisionNumber" placeholder="Nhập số quyết định">
+                    </div>
+                  </div>
+                  <div class="col">
+                    <label for="mrDecisionDate" class="form-label">Ngày quyết định</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="bi bi-calendar-date text-success"></i></span>
+                      <input type="date" class="form-control" id="mrDecisionDate" placeholder="Chọn ngày quyết định">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!--Nhóm Quyết định -->
+
+            <!-- Nhóm Đại diện bệnh viện -->
+            <div id="GroupDaiDienBenhVien">
+              <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                data-bs-toggle="collapse" href="#CollGroupDaiDienBenhVien">
+                Thông tin đại diện bệnh viện
+              </a>
+
+              <div class="collapse show" id="CollGroupDaiDienBenhVien">
+                <!-- Đại diện đơn vị 1 -->
+                <div class="row mb-2 align-items-center">
+                  <label class="col-2 col-form-label mb-0">Đại diện đơn vị 1</label>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-person-badge text-success"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienName1" placeholder="Tên đại diện 1">
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-briefcase text-success"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienChucVu1" placeholder="Chức vụ 1">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Đại diện đơn vị 2 -->
+                <div class="row mb-2 align-items-center">
+                  <label class="col-2 col-form-label mb-0">Đại diện đơn vị 2</label>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-person-badge text-primary"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienName2" placeholder="Tên đại diện 2">
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-briefcase text-primary"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienChucVu2" placeholder="Chức vụ 2">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Đại diện đơn vị 3 -->
+                <div class="row mb-2 align-items-center">
+                  <label class="col-2 col-form-label mb-0">Đại diện đơn vị 3</label>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-person-badge text-danger"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienName3" placeholder="Tên đại diện 3">
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-briefcase text-danger"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienChucVu3" placeholder="Chức vụ 3">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Đại diện đơn vị 4 -->
+                <div class="row mb-2 align-items-center">
+                  <label class="col-2 col-form-label mb-0">Đại diện đơn vị 4</label>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-person-badge text-warning"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienName4" placeholder="Tên đại diện 4">
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-briefcase text-warning"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienChucVu4" placeholder="Chức vụ 4">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Đại diện đơn vị 5 -->
+                <div class="row mb-2 align-items-center">
+                  <label class="col-2 col-form-label mb-0">Đại diện đơn vị 5</label>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-person-badge text-info"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienName5" placeholder="Tên đại diện 5">
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-briefcase text-info"></i>
+                      </span>
+                      <input type="text" class="form-control" id="mrDaiDienChucVu5" placeholder="Chức vụ 5">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>  <!-- Nhóm Đại diện bệnh viện -->
+
+            <!-- Nhóm đại diện đơn vị -->
+            <div id="GroupDaiDienDonVi">
+              <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                data-bs-toggle="collapse" href="#CollGroupDaiDienDonVi">
+                Thông tin đại diện đơn vị
+              </a>
+
+              <div class="collapse show" id="CollGroupDaiDienDonVi">
+                <!-- Đại diện đơn vị 1 -->
+                <div class="row mb-2 align-items-center">
+                  <label class="col-2 col-form-label mb-0">Đại diện đơn vị 1</label>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-person-badge text-success"></i>
+                      </span>
+                      <input type="text" class="form-control" id="dvDaiDienName1" placeholder="Tên đại diện 1">
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-briefcase text-success"></i>
+                      </span>
+                      <input type="text" class="form-control" id="dvDaiDienChucVu1" placeholder="Chức vụ 1">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Đại diện đơn vị 2 -->
+                <div class="row mb-2 align-items-center">
+                  <label class="col-2 col-form-label mb-0">Đại diện đơn vị 2</label>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-person-badge text-primary"></i>
+                      </span>
+                      <input type="text" class="form-control" id="dvDaiDienName2" placeholder="Tên đại diện 2">
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-briefcase text-primary"></i>
+                      </span>
+                      <input type="text" class="form-control" id="dvDaiDienChucVu2" placeholder="Chức vụ 2">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>  <!-- Nhóm đại diện đơn vị -->
+
+            <!-- Thông tin khảo sát -->
+              <div id="GroupThongTinKhaoSat">
+                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                  data-bs-toggle="collapse" href="#CollGroupThongTinKhaoSat">
+                  Thông tin khảo sát
+                </a>
+
+                <div class="collapse show" id="CollGroupThongTinKhaoSat">
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label for="mrSurveyStatus" class="form-label">Tình trạng thiết bị khảo sát</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="bi bi-clipboard-check text-success"></i>
+                        </span>
+                        <textarea class="form-control" id="mrSurveyStatus" rows="2"
+                          placeholder="Nhập tình trạng thiết bị sau khi khảo sát"></textarea>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="mrSurveyConclusion" class="form-label">Kết luận khảo sát</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="bi bi-check-circle text-success"></i>
+                        </span>
+                        <textarea class="form-control" id="mrSurveyConclusion" rows="2"
+                          placeholder="Nhập kết luận sau khảo sát"></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label for="mrRepairProposal" class="form-label">Đề xuất phương án sửa chữa</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="bi bi-tools text-success"></i>
+                        </span>
+                        <textarea class="form-control" id="mrRepairProposal" rows="2"
+                          placeholder="Nhập đề xuất phương án sửa chữa"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Nhóm thông tin khảo sát -->
+
+              <!-- Nhóm Nội dung đề nghị -->
+                <div class="row mb-3" id="GroupNoiDungDeNghi">
+                  <div class="col">
+                    <label for="mrProposalContent" class="form-label">Nội dung đề nghị</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-file-earmark-text text-success"></i>
+                      </span>
+                      <textarea class="form-control" id="mrProposalContent" rows="2"
+                        placeholder="Nhập nội dung đề nghị"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <!-- Nhóm Nội dung đề nghị -->
+
+                <!-- Nhóm Tình trạng thiết bị bàn giao -->
+                <div class="row mb-3" id="GroupDeviceStatusBG">
+                  <div class="col">
+                    <label for="mrDeviceStatusBG" class="form-label">Tình trạng thiết bị bàn giao</label>
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <i class="bi bi-hdd-network text-success"></i>
+                      </span>
+                      <textarea class="form-control" id="mrDeviceStatusBG" rows="2"
+                        placeholder="Nhập tình trạng thiết bị bàn giao"></textarea>
+                    </div>
+                  </div>
+                </div>
+                <!-- Nhóm Tình trạng thiết bị bàn giao -->
+
 
             <!-- Nhóm Note -->
             <div class="row mb-3">
