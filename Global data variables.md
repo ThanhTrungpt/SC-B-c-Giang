@@ -25,6 +25,9 @@ btnFreshData
 btnEdituser
 btnChangePw
 btnLogout
+enableInputRepairModal(View_Edit, TrangThai);
+    case CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA:
+    case "Edit":
 
 // Nút bấm, tìm kiếm -- Frame Main
 btnAddRepair
@@ -128,3 +131,22 @@ GroupThongTinKhaoSat
 
 GroupNoiDungDeNghi
 GroupDeviceStatusBG
+group 
+button
+buttonFile
+
+const btnModalRepairPdf01 = document.getElementById('btnModalRepairPdf01');
+const btnModalRepairWord01 = document.getElementById('btnModalRepairWord01');
+const btnModalRepairPdf02 = document.getElementById('btnModalRepairPdf02');
+const btnModalRepairWord02 = document.getElementById('btnModalRepairWord02');
+const btnModalRepairPdf03 = document.getElementById('btnModalRepairPdf03');
+const btnModalRepairWord03 = document.getElementById('btnModalRepairWord03');
+const btnModalRepairPdf04 = document.getElementById('btnModalRepairPdf04');
+const btnModalRepairWord04 = document.getElementById('btnModalRepairWord04');
+
+      GroupQuyetDinh.style.display = "none";
+      GroupDaiDienBenhVien.style.display = "none";
+      GroupDaiDienDonVi.style.display = "none";
+      GroupThongTinKhaoSat.style.display = "none";
+      GroupNoiDungDeNghi.style.display = "none";
+      GroupDeviceStatusBG.style.display = "none";
