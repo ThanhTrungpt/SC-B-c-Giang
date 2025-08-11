@@ -120,6 +120,15 @@ const btn03_ModalRepairSave = document.getElementById('btn03_ModalRepairSave');
 const btn04_ModalRepairSave = document.getElementById('btn04_ModalRepairSave');
 const btn05_ModalRepairSave = document.getElementById('btn05_ModalRepairSave');
 
+const btnModalRepairPdf01 = document.getElementById('btnModalRepairPdf01');
+const btnModalRepairWord01 = document.getElementById('btnModalRepairWord01');
+const btnModalRepairPdf02 = document.getElementById('btnModalRepairPdf02');
+const btnModalRepairWord02 = document.getElementById('btnModalRepairWord02');
+const btnModalRepairPdf03 = document.getElementById('btnModalRepairPdf03');
+const btnModalRepairWord03 = document.getElementById('btnModalRepairWord03');
+const btnModalRepairPdf04 = document.getElementById('btnModalRepairPdf04');
+const btnModalRepairWord04 = document.getElementById('btnModalRepairWord04');
+
 // Group Repair Modal
 const GroupDonViYC = document.getElementById('GroupDonViYC');
 const GroupNguoiSuaChua = document.getElementById('GroupNguoiSuaChua');
@@ -353,7 +362,7 @@ btnAddRepair.addEventListener('click', async () => {
   console.log("Chức năng thêm báo hỏng.");
   updateSuggestionGroupDevice();
   FormRepairModalTitle.textContent = "Thêm báo hỏng vào tạo Biên bản đề nghị sửa chữa";
-  showGroupRepairModal();
+  showGroupButtonRepairModal("btnNew_ModalRepair");
   });
  // #endregion
 
@@ -454,7 +463,7 @@ btnNew_ModalRepair.addEventListener('click', async () => {
   }// End if objAddNewRepair.status === "success"
 });
 
-// #region *** Update  - Add Event Form Repair Modal ***
+// #region *** Update - View File  - Add Event Form Repair Modal ***
 // btn01_ModalRepairSave - Cập nhật đề nghị báo hỏng
 btn01_ModalRepairSave.addEventListener('click', async () => {
   console.log("Cập nhật đề nghị báo hỏng.");
@@ -579,6 +588,63 @@ btn05_ModalRepairSave.addEventListener('click', async () => {
   const ModalRepairShowHide = bootstrap.Modal.getInstance(FormRepairModal);
   ModalRepairShowHide.hide();
 });
+
+// btnModalRepairWord01
+btnModalRepairPdf01.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB01], "_blank");
+});
+
+// btnModalRepairWord01
+btnModalRepairWord01.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Word_BB01], "_blank");
+});
+
+// btnModalRepairPdf02
+btnModalRepairPdf02.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB02], "_blank");
+});
+
+// btnModalRepairWord02
+btnModalRepairWord02.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Word_BB02], "_blank");
+});
+
+// btnModalRepairPdf03
+btnModalRepairPdf03.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB03], "_blank");
+});
+
+// btnModalRepairWord03
+btnModalRepairWord03.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Word_BB03], "_blank");
+});
+
+// btnModalRepairPdf04
+btnModalRepairPdf04.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB04], "_blank");
+});
+
+// btnModalRepairWord04
+btnModalRepairWord04.addEventListener('click',  () => {
+  const indexRepair = Number(FormRepairModal.dataset.indexRepair);
+  const rowRepair = appData.DataSC[indexRepair];
+  window.open(rowRepair[CONFIG_COLUMNS.DataSC.Word_BB04], "_blank");
+});
+
 // #endregion  *** Add Event Form Repair Modal ***
 
 
@@ -1124,18 +1190,38 @@ function UpdateValViewModalRepair(idRepair, indexRepair, idDevice, indexDevice, 
       console.log("Value Default Modal Repair: " + TrangThai);
   }
 
-  // Ẩn các nút
-  btnNew_ModalRepair.style.display = "none"; // Tạo mới
-  btn01_ModalRepairSave.style.display = "none"; // Đề nghị sửa chữa
-  btn02_ModalRepairSave.style.display = "none"; // Khảo sát tình trạng thiết bị hỏng
-  btn03_ModalRepairSave.style.display = "none"; // Đang sửa
-  btn04_ModalRepairSave.style.display = "none"; // Bảo hành
-  btn05_ModalRepairSave.style.display = "none"; // Sửa ngoài
 
   // Cập nhật Readonly và hiển thị các nút cần thiết 
   switch (View_Edit) {
     case "View":
       stHeadModalRepair = "Xem thông tin - " + stHeadModalRepair;
+      showGroupButtonRepairModal();
+      // Kiểm tra data trong ô file khác rỗng thì hiển thị
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Word_BB01]) {
+        btnModalRepairWord01.style.display = "block";
+      }
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB01]) {
+        btnModalRepairPdf01.style.display = "block";
+      }
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Word_BB02]) {
+        btnModalRepairWord02.style.display = "block";
+      }
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB02]) {
+        btnModalRepairPdf02.style.display = "block";
+      }
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Word_BB03]) {
+        btnModalRepairWord03.style.display = "block";
+      }
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB03]) {
+        btnModalRepairPdf03.style.display = "block";
+      }
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Word_BB04]) {
+        btnModalRepairWord04.style.display = "block";
+      } 
+      if (rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB04]) {
+        btnModalRepairPdf04.style.display = "block";
+      }
+
       // Đặt các trường readonly
       mrRequesterName.disabled = true;
       mrRequesterPhone.disabled = true;
@@ -1149,11 +1235,25 @@ function UpdateValViewModalRepair(idRepair, indexRepair, idDevice, indexDevice, 
     case "Edit":
       stHeadModalRepair = "Cập nhật thông tin và tạo biên bản - " + stHeadModalRepair;
       // View button
-      if (TrangThai == CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA) { btn01_ModalRepairSave.style.display = "block"; }
-      if (TrangThai == CONFIG_ENUM.TRANGTHAI.KHAO_SAT) { btn02_ModalRepairSave.style.display = "block"; } 
-      if (TrangThai == CONFIG_ENUM.TRANGTHAI.DANG_SUA) { btn03_ModalRepairSave.style.display = "block"; }
-      if (TrangThai == CONFIG_ENUM.TRANGTHAI.BAO_HANH) { btn04_ModalRepairSave.style.display = "block"; }
-      if (TrangThai == CONFIG_ENUM.TRANGTHAI.SUA_NGOAI) { btn05_ModalRepairSave.style.display = "block"; }
+      switch (TrangThai) {
+        case CONFIG_ENUM.TRANGTHAI.DE_NGHI_SUA:
+          showGroupButtonRepairModal(btn01_ModalRepairSave);
+          break;
+        case CONFIG_ENUM.TRANGTHAI.KHAO_SAT:
+          showGroupButtonRepairModal(btn02_ModalRepairSave);
+          break;
+        case CONFIG_ENUM.TRANGTHAI.DANG_SUA:
+          showGroupButtonRepairModal(btn03_ModalRepairSave);
+          break;
+        case CONFIG_ENUM.TRANGTHAI.BAO_HANH:
+          showGroupButtonRepairModal(btn04_ModalRepairSave);
+          break;
+        case CONFIG_ENUM.TRANGTHAI.SUA_NGOAI:
+          showGroupButtonRepairModal(btn05_ModalRepairSave);
+          break;
+        default:
+          break;
+      }
 
       // Đặt các trường editable
       mrRequesterName.disabled = false;
@@ -1169,7 +1269,6 @@ function UpdateValViewModalRepair(idRepair, indexRepair, idDevice, indexDevice, 
       console.log("Value Default View_Edit: " + View_Edit);
       break;
   }
-
   FormRepairModalTitle.textContent = stHeadModalRepair;
 }
 
@@ -1244,27 +1343,39 @@ async function deleteRepair(idRepair, indexRepair, idDevice, indexDevice, indexU
   }
 }
 
-// Show Gropup Repair Modal
- function showGroupRepairModal(...groups) {
-   // Logic to show the modal and populate it with data from the specified groups
-   const groupIds = [
-  "GroupQuyetDinh",
-  "GroupDaiDienBenhVien",
-  "GroupDaiDienDonVi",
-  "GroupThongTinKhaoSat",
-  "GroupNoiDungDeNghi",
-  "GroupDeviceStatusBG"
-];
+// Show Group Repair Modal
+function showGroupButtonRepairModal( ...groups) {
+   try{
+      GroupQuyetDinh.style.display = "none";
+      GroupDaiDienBenhVien.style.display = "none";
+      GroupDaiDienDonVi.style.display = "none";
+      GroupThongTinKhaoSat.style.display = "none";
+      GroupNoiDungDeNghi.style.display = "none";
+      GroupDeviceStatusBG.style.display = "none";
 
-groupIds.forEach(id => {
-  const el = document.getElementById(id);
-  if (el) el.style.display = "none";
-});
+      btnNew_ModalRepair.style.display = "none"; //Button Tạo mới
+      btn01_ModalRepairSave.style.display = "none"; // Button Đề nghị sửa chữa
+      btn02_ModalRepairSave.style.display = "none"; // Button Khảo sát tình trạng thiết bị hỏng
+      btn03_ModalRepairSave.style.display = "none"; // Button Đang sửa
+      btn04_ModalRepairSave.style.display = "none"; // Button Bảo hành
+      btn05_ModalRepairSave.style.display = "none"; // Button Sửa ngoài
 
-  // Show only the groups passed as arguments
-  if (groups && groups.length > 0) {
-    groups.forEach(group => {
-      group.style.display = "block";
-    });
+      btnModalRepairPdf01.style.display = "none";
+      btnModalRepairWord01.style.display = "none";
+      btnModalRepairPdf02.style.display = "none";
+      btnModalRepairWord02.style.display = "none";
+      btnModalRepairPdf03.style.display = "none";
+      btnModalRepairWord03.style.display = "none";
+      btnModalRepairPdf04.style.display = "none";
+      btnModalRepairWord04.style.display = "none";
+
+      // Show only the groups passed as arguments
+      if (groups && groups.length > 0) {
+        groups.forEach(group => {
+            group.style.display = "block";
+        });
+      }
+  } catch (error) {
+    console.error("Lỗi khi hiển thị nhóm nút trong Modal Repair:", error);
   }
 }
