@@ -602,9 +602,8 @@ btn02_ModalRepairSave.addEventListener('click', async () => {
   if (rowMucDo) {
     nameMucDo = rowMucDo[CONFIG_COLUMNS.EnumSetting.ten];
   }
-  const objBtn02API = {
-    mrDecisionNumber: mrDecisionNumber.value,
-    mrDecisionDate: mrDecisionDate.value,
+  const objUpdateRepair_02 = {
+    mrDecisionFull: `${mrDecisionNumber.value} ngày ${mrDecisionDate.value}`,
     mrDaiDienName1: mrDaiDienName1.value,
     mrDaiDienChucVu1: mrDaiDienChucVu1.value,
     mrDaiDienName2: mrDaiDienName2.value,
@@ -633,6 +632,7 @@ btn02_ModalRepairSave.addEventListener('click', async () => {
     nameSerial: rowDevice[CONFIG_COLUMNS.DSThietBi.serial],
     nameTinhTrang: rowDevice[CONFIG_COLUMNS.DSThietBi.tinhtrang],
     nameMucDo: nameMucDo,
+    ngaydonvibao: rowRepair[CONFIG_COLUMNS.DSThietBi.ngaydonvibao],
     nameNguoiYeuCau: rowRepair[CONFIG_COLUMNS.DataSC.hotenYeucau],
     nameSDTYeuCau: rowRepair[CONFIG_COLUMNS.DataSC.sdtYeucau],
     nameNguoiSua: rowUserSua[CONFIG_COLUMNS.DSUserSua.hoten],
@@ -641,10 +641,10 @@ btn02_ModalRepairSave.addEventListener('click', async () => {
     timeupdate: formattedDate,
     idTeleNguoiSua: rowUserSua ? rowUserSua[CONFIG_COLUMNS.DSUserSua.usetele] || "" : ""
   };
-  console.log("objBtn02API:", objBtn02API);
+  console.log("objBtn02API:", objUpdateRepair_02);
   // Hiển thị loading
   showloading("Đang cập nhật thông tin và tạo biên bản khảo sát tình trạng trang thiết bị hỏng ...");
-  const objDeleteRepair = await sendFormAPI("updateRepairDn02", objBtn02API);
+  const objDeleteRepair = await sendFormAPI("updateRepairDn02", objUpdateRepair_02);
   console.log("Cập nhật", objDeleteRepair);
   if (objDeleteRepair.status === "success") {
     showsucces("Đã cập nhật thông tin và tạo biên bản khảo sát tình trạng trang thiết bị hỏng thành công.");
