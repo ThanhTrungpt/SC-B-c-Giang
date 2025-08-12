@@ -1,55 +1,84 @@
-// API/testUpdateRepairDn02
-function testUpdateRepairDn02() {
-  const params = {
-    dvDaiDienChucVu1: "Chức vụ ĐV 1",
-    dvDaiDienChucVu2: "Chức vụ ĐV 2",
-    dvDaiDienName1: "Đại diện đơn vị 1",
-    dvDaiDienName2: "Đại diện đơn vị 2",
-    history: "* 00:37:49 12/8/2025 - Đơn Vị Can Thiệp Mạch: Cập nhật thông tin - Khảo sát tình trạng thiết bị hỏng\n   - Ghi chú: ghi chú abc",
-    idDevice: "TB003",
-    idTeleNguoiSua: 5468165152,
-    indexDevice: 3,
-    indexRepair: 2,
-    mrDaiDienChucVu1: "Chức vụ 1",
-    mrDaiDienChucVu2: "Chức vụ 2",
-    mrDaiDienChucVu3: "Chức vụ 3",
-    mrDaiDienChucVu4: "Chức vụ 4",
-    mrDaiDienChucVu5: "Chức vụ 5",
-    mrDaiDienName1: "Đại diện 1",
-    mrDaiDienName2: "Đại diện 2",
-    mrDaiDienName3: "Đại diện 3",
-    mrDaiDienName4: "Đại diện 4",
-    mrDaiDienName5: "Đại diện 5",
-    ngaydonvibao: "23:55:39 31/7/2025",
-    mrDecisionFull: "Số quyết định ngày 2025-11-10",
-    mrRepairProposal: "Phương án áldfl",
-    mrSurveyConclusion: "Kết luântj",
-    mrSurveyStatus: "Tình trạng kháo sants...",
-    nameModel: "GC-03",
-    nameMucDo: "Gấp",
-    nameNguoiSua: "Phạm Thành Test",
-    nameNguoiYeuCau: "Phạm Thành Trung",
-    nameSDTNguoiSua: "038 994 3573",
-    nameSDTYeuCau: 987726236,
-    nameSerial: "Không có",
-    nameThietbi: "Giường bệnh nhân 3 tay quay",
-    nameTinhTrang: "Em011",
-    nameuserdv: "Đơn Vị Can Thiệp Mạch",
-    repairID: "SC.DVCTM.250519.022",
-    timeupdate: "00:37:49 12/8/2025"
-  }
-    const result = updateRepairDn02(params);
-//   SendtoTelegram(params);
-  console.log("Test Update Repair 02:", result);
-}
+
 
 // API/testUpdateRepairDn03
 function testUpdateRepairDn03() {
   const params = {
+    history: "* 00:54:33 13/8/2025 - Đơn Vị Can Thiệp Mạch: Cập nhật thông tin - Đề nghị sửa chữa   - Ghi chú: abc",
+    idDevice: "TB001",
+    idTeleNguoiSua: 5468165152,
+    indexDevice: 1,
+    indexRepair: 2,
+    mrDecisionFull: " ngày undefined/undefined/",
+    mrProposalContent: "mrProposalContent",
+    mrRepairProposal: "mrRepairProposal",
+    mrSurveyConclusion: "mrSurveyConclusion",
+    mrSurveyStatus: "mrSurveyStatus",
+    nameHangSX: "Terumo",
+    nameModel: "TE-SS700",
+    nameMucDo: "Gấp",
+    nameNamSD: "28/12/2018",
+    nameNamSX: 2018,
+    nameNguoiSua: "Phạm Thành Test",
+    nameNguoiYeuCau: "Phạm Thành Trung",
+    nameNuocSX: "Nhật Bản",
+    nameSDTNguoiSua: "038 994 3573",
+    nameSDTYeuCau: 123456790,
+    nameSerial: 1810010532,
+    nameThietbi: "Bơm tiêm điện",
+    nameuserdv: "Đơn Vị Can Thiệp Mạch",
+    ngaydonvibao: "14:44:37 10/8/2025",
+    ngaykhaosat: "00:37:49 12/8/2025",
+    repairID: "SC.DVCTM.250523.029.494",
+    timeupdate: "00:54:33 13/8/2025"
   }
     const result = updateRepairDn03(params);
 //   SendtoTelegram(params);
   console.log("Test Update Repair 03:", result);
+}
+
+// API/testUpdateRepairDn02
+function testUpdateRepairDn02() {
+  const params = {
+    dvDaiDienChucVu1: "Chức vụ ĐV 1",
+    dvDaiDienChucVu2: "",
+    dvDaiDienName1: "Đại diện đơn vị 1",
+    dvDaiDienName2: "",
+    history: "* 23:41:51 12/8/2025 - Đơn Vị Can Thiệp Mạch: Cập nhật thông tin - Khảo sát tình trạng thiết bị hỏng\n",
+    idDevice: "TB001",
+    idTeleNguoiSua: 5468165152,
+    indexDevice: 1,
+    indexRepair: 7,
+    mrDaiDienChucVu1: "Chức vụ 1",
+    mrDaiDienChucVu2: "",
+    mrDaiDienChucVu3: "",
+    mrDaiDienChucVu4: "",
+    mrDaiDienChucVu5: "",
+    mrDaiDienName1: "Đại diện 1",
+    mrDaiDienName2: "",
+    mrDaiDienName3: "",
+    mrDaiDienName4: "",
+    mrDaiDienName5: "",
+    mrDecisionFull: "123 ngày 2025-01-11",
+    mrRepairProposal: "sdfsdf",
+    mrSurveyConclusion: "sdfsdf",
+    mrSurveyStatus: "sdfsd",
+    nameModel: "TE-SS700",
+    nameMucDo: "Gấp",
+    nameNguoiSua: "Phạm Thành Test",
+    nameNguoiYeuCau: "Phạm Thành Trung",
+    nameSDTNguoiSua: "038 994 3573",
+    nameSDTYeuCau: 123456790,
+    nameSerial: 1810010532,
+    nameThietbi: "Bơm tiêm điện",
+    nameTinhTrang: "Em011",
+    nameuserdv: "Đơn Vị Can Thiệp Mạch",
+    ngaydonvibao: undefined,
+    repairID: "SC.DVCTM.250521.028.352",
+    timeupdate: "23:41:51 12/8/2025"
+  }
+    const result = updateRepairDn02(params);
+//   SendtoTelegram(params);
+  console.log("Test Update Repair 02:", result);
 }
 
 // API/testUpdateRepairDn04
@@ -88,6 +117,7 @@ function updateRepairDn02(params) {
     }
     // Xóa và update biên bản khảo sát tình trạng báo hỏng
     objFileUrl = createfile_bm0902(params, rowRepair);
+    console.log("[updateRepairDn02] - objFileUrl:", objFileUrl);
 
     //mrDecisionNumber
     rowRepair[CONFIG_COLUMNS.DataSC.quyetdinhtokhaosat] = params.mrDecisionFull;
@@ -141,8 +171,63 @@ function updateRepairDn02(params) {
 }
 
 // API/updateRepairDn03
-function updateRepairDn03() {
-  console.log("updateRepairDn03");
+function updateRepairDn03(params) {
+  try {
+    const ssMainData = SpreadsheetApp.openById(CONFIG_SpreadSheet_ID.idSH_DataSC);
+    const shDataSC = ssMainData.getSheetByName(CONFIG_SHEET_NAMES.DataSC);
+    const val_DataSC = shDataSC.getDataRange().getValues();
+
+    // Kiểm tra trạng thái Repair
+    const indexRepair = Number(params.indexRepair);
+    const rowRepair = val_DataSC[indexRepair];
+    console.log("[updateRepairDn03] - indexRepair:", indexRepair, "rowRepair:", rowRepair);
+    // kiểm tra repairID
+    if (params.repairID !== rowRepair[CONFIG_COLUMNS.DataSC.id]) {
+        console.log("[updateRepairDn03] - Lỗi: ID đề nghị sửa chữa không khớp với indexRepair");
+        return { status: "error", message: "ID đề nghị sửa chữa không khớp với indexRepair"};
+    }
+    // Kiểm tra trang thai đề nghị
+    if (rowRepair[CONFIG_COLUMNS.DataSC.trangthai] !== CONFIG_ENUM.TRANGTHAI.DANG_SUA) {
+        console.log("[updateRepairDn03] - Lỗi: Đề nghị sửa chữa không ở trạng thái đang sửa");
+        return { status: "error", message: "Đề nghị sửa chữa không ở trạng thái đang sửa" };
+    }
+    // Xóa và update biên bản khảo sát tình trạng báo hỏng
+    objFileUrl = createfile_bm0903(params, rowRepair);
+    console.log("[updateRepairDn03] - objFileUrl:", objFileUrl);
+
+    //mrDecisionNumber
+    
+    rowRepair[CONFIG_COLUMNS.DataSC.ngaydenghi] = params.timeupdate;
+    rowRepair[CONFIG_COLUMNS.DataSC.noidungdenghi] = params.mrProposalContent;
+    rowRepair[CONFIG_COLUMNS.DataSC.Word_BB03] = objFileUrl.wordFileUrl;
+    rowRepair[CONFIG_COLUMNS.DataSC.Pdf_BB03] = objFileUrl.pdfFileUrl;
+    // Cập nhật lịch sử
+    rowRepair[CONFIG_COLUMNS.DataSC.history] += "\n" + params.history;
+
+    // Time Update
+    rowRepair[CONFIG_COLUMNS.DataSC.timeupdate] = params.timeupdate;
+
+    // Cập nhật lại dòng sửa chữa vào sheet
+    shDataSC.getRange(indexRepair + 1, 1, 1, rowRepair.length).setValues([rowRepair]);
+    console.log("[updateRepairDn03] - Cập nhật dòng sửa chữa:", rowRepair);
+
+    // Nhắn tin trên Telegram - Nhoms
+    // SendtoTelegram(params, TELEGRAM_CONFIG.group_chat_id_Tele, "CẬP NHẬT ĐỀ NGHỊ SỬA CHỮA");
+    // Nhắn tin trên Telegram - Người sửa
+    // if (params.idTeleNguoiSua) {
+    //     SendtoTelegram(params, params.idTeleNguoiSua, "CẬP NHẬT ĐỀ NGHỊ SỬA CHỮA");
+    // }
+
+    return {
+        status: "success",
+        message: "Update repair 03 successfully",
+        indexRepair: indexRepair,
+        rowRepair: rowRepair
+    };
+  } catch (error) {
+    console.error("Error in updateRepairDn03:", error);
+    return { status: "error", message: error.message };
+  }
 }
 
 // API/updateRepairDn04
