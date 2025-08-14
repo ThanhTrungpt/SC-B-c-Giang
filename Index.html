@@ -35,7 +35,7 @@
         <h4 class="mb-0 text-center">Đăng nhập <br> Phần mềm quản lý sửa chữa</h4>
       </div>
       <div class="card-body">
-        <form>
+        <form >
           <div class="mb-3">
             <label for="username" class="form-label">Tên đăng nhập</label>
             <div class="input-group">
@@ -504,6 +504,53 @@
               </div>
             </div><!--Nhóm Quyết định -->
 
+            <!-- Thông tin khảo sát -->
+              <div id="GroupThongTinKhaoSat">
+                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
+                  data-bs-toggle="collapse" href="#CollGroupThongTinKhaoSat">
+                  Thông tin khảo sát
+                </a>
+
+                <div class="collapse show" id="CollGroupThongTinKhaoSat">
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label for="mrSurveyStatus" class="form-label">Tình trạng thiết bị khảo sát</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="bi bi-clipboard-check text-success"></i>
+                        </span>
+                        <textarea class="form-control" id="mrSurveyStatus" rows="2"
+                          placeholder="Nhập tình trạng thiết bị sau khi khảo sát"></textarea>
+                      </div>
+                    </div>
+                    <div class="col">
+                      <label for="mrSurveyConclusion" class="form-label">Kết luận khảo sát</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="bi bi-check-circle text-success"></i>
+                        </span>
+                        <textarea class="form-control" id="mrSurveyConclusion" rows="2"
+                          placeholder="Nhập kết luận sau khảo sát"></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label for="mrRepairProposal" class="form-label">Đề xuất phương án sửa chữa</label>
+                      <div class="input-group">
+                        <span class="input-group-text">
+                          <i class="bi bi-tools text-success"></i>
+                        </span>
+                        <textarea class="form-control" id="mrRepairProposal" rows="2"
+                          placeholder="Nhập đề xuất phương án sửa chữa"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Nhóm thông tin khảo sát -->
+
             <!-- Nhóm Đại diện bệnh viện -->
             <div id="GroupDaiDienBenhVien">
               <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
@@ -671,53 +718,6 @@
               </div>
             </div>  <!-- Nhóm đại diện đơn vị -->
 
-            <!-- Thông tin khảo sát -->
-              <div id="GroupThongTinKhaoSat">
-                <a class="collapsed h6 border text-success border-success rounded d-block text-center py-2 text-decoration-none"
-                  data-bs-toggle="collapse" href="#CollGroupThongTinKhaoSat">
-                  Thông tin khảo sát
-                </a>
-
-                <div class="collapse show" id="CollGroupThongTinKhaoSat">
-                  <div class="row mb-3">
-                    <div class="col">
-                      <label for="mrSurveyStatus" class="form-label">Tình trạng thiết bị khảo sát</label>
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="bi bi-clipboard-check text-success"></i>
-                        </span>
-                        <textarea class="form-control" id="mrSurveyStatus" rows="2"
-                          placeholder="Nhập tình trạng thiết bị sau khi khảo sát"></textarea>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <label for="mrSurveyConclusion" class="form-label">Kết luận khảo sát</label>
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="bi bi-check-circle text-success"></i>
-                        </span>
-                        <textarea class="form-control" id="mrSurveyConclusion" rows="2"
-                          placeholder="Nhập kết luận sau khảo sát"></textarea>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="row mb-3">
-                    <div class="col">
-                      <label for="mrRepairProposal" class="form-label">Đề xuất phương án sửa chữa</label>
-                      <div class="input-group">
-                        <span class="input-group-text">
-                          <i class="bi bi-tools text-success"></i>
-                        </span>
-                        <textarea class="form-control" id="mrRepairProposal" rows="2"
-                          placeholder="Nhập đề xuất phương án sửa chữa"></textarea>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Nhóm thông tin khảo sát -->
-
               <!-- Nhóm Nội dung đề nghị -->
                 <div class="row mb-3" id="GroupNoiDungDeNghi">
                   <div class="col">
@@ -764,54 +764,50 @@
 
         <!-- modal-footer -->
         <div class="modal-footer">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col text-start">
-                <div class="row">
-                  <div class="col">
-                    <button type="button" class="btn btn-success" id="btnModalRepairPdf01">
-                      <i class="bi bi-file-pdf"></i> Đề nghị sửa chữa
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord01">
-                      <i class="bi bi-file-earmark-word"></i> Đề nghị sửa chữa
-                    </button>
-                  </div>
-                  <div class="col">
-                    <button type="button" class="btn btn-success" id="btnModalRepairPdf02">
-                      <i class="bi bi-file-pdf"></i> Biên bản khảo sát
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord02">
-                      <i class="bi bi-file-earmark-word"></i> Biên bản khảo sát
-                    </button>
-                  </div>
-                  <div class="col">
-                    <button type="button" class="btn btn-success" id="btnModalRepairPdf03">
-                      <i class="bi bi-file-pdf"></i> Giấy đề nghị
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord03">
-                      <i class="bi bi-file-earmark-word"></i> Giấy đề nghị
-                    </button>
-                  </div>
-                  <div class="col">
-                    <button type="button" class="btn btn-success" id="btnModalRepairPdf04">
-                      <i class="bi bi-file-pdf"></i> Biên bản bàn giao
-                    </button>
-                    <button type="button" class="btn btn-secondary" id="btnModalRepairWord04">
-                      <i class="bi bi-file-earmark-word"></i> Biên bản bàn giao
-                    </button>
-                  </div>
-                </div>
+          <div class="container-fluid d-flex justify-content-end align-items-start flex-wrap gap-2 align-items-stretch">
+            <!-- Biên bản bàn giao -->
+            <div class="card text-center" style="width: 160px;" id="GroupbtnModalRepair04">
+              <div class="card-header bg-secondary text-black">Biên bản bàn giao</div>
+              <div class="btn-group w-100">
+                <button class="btn btn-primary rounded-0" id="btnModalRepairWord04"><i class="bi bi-file-earmark-word"></i></button>
+                <button class="btn btn-danger rounded-0" id="btnModalRepairPdf04"><i class="bi bi-file-pdf"></i></button>
               </div>
-              <div class="col text-end">
-                <button type="button" class="btn btn-primary" id="btnNew_ModalRepair">Tạo mới đề nghị </br>và Giấy đề nghị sửa chữa</button>
-                <button type="button" class="btn btn-primary" id="btn01_ModalRepairSave">Cập nhật thông tin</br>và tạo Giấy đề nghị sửa chữa </button>
-                <button type="button" class="btn btn-primary" id="btn02_ModalRepairSave">Cập nhật thông tin</br>và tạo Biên bản khảo sát tình trạng trang thiết bị hỏng </button>
-                <button type="button" class="btn btn-primary" id="btn03_ModalRepairSave">Cập nhật thông tin</br>và tạo Giấy đề nghị</button>
-                <button type="button" class="btn btn-primary" id="btn04_ModalRepairSave">Cập nhật thông tin</br>và tạo Biên bản bàn giao, nghiệm thu</button>
-                <button type="button" class="btn btn-primary" id="btn05_ModalRepairSave">Cập nhật thông tin</br>và tạo biên bản</button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+
+            <!-- Giấy đề nghị -->
+            <div class="card text-center" style="width: 160px;" id="GroupbtnModalRepair03">
+              <div class="card-header bg-secondary text-black">Giấy đề nghị</div>
+              <div class="btn-group w-100">
+                <button class="btn btn-primary rounded-0" id="btnModalRepairWord03"><i class="bi bi-file-earmark-word"></i></button>
+                <button class="btn btn-danger rounded-0" id="btnModalRepairPdf03"><i class="bi bi-file-pdf"></i></button>
               </div>
-            </div> <!-- row -->
+            </div>
+
+            <!-- Biên bản khảo sát -->
+            <div class="card text-center" style="width: 160px;" id="GroupbtnModalRepair02">
+              <div class="card-header bg-secondary text-black">Biên bản khảo sát</div>
+              <div class="btn-group w-100">
+                <button class="btn btn-primary rounded-0" id="btnModalRepairWord02"><i class="bi bi-file-earmark-word"></i></button>
+                <button class="btn btn-danger rounded-0" id="btnModalRepairPdf02"><i class="bi bi-file-pdf"></i></button>
+              </div>
+            </div>
+           
+            <!-- Đề nghị sửa chữa -->
+            <div class="card text-center" style="width: 160px;" id="GroupbtnModalRepair01">
+              <div class="card-header bg-secondary text-black">Đề nghị sửa chữa</div>
+              <div class="btn-group w-100">
+                <button class="btn btn-primary rounded-0" id="btnModalRepairWord01"><i class="bi bi-file-earmark-word"></i></button>
+                <button class="btn btn-danger rounded-0" id="btnModalRepairPdf01"><i class="bi bi-file-pdf"></i></button>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-primary mx-1" id="btnNew_ModalRepair">Tạo mới đề nghị <br> và Giấy đề nghị sửa chữa</button>
+            <button type="button" class="btn btn-primary mx-1" id="btn01_ModalRepairSave">Cập nhật thông tin  <br> và tạo Giấy đề nghị sửa chữa</button>
+            <button type="button" class="btn btn-primary mx-1" id="btn02_ModalRepairSave">Cập nhật thông tin  <br> và tạo Biên bản khảo sát</button>
+            <button type="button" class="btn btn-primary mx-1" id="btn03_ModalRepairSave">Cập nhật thông tin  <br> và tạo Giấy đề nghị</button>
+            <button type="button" class="btn btn-primary mx-1" id="btn04_ModalRepairSave">Cập nhật thông tin  <br> và tạo Biên bản bàn giao</button>
+            <button type="button" class="btn btn-primary mx-1" id="btn05_ModalRepairSave">Cập nhật thông tin  <br> và tạo biên bản</button>
+            <button type="button" class="btn btn-secondary align-self-stretch" data-bs-dismiss="modal">Đóng</button>
           </div> <!-- container-fluid -->
         </div> <!-- modal-footer -->
       </div> <!-- modal-content -->
@@ -819,15 +815,66 @@
   </div> <!-- FormRepairModal -->
 
   <!-- Edit User Profile Modal -->
-  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal fade modal-lg" id="editProfileModal" tabindex="-1" aria-hidden="true"  >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="editProfileModalLabel">Chỉnh sửa thông tin cá nhân</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div> <!-- modal-header -->
-        <div class="modal-body">
-          "Hello"
+
+        <!-- modal-body -->
+        <div class="modal-body" >
+          <form id="editProfileForm">
+            <div class="row mb-3">
+              <div class="col">
+                <label for="editProfileDepartment" class="form-label">Tên đơn vị</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-building text-success"></i></span>
+                  <input type="text" class="form-control" id="editProfileDepartment" placeholder="Nhập tên đơn vị mới">
+                  <span class="input-group-text" id="editProfileDepartmentOld">tên đơn vị cũ</span>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-3">
+              <div class="col">
+                <label for="editProfileSymbol" class="form-label">Ký hiệu (từ 3 đến 5 ký tự viết hoa)</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-tag-fill text-success"></i></span>
+                  <input type="text" class="form-control" id="editProfileSymbol" placeholder="Nhập ký hiệu đơn vị mới">
+                  <span class="input-group-text" id="editProfileSymbolOld">ký hiệu cũ</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col">
+                <label for="editProfileUsername" class="form-label">Tên đăng nhập</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-person-badge text-success"></i></span>
+                  <input type="text" class="form-control" id="editProfileUsername" placeholder="Nhập tên đăng nhập mới">
+                  <span class="input-group-text" id="editProfileUsernameOld">Tên đăng nhập cũ</span>
+                </div>
+              </div>
+            </div>
+            <div class="row mb-3" hidden>
+              <div class="col">
+                <label for="editProfileAvatar" class="form-label">Ảnh đại diện</label>
+                <div class="input-group mb-2">
+                  <span class="input-group-text"><i class="bi bi-image text-success"></i></span>
+                  <input type="file" class="form-control" id="editProfileAvatar" accept="image/*">
+                </div>
+                <div class="d-flex justify-content-center">
+                  <div class="position-relative" style="width: 150px; height: 150px;">
+                    <img id="previewAvatar" src="" alt="Avatar Preview" class="img-thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
+                    <button type="button" id="removeAvatar" class="btn btn-sm btn-danger position-absolute top-0 end-0">
+                      <i class="bi bi-x"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
         </div> <!-- modal-body -->
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>

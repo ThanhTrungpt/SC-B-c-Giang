@@ -9,6 +9,12 @@ function doPost(e) {
     case "checkAPI":
       result = checkAPI(params);
       break;
+    case "editProfile":
+      result = editProfile(params);
+      break;
+    case "changePassword":
+      result = changePassword(params);
+      break;
     case "getdata":
       result = getdata();
       break;
