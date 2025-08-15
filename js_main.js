@@ -27,6 +27,7 @@ const userNametxt = document.getElementById('txtuserName');
 const userAvatarimg = document.getElementById('imguserAvatar');
 
 const btnFreshData = document.getElementById('btnFreshData');
+const btnListDevicesDV = document.getElementById('btnListDevicesDV');
 const btnEdituser = document.getElementById('btnEdituser');
 const btnLogout = document.getElementById('btnLogout');
 
@@ -300,6 +301,12 @@ btnFreshData.addEventListener('click', async () => {
 
   // Ẩn loading
   frmloading.style.display = "none";
+});
+
+// Add Event btnListDevicesDV
+btnListDevicesDV.addEventListener('click', () => {
+  console.log("Chức năng danh sách thiết bị.");
+  updateTablelistDeviceModal();
 });
 
 // Add Event btnEdituser
@@ -1991,4 +1998,60 @@ function showButton_RepairModal(idRepair, indexRepair, idDevice, indexDevice, in
     showButtonRepairModal(btn04_ModalRepairSave);
   }
   return true;
+}
+
+/**
+ * Updates the device list modal with devices belonging to the current user's department
+ */
+function updateTablelistDeviceModal() {
+  const TablelistDeviceModal = document.getElementById('TablelistDeviceModal');
+  // Clear the table
+  TablelistDeviceModal.innerHTML = "";
+
+  // Filter devices based on the current user's department
+  const userDepartment = userData.id;
+  console.log("User Department:", userDepartment);
+  console.log("All Devices:", appData.DSThietBi);
+  const filteredDevices = appData.DSThietBi.filter(
+    device => device[CONFIG_COLUMNS.DSThietBi.donvi] === userDepartment
+  );
+
+  // Check if there are devices to display
+  if (filteredDevices.length === 0) {
+    TablelistDeviceModal.innerHTML = `
+      <tr>
+        <td colspan="3" class="text-center">Không có thiết bị nào thuộc đơn vị của bạn</td>
+      </tr>
+    `;
+    return;
+  }
+
+  // Populate table with filtered devices
+  filteredDevices.forEach((device, index) => {
+    // Determine device status class and text
+    let statusClass = "bg-success text-white";
+    let statusText = "Bình thường";
+    
+    if (device[CONFIG_COLUMNS.DSThietBi.tinhtrang] !== CONFIG_ENUM.TINHTRANG_THIETBI.BINH_THUONG) {
+      statusClass = "bg-danger text-white";
+      statusText = "Đang sửa chữa";
+    }
+
+    // Create table row
+    TablelistDeviceModal.innerHTML += `
+      <tr>
+        <td class="text-center">${index + 1}</td>
+        <td>
+          Thiết bị: ${device[CONFIG_COLUMNS.DSThietBi.tentb]} - ${device[CONFIG_COLUMNS.DSThietBi.mathietbi]}<br>
+          🔧 ${device[CONFIG_COLUMNS.DSThietBi.model]}
+          - ${device[CONFIG_COLUMNS.DSThietBi.serial]}<br>
+          <strong>Nhóm:</strong> ${device[CONFIG_COLUMNS.DSThietBi.nhomtb]}<br>
+          <strong>Vị trí:</strong> ${device[CONFIG_COLUMNS.DSThietBi.vitri]}
+        </td>
+        <td class="text-center">
+          <span class="badge ${statusClass}">${statusText}</span>
+        </td>
+      </tr>
+    `;
+  });
 }
