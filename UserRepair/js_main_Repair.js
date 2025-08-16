@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log("Vào Loading...");
     appData = 0;
-    appData = await JSON.parse(localStorage.getItem("storeAppData"));
+    // appData = await JSON.parse(localStorage.getItem("storeAppData"));
   } catch (error) {
     console.log("Lỗi:", error);
     appData = 0;
