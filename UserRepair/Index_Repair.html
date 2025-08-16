@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
   <!-- Link to CSS -->
-  <link rel="stylesheet" href="./ccs_Styles.html">
+  <link rel="stylesheet" href="./ccs_Styles_Repair.html">
   <title>Phần mềm quản lý sửa chữa - Bệnh viện Đa khoa Bắc Giang</title>
 
 </head>
@@ -91,16 +91,7 @@
                   alt="User Avatar" width="40" height="40" class="user-avatar rounded-circle">
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                  <a class="dropdown-item" id="btnListDevicesDV" href="#" data-bs-toggle="modal" data-bs-target="#listDeviceModal">
-                    <i class="bi bi-card-list text-primary" style="font-size: 1.5rem;"></i>
-                    Danh sách thiết bị
-                  </a>
-                </li>
-                <li>
-                  <hr class="dropdown-divider">
-                </li>
-                <li>
+                                <li>
                   <a class="dropdown-item" id="btnEdituser" href="#" data-bs-toggle="modal"
                     data-bs-target="#editProfileModal">
                     <i class="bi bi-pencil-square text-primary" style="font-size: 1.5rem;"></i>
@@ -132,7 +123,7 @@
 
     <!-- Nút bấm, tìm kiếm/Main Section -->
     <div class="row mb-3">
-      <div class="col-md-3">
+      <div class="col-md-3" style="display: none;">
         <button type="button" id="btnAddRepair" class="btn btn-success w-100 fw-bold" data-bs-toggle="modal"
           data-bs-target="#FormRepairModal">
           <i class="bi bi-plus-square-fill"></i> Thêm báo hỏng
@@ -275,7 +266,7 @@
   </div> <!-- Main Section -->
 
   <!-- Repair Modal modal-dialog-scrollable-->
-  <div class="modal fade" id="FormRepairModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" data-index-repair="" data-id-repair="" data-index-device="" data-id-device="" data-index-user-sua=""
+  <div class="modal fade" id="FormRepairModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" data-index-repair="" data-id-repair="" data-index-device="" data-id-device="" data-index-user-sua="" data-state-repair=""
     aria-labelledby="FormRepairModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-fullscreen-md-down ">
       <div class="modal-content">
@@ -337,10 +328,7 @@
                     <label for="mrRepairerName" class="form-label">Người sửa chữa</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-person-gear text-success"></i></span>
-                      <select class="form-select" id="mrRepairerName">
-                        <option value="" selected>Chọn người sửa chữa</option>
-                        <!-- Options will be populated dynamically -->
-                      </select>
+                      <input type="text" class="form-control" id="mrRepairerName" placeholder="Nhập tên người sửa chữa">
                     </div>
                   </div>
                   <div class="col">
@@ -366,20 +354,14 @@
                     <label for="mrDeviceGroup" class="form-label">Nhóm thiết bị</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-diagram-3 text-success"></i></span>
-                      <select class="form-select" id="mrDeviceGroup">
-                        <option value="" selected>Chọn nhóm thiết bị</option>
-                        <!-- Options will be populated dynamically -->
-                      </select>
+                      <input type="text" class="form-control" id="mrDeviceGroup" placeholder="Nhập nhóm thiết bị">
                     </div>
                   </div>
                   <div class="col">
                     <label for="mrDeviceID" class="form-label">Mã thiết bị</label>
                     <div class="input-group">
                       <span class="input-group-text"><i class="bi bi-upc-scan text-success"></i></span>
-                      <select class="form-select" id="mrDeviceID">
-                        <option value="" selected>-- Chọn mã thiết bị --</option>
-                        <!-- Options will be populated dynamically -->
-                      </select>
+                      <input type="text" class="form-control" id="mrDeviceID" placeholder="Nhập mã thiết bị">
                     </div>
                   </div>
                 </div>
@@ -805,48 +787,25 @@
               </div>
             </div>
 
-            <button type="button" class="btn btn-primary mx-1" id="btnNew_ModalRepair">Tạo mới đề nghị <br> và Giấy đề nghị sửa chữa</button>
+            <!-- <button type="button" class="btn btn-primary mx-1" id="btnNew_ModalRepair">Tạo mới đề nghị <br> và Giấy đề nghị sửa chữa</button> -->
             <button type="button" class="btn btn-primary mx-1" id="btn01_ModalRepairSave">Cập nhật thông tin  <br> và tạo Giấy đề nghị sửa chữa</button>
             <button type="button" class="btn btn-primary mx-1" id="btn02_ModalRepairSave">Cập nhật thông tin  <br> và tạo Biên bản khảo sát</button>
             <button type="button" class="btn btn-primary mx-1" id="btn03_ModalRepairSave">Cập nhật thông tin  <br> và tạo Giấy đề nghị</button>
             <button type="button" class="btn btn-primary mx-1" id="btn04_ModalRepairSave">Cập nhật thông tin  <br> và tạo Biên bản bàn giao</button>
             <button type="button" class="btn btn-primary mx-1" id="btn05_ModalRepairSave">Cập nhật thông tin  <br> và tạo biên bản</button>
+            <button type="button" class="btn btn-outline-danger mx-2" id="btnSwitchState_KhaoSat">Chuyển sang <br> Khảo sát tình trạng thiết bị</button>
+            <button type="button" class="btn btn-outline-danger mx-2" id="btnSwitchState_DangSua">Chuyển sang <br> Đang sửa</button>
+            <button type="button" class="btn btn-outline-danger mx-2" id="btnSwitchState_BaoHanh">Chuyển sang <br> Bảo hành</button>
+            <button type="button" class="btn btn-outline-danger mx-2" id="btnSwitchState_SuaNgoai">Chuyển sang <br> Sửa ngoài</button>
+            <button type="button" class="btn btn-outline-danger mx-2" id="btnSwitchState_HoanThanh"> Thiết bị bình thường <br> hoàn thành sửa</button>
+            <button type="button" class="btn btn-outline-danger mx-2" id="btnSwitchState_Hong"> Thiết bị hỏng <br> không sửa được</button>
+
             <button type="button" class="btn btn-secondary align-self-stretch" data-bs-dismiss="modal">Đóng</button>
           </div> <!-- container-fluid -->
         </div> <!-- modal-footer -->
       </div> <!-- modal-content -->
     </div> <!-- modal-dialog -->
   </div> <!-- FormRepairModal -->
-
-  <!-- List Device Modal -->
-  <div class="modal fade modal-lg" id="listDeviceModal" tabindex="-1" aria-hidden="true"  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="listDeviceModalLabel">Danh sách thiết bị</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div> <!-- modal-header -->
-
-        <!-- modal-body -->
-        <div class="modal-body" >
-          <table class="table table-bordered table-hover">
-            <thead>
-              <tr class="tb_header align-middle">
-                <th class="text-center" style="width: 5%;">STT</th>
-                <th class="text-center" style="width: 75%;">Thông tin thiết bị</th>
-                <th class="text-center" style="width: 20%;">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody id="TablelistDeviceModal">
-              <!-- Data will be populated dynamically -->
-            </tbody>
-          </table>  
-        </div> <!-- modal-body -->
-        <div class="modal-footer">
-        </div>
-      </div>
-    </div>
-  </div><!-- List Device Modal -->
 
   <!-- Edit User Profile Modal -->
   <div class="modal fade modal-lg" id="editProfileModal" tabindex="-1" aria-hidden="true"  >
@@ -862,31 +821,64 @@
           <form id="editProfileForm">
             <div class="row mb-3">
               <div class="col">
-                <label for="editProfileDepartment" class="form-label">Tên đơn vị</label>
+                <label for="editProfileDepartment" class="form-label">Đơn vị</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-building text-success"></i></span>
-                  <input type="text" class="form-control" id="editProfileDepartment" placeholder="Nhập tên đơn vị mới">
-                  <span class="input-group-text" id="editProfileDepartmentOld">tên đơn vị cũ</span>
+                  <input type="text" class="form-control" id="editProfileDepartment" placeholder="Nhập đơn vị">
+                  <span class="input-group-text" id="editProfileDepartmentOld">đơn vị cũ</span>
                 </div>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col">
-                <label for="editProfileSymbol" class="form-label">Ký hiệu (từ 3 đến 5 ký tự viết hoa)</label>
+                <label for="editProfileFullName" class="form-label">Họ và tên</label>
                 <div class="input-group">
-                  <span class="input-group-text"><i class="bi bi-tag-fill text-success"></i></span>
-                  <input type="text" class="form-control" id="editProfileSymbol" placeholder="Nhập ký hiệu đơn vị mới">
-                  <span class="input-group-text" id="editProfileSymbolOld">ký hiệu cũ</span>
+                  <span class="input-group-text"><i class="bi bi-person-fill text-success"></i></span>
+                  <input type="text" class="form-control" id="editProfileFullName" placeholder="Nhập họ và tên">
+                  <span class="input-group-text" id="editProfileFullNameOld">họ tên cũ</span>
                 </div>
               </div>
             </div>
             
             <div class="row mb-3">
               <div class="col">
+                <label for="editProfilePhone" class="form-label">Số điện thoại</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-phone text-success"></i></span>
+                  <input type="text" class="form-control" id="editProfilePhone" placeholder="Nhập số điện thoại">
+                  <span class="input-group-text" id="editProfilePhoneOld">SĐT cũ</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col">
+                <label for="editProfileEmail" class="form-label">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-envelope text-success"></i></span>
+                  <input type="email" class="form-control" id="editProfileEmail" placeholder="Nhập email">
+                  <span class="input-group-text" id="editProfileEmailOld">Email cũ</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col">
+                <label for="editProfileTelegram" class="form-label">Telegram</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-telegram text-success"></i></span>
+                  <input type="text" class="form-control" id="editProfileTelegram" placeholder="Nhập Telegram">
+                  <span class="input-group-text" id="editProfileTelegramOld">Telegram cũ</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col">
                 <label for="editProfileUsername" class="form-label">Tên đăng nhập</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-person-badge text-success"></i></span>
-                  <input type="text" class="form-control" id="editProfileUsername" placeholder="Nhập tên đăng nhập mới">
+                  <input type="text" class="form-control" id="editProfileUsername" placeholder="Nhập tên đăng nhập">
                   <span class="input-group-text" id="editProfileUsernameOld">Tên đăng nhập cũ</span>
                 </div>
               </div>
@@ -975,7 +967,7 @@
   </div>
 
   <!-- Embed Script -->
-  <script type="module" src="./js_main.js"></script>
+  <script type="module" src="./js_main_Repair.js"></script>
   <script type="module" src="./config.js"></script>
 
   <!-- SweetAlert2 -->

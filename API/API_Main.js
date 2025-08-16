@@ -36,6 +36,9 @@ function doPost(e) {
     case "updateRepairDn04":
       result = updateRepairDn04(params);
       break;
+    case "switchStateRepair_Device":
+      result = switchStateRepair_Device(params);
+      break;
     default:
       result = { status: "lỗi action error", message: "Unknown action" };
   }

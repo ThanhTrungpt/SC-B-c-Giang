@@ -150,7 +150,12 @@ const CONFIG_ENUM = {
   // Equipment status
   TINHTRANG_THIETBI: {
     HONG: "Em010",         // Hỏng
-    BINH_THUONG: "Em011"   // Hoạt động bình thường
+    BINH_THUONG: "Em011",   // Hoạt động bình thường
+    DE_NGHI_SUA: "Em012",           // Đề nghị sửa
+    KHAO_SAT: "Em013",              // Khảo sát tình trạng thiết bị hỏng
+    DANG_SUA: "Em014",              // Đang sửa
+    BAO_HANH: "Em015",              // Bảo hành
+    SUA_NGOAI: "Em016"              // Sửa ngoài
   },
   
   // Priority levels

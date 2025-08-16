@@ -284,7 +284,7 @@ function UpdateTrangThaiThietBi01(params, shDSThietBi, val_DSThietBi) {
 
             // Cập nhật trạng thái thiết bị mới thành hỏng
             const rowDeviceNew = val_DSThietBi[indexDeviceNew];
-            rowDeviceNew[CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.HONG;
+            rowDeviceNew[CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.DE_NGHI_SUA;
             console.log(rowDeviceNew);
             console.log(rowDeviceOld);
 
@@ -369,7 +369,7 @@ function CheckStatusDeviceAdd(params, shDSThietBi, val_DSThietBi) {
             const rowDevice = val_DSThietBi[indexDevice];
             console.log("[CheckTrangThaiThietBi] - rowDevice:", rowDevice);
             // Cập nhật trạng thái thiết bị thành hỏng
-            rowDevice[CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.HONG;
+            rowDevice[CONFIG_COLUMNS.DSThietBi.tinhtrang] = CONFIG_ENUM.TINHTRANG_THIETBI.DE_NGHI_SUA;
             // Ghi chú cập nhật
             rowDevice[CONFIG_COLUMNS.DSThietBi.ghichu] = params.ghichu;
             // History cập nhật
