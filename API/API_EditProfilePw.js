@@ -17,7 +17,7 @@ function testeditProfile() {
 const params = {
     donvi: "Đơn Vị Can Thiệp Mạch",
     id: "UDV001",
-    kihieu: "DVCTM",
+    // kihieu: "DVCTM",
     username: "b",
     history: "* 11:32:45 14/8/2025 - Đơn Vị Can Thiệp Mạch: Cập nhật thông tin đơn vị",
     timeupdate: "11:32:45 14/8/2025"
@@ -39,15 +39,15 @@ function editProfile(params) {
         const valUserData = shUserData.getDataRange().getValues();
         console.log("[editProfile] Lấy dữ liệu người dùng: " + JSON.stringify(valUserData));
         
-        // Kiểm tra ký hiệu có trùng không, nếu trùng thì trả về lỗi đã có ký hiệu trùng, đề nghị chọn ký hiệu khác
-        // Modify this to exclude the current user being edited
-        const existingUser = valUserData.findIndex(user => 
-            user[CONFIG_COLUMNS.DSUserDV.kihieu] === params.kihieu && 
-            user[CONFIG_COLUMNS.DSUserDV.id] !== params.id);
-        console.log("[editProfile] Kiểm tra ký hiệu: " + params.kihieu + ", Kết quả: " + JSON.stringify(existingUser));
-        if (existingUser !== -1) {
-            return { status: "error", message: "Ký hiệu đã tồn tại, vui lòng chọn ký hiệu khác." };
-        }
+        // // Kiểm tra ký hiệu có trùng không, nếu trùng thì trả về lỗi đã có ký hiệu trùng, đề nghị chọn ký hiệu khác
+        // // Modify this to exclude the current user being edited
+        // const existingUser = valUserData.findIndex(user => 
+        //     user[CONFIG_COLUMNS.DSUserDV.kihieu] === params.kihieu && 
+        //     user[CONFIG_COLUMNS.DSUserDV.id] !== params.id);
+        // console.log("[editProfile] Kiểm tra ký hiệu: " + params.kihieu + ", Kết quả: " + JSON.stringify(existingUser));
+        // if (existingUser !== -1) {
+        //     return { status: "error", message: "Ký hiệu đã tồn tại, vui lòng chọn ký hiệu khác." };
+        // }
         
         // Cập nhật thay đổi
         const userIndex = valUserData.findIndex(user => user[CONFIG_COLUMNS.DSUserDV.id] === params.id);
@@ -58,15 +58,11 @@ function editProfile(params) {
 
             // Update the user data
             userData[CONFIG_COLUMNS.DSUserDV.donvi] = params.donvi;
-            userData[CONFIG_COLUMNS.DSUserDV.kihieu] = params.kihieu;
+            // userData[CONFIG_COLUMNS.DSUserDV.kihieu] = params.kihieu;
             userData[CONFIG_COLUMNS.DSUserDV.username] = params.username;
             userData[CONFIG_COLUMNS.DSUserDV.history] = params.history;
             userData[CONFIG_COLUMNS.DSUserDV.timeupdate] = params.timeupdate;
 
-            // REMOVE THIS LINE - This is causing the error
-            // shUserData.getDataRange().setValues([UserRowData]);
-            
-            // This line is correct - keep only this one
             shUserData.getRange(userIndex + 1, 1, 1, userData.length).setValues([userData]);
             console.log("[editProfile] Cập nhật người dùng thành công: " + JSON.stringify(userData));
 

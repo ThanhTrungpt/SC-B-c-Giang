@@ -15,6 +15,12 @@ function doPost(e) {
     case "changePassword":
       result = changePassword(params);
       break;
+    case "editProfileRepair":
+      result = editProfileRepair(params);
+      break;
+    case "changePasswordRepair":
+      result = changePasswordRepair(params);
+      break;
     case "getdata":
       result = getdata();
       break;

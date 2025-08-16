@@ -34,8 +34,8 @@ const btnLogout = document.getElementById('btnLogout');
 // Get Edit Profile - Modal Elements
 const editProfileDepartment = document.getElementById('editProfileDepartment');
 const editProfileDepartmentOld = document.getElementById('editProfileDepartmentOld');
-const editProfileSymbol = document.getElementById('editProfileSymbol');
-const editProfileSymbolOld = document.getElementById('editProfileSymbolOld');
+// const editProfileSymbol = document.getElementById('editProfileSymbol');
+// const editProfileSymbolOld = document.getElementById('editProfileSymbolOld');
 const editProfileUsername = document.getElementById('editProfileUsername');
 const editProfileUsernameOld = document.getElementById('editProfileUsernameOld');
 const btnSaveProfile = document.getElementById('btnSaveProfile');
@@ -316,8 +316,8 @@ btnEdituser.addEventListener('click', () => {
   // Fill the form with current user data
   editProfileDepartment.value = '';
   editProfileDepartmentOld.textContent  = userData.donvi || '';
-  editProfileSymbol.value = '';
-  editProfileSymbolOld.textContent  = userData.kihieu || '';
+  // editProfileSymbol.value = '';
+  // editProfileSymbolOld.textContent  = userData.kihieu || '';
   editProfileUsername.value = '';
   editProfileUsernameOld.textContent  = userData.username || '';
 });
@@ -331,12 +331,12 @@ btnSaveProfile.addEventListener('click', async () => {
     return;
   }
   
-  // Validate symbol
-  if (!editProfileSymbol.value.trim() || editProfileSymbol.value.length < 3 || editProfileSymbol.value.length > 5 || editProfileSymbol.value !== editProfileSymbol.value.toUpperCase()) {
-    editProfileSymbol.focus();
-    showwarning("Vui lòng nhập ký hiệu đơn vị (từ 3 đến 5 ký tự viết hoa)");
-    return;
-  }
+  // // Validate symbol
+  // if (!editProfileSymbol.value.trim() || editProfileSymbol.value.length < 3 || editProfileSymbol.value.length > 5 || editProfileSymbol.value !== editProfileSymbol.value.toUpperCase()) {
+  //   editProfileSymbol.focus();
+  //   showwarning("Vui lòng nhập ký hiệu đơn vị (từ 3 đến 5 ký tự viết hoa)");
+  //   return;
+  // }
 
   // Validate username
   if (!editProfileUsername.value.trim()) {
@@ -352,7 +352,7 @@ btnSaveProfile.addEventListener('click', async () => {
   const objEditProfile = {
     id: userData.id,
     donvi: editProfileDepartment.value,
-    kihieu: editProfileSymbol.value,
+    // kihieu: editProfileSymbol.value,
     username: editProfileUsername.value,
     history: txtHistory,
     timeupdate: currentTime

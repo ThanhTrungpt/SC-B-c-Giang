@@ -319,12 +319,6 @@ btnFreshData.addEventListener('click', async () => {
   frmloading.style.display = "none";
 });
 
-// Add Event btnListDevicesDV - Removed as element doesn't exist in HTML
-// btnListDevicesDV.addEventListener('click', () => {
-//   console.log("Chức năng danh sách thiết bị.");
-//   updateTablelistDeviceModal();
-// });
-
 // Add Event btnEdituser
 btnEdituser.addEventListener('click', () => {
     // Display the edit profile modal with user data
@@ -366,6 +360,12 @@ btnSaveProfile.addEventListener('click', async () => {
     showwarning("Vui lòng nhập số điện thoại");
     return;
   }
+  // Validate editProfileTelegram
+  if (!editProfileTelegram.value.trim()) {
+    editProfileTelegram.focus();
+    showwarning("Vui lòng nhập Telegram");
+    return;
+  }
 
   // Validate username
   if (!editProfileUsername.value.trim()) {
@@ -373,12 +373,13 @@ btnSaveProfile.addEventListener('click', async () => {
     showwarning("Vui lòng nhập tên đăng nhập");
     return;
   }
+  
   // Time now
   const currentTime = new Date();
   const formattedDate = currentTime.toLocaleTimeString('vi-VN') + ' ' + currentTime.toLocaleDateString('vi-VN');
   let txtHistory = `* ${formattedDate} - ${userDataRepair.hovaten}: Cập nhật thông tin người sửa chữa`;
   // Prepare data for API call
-  const objEditProfile = {
+  const objEditProfileRepair = {
     id: userDataRepair.id,
     donvi: editProfileDepartment.value,
     hoten: editProfileFullName.value,
@@ -389,9 +390,9 @@ btnSaveProfile.addEventListener('click', async () => {
     history: txtHistory,
     timeupdate: currentTime
   };
-  console.log("objEditProfile:", objEditProfile);
+  console.log("objEditProfileRepair:", objEditProfileRepair);
   showloading("Đang xử lý cập nhật thông tin người dùng...");
-  const response = await sendFormAPI("editProfileRepair", objEditProfile);
+  const response = await sendFormAPI("editProfileRepair", objEditProfileRepair);
   if (response.status === "success") {
     // Update userDataRepair with new values
     // type response.userIndex
