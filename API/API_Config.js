@@ -10,7 +10,7 @@ const CONFIG_SpreadSheet_ID = {
     DataSC: "Main_SC",      // Main repair data sheet
     DSThietBi: "DSThietBi", // Equipment sheet
     DSNhomTB: "DSNhomTB",   // Equipment groups sheet
-    EnumSetting: "Enum Setting" // Enum settings sheet
+    EnumSetting: "EnumSetting" // Enum settings sheet - Changed from "Enum Setting" to "EnumSetting" (removed space)
   };
 
 // ===== 3. COLUMN DEFINITIONS =====
